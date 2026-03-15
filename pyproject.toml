@@ -1,0 +1,27 @@
+[project]
+name = "theo-fish-etl"
+version = "0.1.0"
+description = "ETL pipeline for ingesting ArXiv academic papers"
+requires-python = ">=3.10"
+dependencies = [
+    "arxiv2markdown",
+    "mineru[all]",
+    "httpx",
+    "pydantic>=2.0",
+    "feedparser",
+    "fastapi>=0.115",
+    "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["data_loader"]
