@@ -9,9 +9,8 @@ import sys
 from pathlib import Path
 
 from data_loader.config import PROCESSED_DIR, PAPERS_DIR, DEFAULT_CONCURRENCY
-from data_loader.input_reader import read_csv, read_cli_papers, merge_inputs
-from data_loader.logger import setup_logger
-from data_loader.orchestrator import process_batch, print_summary
+from data_loader.orchestrator import print_summary
+from data_loader.sdk import load_papers
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -65,24 +64,14 @@ def main() -> None:
     if not args.csv and not args.paper:
         parser.error("Provide at least one of --csv or --paper")
 
-    setup_logger()
+    print(f"Processing paper(s)...")
 
-    # Read inputs
-    csv_papers = read_csv(args.csv) if args.csv else []
-    cli_papers = read_cli_papers(args.paper)
-    papers = merge_inputs(csv_papers, cli_papers)
-
-    if not papers:
-        print("No valid papers to process.")
-        sys.exit(0)
-
-    print(f"Processing {len(papers)} paper(s)...")
-
-    # Run pipeline
+    # Run pipeline via SDK
     batch_result = asyncio.run(
-        process_batch(
-            papers=papers,
-            processed_dir=args.output,
+        load_papers(
+            arxiv_ids=args.paper,
+            csv_path=args.csv,
+            output_dir=args.output,
             papers_dir=args.papers_dir,
             concurrency=args.concurrency,
             force=args.force,
