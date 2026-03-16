@@ -163,7 +163,7 @@ class GraphReader:
         rows = await self._client.execute_read(
             "MATCH (n)-[r:SOURCED_FROM]->(s:Source) "
             "WHERE n:Claim OR n:Provenance "
-            "RETURN coalesce(n.slug, n.concept_slug) AS node_slug, "
+            "RETURN DISTINCT coalesce(n.slug, n.concept_slug) AS node_slug, "
             "s.arxiv_id AS source_arxiv_id, "
             "r.section AS section, r.confidence AS confidence"
         )
