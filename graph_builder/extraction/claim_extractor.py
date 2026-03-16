@@ -9,7 +9,7 @@ import logging
 
 from graph_builder.config.schema_types import GraphSchema
 from graph_builder.extraction.prompt_generator import build_claim_prompt
-from graph_builder.llm.llm_client import DeepSeekClient
+from graph_builder.llm.protocol import LLMClient
 from graph_builder.llm.response_parser import parse_claims
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.edges import CouplingEdge
@@ -21,9 +21,10 @@ logger = logging.getLogger("graph_builder")
 async def extract_claims_from_section(
     section: Section,
     schema: GraphSchema,
-    llm_client: DeepSeekClient,
+    llm_client: LLMClient,
     concept_list: list[dict],
     paper_slug: str,
+    proof_map: dict[str, str] | None = None,
 ) -> tuple[list[ClaimNode], list[CouplingEdge]]:
     """Extract claim nodes and ABOUT coupling edges from a single paper section.
 
@@ -37,10 +38,11 @@ async def extract_claims_from_section(
     @param llm_client Async LLM client for the extraction call.
     @param concept_list Section-local concept dicts with name/slug/type keys.
     @param paper_slug Slug of the source paper for composing claim slugs.
+    @param proof_map Optional mapping of claim labels to deferred proof text.
     @returns Tuple of (claims, coupling_edges), both empty on failure.
     """
     system_prompt = build_claim_prompt(schema, concept_list)
-    user_prompt = section.content
+    user_prompt = _build_user_prompt(section.content, proof_map)
 
     try:
         response = await llm_client.call(system_prompt, user_prompt)
@@ -115,3 +117,43 @@ def _edges_for_claim(claim_slug: str, concept_slugs: list) -> list[CouplingEdge]
         if isinstance(slug, str) and slug:
             edges.append(CouplingEdge(claim_slug=claim_slug, concept_slug=slug))
     return edges
+
+
+def _build_user_prompt(
+    section_content: str,
+    proof_map: dict[str, str] | None,
+) -> str:
+    """Build user prompt, injecting deferred proofs if they match.
+
+    @param section_content Raw section text
+    @param proof_map Optional mapping of claim labels to proof text
+    @returns User prompt with any deferred proofs appended
+    """
+    if not proof_map:
+        return section_content
+
+    injections = _find_matching_proofs(section_content, proof_map)
+    if not injections:
+        return section_content
+
+    parts = [section_content, "", "--- DEFERRED PROOF (from appendix) ---"]
+    for label, proof_text in injections:
+        parts.append(f"Proof of {label}: {proof_text}")
+    return "\n".join(parts)
+
+
+def _find_matching_proofs(
+    content: str,
+    proof_map: dict[str, str],
+) -> list[tuple[str, str]]:
+    """Find proof map entries whose labels appear in the section content.
+
+    @param content Section text to search
+    @param proof_map Mapping of labels to proof text
+    @returns List of (label, proof_text) tuples for matches
+    """
+    matches = []
+    for label, proof_text in proof_map.items():
+        if label in content:
+            matches.append((label, proof_text))
+    return matches

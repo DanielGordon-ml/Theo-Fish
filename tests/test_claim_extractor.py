@@ -261,3 +261,39 @@ class TestExtractClaimsFromSection:
 
         assert claims == []
         assert edges == []
+
+    @pytest.mark.asyncio
+    async def test_it_should_inject_deferred_proof_into_user_prompt(self):
+        """It should append deferred proof text to the section content."""
+        schema = _make_schema()
+        section = _make_section(
+            heading="Main Results",
+            content="Theorem III.3. The bound is tight.",
+        )
+        client = _make_mock_client([_VALID_CLAIM])
+        proof_map = {"Theorem III.3": "We proceed by induction."}
+
+        await extract_claims_from_section(
+            section, schema, client, _CONCEPT_LIST, "test-paper",
+            proof_map=proof_map,
+        )
+
+        _, user_prompt = client.call.call_args[0]
+        assert "DEFERRED PROOF" in user_prompt
+        assert "We proceed by induction" in user_prompt
+
+    @pytest.mark.asyncio
+    async def test_it_should_not_inject_when_no_matching_proof(self):
+        """It should not modify the prompt when no proof matches."""
+        schema = _make_schema()
+        section = _make_section(content="Theorem 99. Something else.")
+        client = _make_mock_client([])
+        proof_map = {"Theorem III.3": "Some proof."}
+
+        await extract_claims_from_section(
+            section, schema, client, _CONCEPT_LIST, "test-paper",
+            proof_map=proof_map,
+        )
+
+        _, user_prompt = client.call.call_args[0]
+        assert "DEFERRED PROOF" not in user_prompt
