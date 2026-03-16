@@ -1,0 +1,212 @@
+{
+  "main": {
+    "id": "ca483cb1d7e3254b",
+    "type": "split",
+    "children": [
+      {
+        "id": "2000186a726663ca",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a5dcf367e5ad8386",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3fc7b9d271bbe37e",
+    "type": "split",
+    "children": [
+      {
+        "id": "9a804ad68a36a54d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f4b81cec24b8ad4d",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "6bab1e3ab20e5405",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "b24ee434da76c062",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "2a2373f659909cc5",
+    "type": "split",
+    "children": [
+      {
+        "id": "459e417a7c6ca844",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "daa5efeb5e6bf58f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "3e06da75b31ac2f6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "fbcff57593caa52f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "a0b28088581d9615",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "73427417b69558e9",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "a5dcf367e5ad8386",
+  "lastOpenFiles": [
+    "Combinatorial-Network-Optimization-with-Unknown-Variables-Multi-Armed-Bandits-wi/index.md",
+    "_meta/schema.yaml",
+    "_meta",
+    "Welcome.md",
+    "Introduction-to-Multi-Armed-Bandits/(15).md",
+    "Introduction-to-Multi-Armed-Bandits/(29).md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 9.8.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 9.3.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 9.1.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 8.8.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 8.6.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 8.4.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 7.7.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 7.6.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 7.4.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 7.10.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 7.1.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 6.11.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 6.1.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 5.9.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 5.8.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 5.6.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 5.16.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 5.14.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 5.11.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 4.18.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 4.12.md",
+    "Introduction-to-Multi-Armed-Bandits/Theorem 4.11.md",
+    "Introduction-to-Multi-Armed-Bandits",
+    "Combinatorial-Network-Optimization-with-Unknown-Variables-Multi-Armed-Bandits-wi"
+  ]
+}

@@ -1,0 +1,306 @@
+<h2>Module Structure — Code Layout</h2>
+<p class="subtitle">Clean rebuild of graph_builder as dual-graph pipeline targeting Neo4j</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Directory Structure</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.8;">
+<pre style="margin: 0; color: #aaa; white-space: pre-wrap;">src/
+└── <span style="color: #8ad88a; font-weight: bold;">graph_builder/</span>
+    ├── __init__.py                    <span style="color: #555;"># Public API: build_graph, build_graphs, is_built</span>
+    ├── __main__.py                    <span style="color: #555;"># python -m graph_builder</span>
+    │
+    ├── <span style="color: #aa88cc; font-weight: bold;">config/</span>
+    │   ├── config.py                  <span style="color: #555;"># Env vars, paths, Neo4j connection, concurrency</span>
+    │   ├── schema-loader.py           <span style="color: #555;"># Reads _meta/schema.yaml → typed dataclasses</span>
+    │   └── schema.types.ts            <span style="color: #555;"># TypedDict / dataclass definitions for schema</span>
+    │
+    ├── <span style="color: #6aaadd; font-weight: bold;">models/</span>
+    │   ├── concept.py                 <span style="color: #555;"># ConceptNode, ConceptEdge dataclasses</span>
+    │   ├── claim.py                   <span style="color: #555;"># ClaimNode, ClaimEdge dataclasses</span>
+    │   ├── source.py                  <span style="color: #555;"># SourceNode dataclass</span>
+    │   ├── provenance.py              <span style="color: #555;"># ProvenanceNode, FormulationEdge dataclasses</span>
+    │   ├── edges.py                   <span style="color: #555;"># Shared edge types, CouplingEdge (ABOUT)</span>
+    │   └── results.py                 <span style="color: #555;"># BuildResult, BatchBuildResult, ValidationResult</span>
+    │
+    ├── <span style="color: #dd6a8a; font-weight: bold;">extraction/</span>
+    │   ├── section-splitter.py        <span style="color: #555;"># Reused from v1 (TOC strip, H1/H2 split, oversized handling)</span>
+    │   ├── concept-extractor.py       <span style="color: #555;"># Pass 1: per-section concept extraction</span>
+    │   ├── concept-merger.py          <span style="color: #555;"># Intra-paper dedup + cross-vault dedup cascade</span>
+    │   ├── claim-extractor.py         <span style="color: #555;"># Pass 2: per-section claim extraction (grounded)</span>
+    │   ├── edge-enricher.py           <span style="color: #555;"># Pass 3a: per-claim edge extraction</span>
+    │   ├── cross-section-linker.py    <span style="color: #555;"># Pass 3b: paper-wide gap-fill for implicit deps</span>
+    │   └── prompt-generator.py        <span style="color: #555;"># Reads schema → builds LLM prompts dynamically</span>
+    │
+    ├── <span style="color: #dddd6a; font-weight: bold;">dedup/</span>
+    │   ├── embedding-client.py        <span style="color: #555;"># Embedding API (local or remote), batch compute</span>
+    │   ├── fuzzy-matcher.py           <span style="color: #555;"># String normalization, abbreviation expansion, similarity</span>
+    │   ├── dedup-cascade.py           <span style="color: #555;"># Orchestrates: embedding → fuzzy → LLM confirm</span>
+    │   └── abbreviations.py           <span style="color: #555;"># Known math abbreviation map (MDP→Markov Decision Process, etc.)</span>
+    │
+    ├── <span style="color: #aabb66; font-weight: bold;">graph/</span>
+    │   ├── neo4j-client.py            <span style="color: #555;"># Async Neo4j driver wrapper, connection pool</span>
+    │   ├── graph-writer.py            <span style="color: #555;"># MERGE/CREATE operations with field ownership rules</span>
+    │   ├── graph-reader.py            <span style="color: #555;"># Query existing concepts, embeddings, slugs</span>
+    │   └── validator.py               <span style="color: #555;"># Schema validation: check edges, cycles, required fields</span>
+    │
+    ├── <span style="color: #6aaadd; font-weight: bold;">vault/</span>
+    │   ├── obsidian-exporter.py       <span style="color: #555;"># Neo4j → staging dir → atomic move to vault</span>
+    │   ├── sync-back.py               <span style="color: #555;"># Vault → Neo4j (human-owned fields only)</span>
+    │   ├── frontmatter-builder.py     <span style="color: #555;"># Builds YAML frontmatter (flat links + _meta keys)</span>
+    │   ├── body-renderer.py           <span style="color: #555;"># Renders markdown body with prose wikilinks</span>
+    │   └── manifest.py                <span style="color: #555;"># Reads/writes _meta/export-manifest.json</span>
+    │
+    ├── <span style="color: #8888cc; font-weight: bold;">llm/</span>
+    │   ├── llm-client.py              <span style="color: #555;"># Async DeepSeek client (reused core from v1)</span>
+    │   └── response-parser.py         <span style="color: #555;"># JSON parsing, validation, graceful error handling</span>
+    │
+    ├── <span style="color: #dd8888; font-weight: bold;">orchestrator/</span>
+    │   ├── orchestrator.py            <span style="color: #555;"># Single-paper pipeline: load → P1 → merge → P2 → P3 → validate → write</span>
+    │   ├── batch-processor.py         <span style="color: #555;"># Multi-paper: discover, skip-check, parallel process</span>
+    │   └── cli.py                     <span style="color: #555;"># Argparse: --paper, --input-dir, --export, --sync-back, --force, etc.</span>
+    │
+    ├── <span style="color: #888;">shared/</span>
+    │   ├── errors.py                  <span style="color: #555;"># GraphBuilderError, ValidationError, DedupConflictError</span>
+    │   ├── logger.py                  <span style="color: #555;"># Structured logging (reused from v1)</span>
+    │   └── slugify.py                 <span style="color: #555;"># Deterministic slug generation from canonical names</span>
+    │
+    └── <span style="color: #888;">tests/</span>                         <span style="color: #555;"># Mirror structure</span>
+        ├── extraction/
+        │   ├── concept-extractor.test.py
+        │   ├── concept-merger.test.py
+        │   ├── claim-extractor.test.py
+        │   ├── edge-enricher.test.py
+        │   ├── cross-section-linker.test.py
+        │   ├── prompt-generator.test.py
+        │   └── section-splitter.test.py
+        ├── dedup/
+        │   ├── embedding-client.test.py
+        │   ├── fuzzy-matcher.test.py
+        │   └── dedup-cascade.test.py
+        ├── graph/
+        │   ├── graph-writer.test.py
+        │   ├── graph-reader.test.py
+        │   └── validator.test.py
+        ├── vault/
+        │   ├── obsidian-exporter.test.py
+        │   ├── sync-back.test.py
+        │   ├── frontmatter-builder.test.py
+        │   └── body-renderer.test.py
+        ├── models/
+        │   └── ...
+        └── orchestrator/
+            ├── orchestrator.test.py
+            └── batch-processor.test.py</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Module Responsibilities — Single Responsibility Boundaries</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7;">
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr style="border-bottom: 1px solid #333;">
+          <th style="text-align: left; padding: 8px; color: #888; width: 22%;">Module</th>
+          <th style="text-align: left; padding: 8px; color: #888; width: 38%;">Responsibility</th>
+          <th style="text-align: left; padding: 8px; color: #888; width: 20%;">Depends On</th>
+          <th style="text-align: left; padding: 8px; color: #888; width: 20%;">Depended On By</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aa88cc;">config/</td>
+          <td style="padding: 8px; color: #aaa;">Load env vars, parse schema.yaml into typed objects</td>
+          <td style="padding: 8px; color: #888;">—</td>
+          <td style="padding: 8px; color: #888;">Everything</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #6aaadd;">models/</td>
+          <td style="padding: 8px; color: #aaa;">Pure data structures — no behavior, no I/O</td>
+          <td style="padding: 8px; color: #888;">—</td>
+          <td style="padding: 8px; color: #888;">Everything</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #8888cc;">llm/</td>
+          <td style="padding: 8px; color: #aaa;">DeepSeek API calls, retry logic, token tracking, JSON parsing</td>
+          <td style="padding: 8px; color: #888;">config</td>
+          <td style="padding: 8px; color: #888;">extraction</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #dd6a8a;">extraction/</td>
+          <td style="padding: 8px; color: #aaa;">All LLM-powered extraction: concepts, claims, edges. Prompt generation from schema.</td>
+          <td style="padding: 8px; color: #888;">config, models, llm</td>
+          <td style="padding: 8px; color: #888;">orchestrator</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #dddd6a;">dedup/</td>
+          <td style="padding: 8px; color: #aaa;">Embedding computation, fuzzy matching, dedup cascade orchestration</td>
+          <td style="padding: 8px; color: #888;">config, models, llm, graph</td>
+          <td style="padding: 8px; color: #888;">orchestrator</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aabb66;">graph/</td>
+          <td style="padding: 8px; color: #aaa;">Neo4j read/write, connection management, schema validation</td>
+          <td style="padding: 8px; color: #888;">config, models</td>
+          <td style="padding: 8px; color: #888;">dedup, vault, orchestrator</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #6aaadd;">vault/</td>
+          <td style="padding: 8px; color: #aaa;">Obsidian export (Neo4j → md), sync-back (md → Neo4j), frontmatter/body generation</td>
+          <td style="padding: 8px; color: #888;">config, models, graph</td>
+          <td style="padding: 8px; color: #888;">orchestrator</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; color: #dd8888;">orchestrator/</td>
+          <td style="padding: 8px; color: #aaa;">Pipeline coordination, batch processing, CLI entry point</td>
+          <td style="padding: 8px; color: #888;">All modules</td>
+          <td style="padding: 8px; color: #888;">__init__, __main__</td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Key Design Constraints (from CLAUDE.md)</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px;">
+          <div class="label">File Size</div>
+          <p style="color: #aaa; font-size: 11px;">No file exceeds 600 lines. Split at 500. Each file in extraction/ handles one pass. Edge enricher and cross-section linker are separate files despite both being "Pass 3."</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px;">
+          <div class="label">Functions</div>
+          <p style="color: #aaa; font-size: 11px;">Max 20 lines per function, max 3 params. Orchestrator stages are separate functions, not one monolith. Options objects for anything complex.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px;">
+          <div class="label">Naming</div>
+          <p style="color: #aaa; font-size: 11px;">Files: kebab-case. Classes: PascalCase. Functions: camelCase. Constants: UPPER_SNAKE_CASE. Booleans: is/has/can/should prefix.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px;">
+          <div class="label">Testing</div>
+          <p style="color: #aaa; font-size: 11px;">Test file written BEFORE implementation. Mirror source paths. Cover happy path, edge cases, error cases. Run single test file, not full suite.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px;">
+          <div class="label">Documentation</div>
+          <p style="color: #aaa; font-size: 11px;">Every file has a header comment. Every export has JSDoc. Comments explain WHY not WHAT.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px;">
+          <div class="label">Error Handling</div>
+          <p style="color: #aaa; font-size: 11px;">Never swallow errors. Always include context. GraphBuilderError, ValidationError, DedupConflictError with cause chaining.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">What Gets Reused from v1</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tr style="border-bottom: 1px solid #333;">
+          <th style="text-align: left; padding: 8px; color: #888; width: 30%;">v1 File</th>
+          <th style="text-align: left; padding: 8px; color: #888; width: 15%;">Status</th>
+          <th style="text-align: left; padding: 8px; color: #888; width: 55%;">Notes</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">section_splitter.py</td>
+          <td style="padding: 8px;"><span style="background: #2a3d2a; color: #8ad88a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">reuse</span></td>
+          <td style="padding: 8px; color: #888;">TOC strip, H1/H2 split, oversized handling — all still needed</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">llm_client.py</td>
+          <td style="padding: 8px;"><span style="background: #2a2a3d; color: #8a8add; padding: 2px 6px; border-radius: 3px; font-size: 10px;">adapt</span></td>
+          <td style="padding: 8px; color: #888;">Core retry/semaphore/token tracking reused. Add embedding model support.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">logger.py</td>
+          <td style="padding: 8px;"><span style="background: #2a3d2a; color: #8ad88a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">reuse</span></td>
+          <td style="padding: 8px; color: #888;">Structured logging as-is</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">errors.py</td>
+          <td style="padding: 8px;"><span style="background: #2a2a3d; color: #8a8add; padding: 2px 6px; border-radius: 3px; font-size: 10px;">adapt</span></td>
+          <td style="padding: 8px; color: #888;">Add ValidationError, DedupConflictError</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">config.py</td>
+          <td style="padding: 8px;"><span style="background: #2a2a3d; color: #8a8add; padding: 2px 6px; border-radius: 3px; font-size: 10px;">adapt</span></td>
+          <td style="padding: 8px; color: #888;">Add Neo4j connection params, embedding config, schema path</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">models.py</td>
+          <td style="padding: 8px;"><span style="background: #3d2a2a; color: #dd8a8a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">replace</span></td>
+          <td style="padding: 8px; color: #888;">Completely new dual-graph models</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">entity_extractor.py</td>
+          <td style="padding: 8px;"><span style="background: #3d2a2a; color: #dd8a8a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">replace</span></td>
+          <td style="padding: 8px; color: #888;">Split into concept-extractor + claim-extractor</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">relationship_mapper.py</td>
+          <td style="padding: 8px;"><span style="background: #3d2a2a; color: #dd8a8a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">replace</span></td>
+          <td style="padding: 8px; color: #888;">Replaced by edge-enricher + cross-section-linker</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">prompts.py</td>
+          <td style="padding: 8px;"><span style="background: #3d2a2a; color: #dd8a8a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">replace</span></td>
+          <td style="padding: 8px; color: #888;">Replaced by prompt-generator.py (schema-driven, not hardcoded)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">vault_writer.py</td>
+          <td style="padding: 8px;"><span style="background: #3d2a2a; color: #dd8a8a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">replace</span></td>
+          <td style="padding: 8px; color: #888;">Replaced by vault/ module (exporter, sync-back, frontmatter, body renderer)</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; color: #aaa;">vault_scanner.py</td>
+          <td style="padding: 8px;"><span style="background: #3d2a2a; color: #dd8a8a; padding: 2px 6px; border-radius: 3px; font-size: 10px;">replace</span></td>
+          <td style="padding: 8px; color: #888;">Neo4j replaces vault scanning — graph-reader.py queries Neo4j directly</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Dependency Graph — Build Order</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7; color: #aaa;">
+      <div style="text-align: center;">
+        <div style="color: #888; margin-bottom: 12px;">Implementation flows bottom-up: foundational modules first, orchestration last</div>
+
+        <div style="display: inline-block; text-align: left;">
+          <div style="margin-bottom: 8px;">
+            <span style="color: #888;">Layer 4:</span>
+            <span style="background: #3d1a1a; color: #dd8888; padding: 3px 8px; border-radius: 4px; margin-left: 8px;">orchestrator/</span>
+            <span style="background: #1a1a3d; color: #8888dd; padding: 3px 8px; border-radius: 4px; margin-left: 4px;">__init__.py</span>
+          </div>
+          <div style="text-align: center; color: #444; margin: 4px 0;">↑</div>
+          <div style="margin-bottom: 8px;">
+            <span style="color: #888;">Layer 3:</span>
+            <span style="background: #3d1a2a; color: #dd6a8a; padding: 3px 8px; border-radius: 4px; margin-left: 8px;">extraction/</span>
+            <span style="background: #3d3d1a; color: #dddd6a; padding: 3px 8px; border-radius: 4px; margin-left: 4px;">dedup/</span>
+            <span style="background: #1a2a3d; color: #6aaadd; padding: 3px 8px; border-radius: 4px; margin-left: 4px;">vault/</span>
+          </div>
+          <div style="text-align: center; color: #444; margin: 4px 0;">↑</div>
+          <div style="margin-bottom: 8px;">
+            <span style="color: #888;">Layer 2:</span>
+            <span style="background: #1a1a2e; color: #8888cc; padding: 3px 8px; border-radius: 4px; margin-left: 8px;">llm/</span>
+            <span style="background: #1a2a1a; color: #aabb66; padding: 3px 8px; border-radius: 4px; margin-left: 4px;">graph/</span>
+          </div>
+          <div style="text-align: center; color: #444; margin: 4px 0;">↑</div>
+          <div>
+            <span style="color: #888;">Layer 1:</span>
+            <span style="background: #2a1a2e; color: #aa88cc; padding: 3px 8px; border-radius: 4px; margin-left: 8px;">config/</span>
+            <span style="background: #1a2a3d; color: #6aaadd; padding: 3px 8px; border-radius: 4px; margin-left: 4px;">models/</span>
+            <span style="background: #222; color: #888; padding: 3px 8px; border-radius: 4px; margin-left: 4px;">shared/</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

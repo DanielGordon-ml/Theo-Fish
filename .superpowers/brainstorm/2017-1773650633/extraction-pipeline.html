@@ -1,0 +1,239 @@
+<h2>Extraction Pipeline — Two-Pass with Schema-Driven Prompts</h2>
+<p class="subtitle">Hybrid extraction: per-section concepts → paper-wide merge → per-section claims grounded against merged concepts</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Pipeline Flow — Single Paper</div>
+    <div class="mockup-body" style="padding: 24px; font-family: monospace; font-size: 12px; line-height: 1.6;">
+
+      <!-- Step 0: Load -->
+      <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+        <div style="background: #333; color: #888; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">0</div>
+        <div style="flex: 1;">
+          <div style="color: #aabb66; font-weight: bold;">Load & Prepare</div>
+          <div style="color: #8a9a6a; font-size: 11px; margin-top: 4px;">
+            Read cleaned JSON → split into sections (reuse existing section_splitter)<br>
+            Load <code>_meta/schema.yaml</code> → parse concept_types, claim_types, edges<br>
+            Query Neo4j for existing concept slugs + embeddings (for dedup context)
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Pass 1 -->
+      <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+        <div style="background: #1e2a3a; color: #6aaadd; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">1</div>
+        <div style="flex: 1; background: #111822; border: 1px solid #2a3a4a; border-radius: 8px; padding: 14px;">
+          <div style="color: #6aaadd; font-weight: bold;">Pass 1 — Concept Extraction (per-section, parallel)</div>
+          <div style="color: #5a8aaa; font-size: 11px; margin-top: 8px;">
+            For each section (semaphore-limited concurrency):
+          </div>
+          <div style="background: #0a1018; border-radius: 6px; padding: 10px; margin-top: 8px; font-size: 11px; color: #8ab;">
+            <strong>System prompt</strong> (generated from schema.yaml):<br>
+            <span style="color: #6a8;">• Valid concept types + descriptions + required/optional fields</span><br>
+            <span style="color: #6a8;">• Valid concept edge types + descriptions</span><br>
+            <span style="color: #6a8;">• Instructions: extract objects, not claims</span><br><br>
+            <strong>User prompt:</strong><br>
+            <span style="color: #6a8;">• Section text</span><br>
+            <span style="color: #6a8;">• Top 10-20 embedding-similar existing concepts from vault (pre-filtered)</span><br>
+            <span style="color: #6a8;">• "If a concept matches an existing one, use that exact name"</span><br><br>
+            <strong>Response format:</strong> JSON<br>
+            <code style="color: #aad;">{"concepts": [{"name": "...", "semantic_type": "...", "formal_spec": "...", ...}],
+ "concept_edges": [{"source": "...", "target": "...", "type": "GENERALIZES", ...}]}</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Merge -->
+      <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+        <div style="background: #2a2a1e; color: #dddd6a; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">2</div>
+        <div style="flex: 1; background: #18180e; border: 1px solid #3a3a2a; border-radius: 8px; padding: 14px;">
+          <div style="color: #dddd6a; font-weight: bold;">Concept Merge & Dedup (paper-wide, no LLM)</div>
+          <div style="color: #aaa86a; font-size: 11px; margin-top: 8px;">
+            <strong>Step 2a — Intra-paper dedup:</strong><br>
+            Collect all concepts from all sections → deduplicate by normalized name<br>
+            Keep richest formulation (longest formal_spec, most components)<br><br>
+
+            <strong>Step 2b — Cross-vault dedup cascade:</strong><br>
+            <div style="margin-left: 12px; margin-top: 4px;">
+              <span style="color: #8a8;">1.</span> Compute embedding for each new concept<br>
+              <span style="color: #8a8;">2.</span> Vector similarity search against Neo4j concept_embedding index<br>
+              <span style="color: #aa8;">3.</span> String normalization (lowercase, expand abbreviations, strip articles)<br>
+              <span style="color: #aa8;">4.</span> Similarity > 0.85 → auto-resolve to existing slug<br>
+              <span style="color: #da8;">5.</span> Similarity 0.6–0.85 → LLM confirmation call (targeted, cheap)<br>
+              <span style="color: #8a8;">6.</span> Similarity < 0.6 → new concept<br>
+            </div>
+            <br>
+            <strong>Output:</strong> Resolved concept list with slug mappings (new vs existing)
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Pass 2 -->
+      <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+        <div style="background: #2a1e2a; color: #dd6a8a; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">3</div>
+        <div style="flex: 1; background: #180e18; border: 1px solid #3a2a3a; border-radius: 8px; padding: 14px;">
+          <div style="color: #dd6a8a; font-weight: bold;">Pass 2 — Claim Extraction (per-section, parallel)</div>
+          <div style="color: #aa5a7a; font-size: 11px; margin-top: 8px;">
+            For each section (semaphore-limited concurrency):
+          </div>
+          <div style="background: #100818; border-radius: 6px; padding: 10px; margin-top: 8px; font-size: 11px; color: #b8a;">
+            <strong>System prompt</strong> (generated from schema.yaml):<br>
+            <span style="color: #a68;">• Valid claim types + descriptions + required/optional fields</span><br>
+            <span style="color: #a68;">• Valid claim edge types + coupling edge types (ABOUT)</span><br>
+            <span style="color: #a68;">• Instructions: extract assertions, not objects</span><br><br>
+            <strong>User prompt:</strong><br>
+            <span style="color: #a68;">• Section text</span><br>
+            <span style="color: #a68;">• <strong>Full merged concept list from Step 2</strong> (names + slugs + types)</span><br>
+            <span style="color: #a68;">• "For each claim, identify which concepts it is ABOUT"</span><br>
+            <span style="color: #a68;">• "Identify DEPENDS_ON relationships to other claims in this section"</span><br><br>
+            <strong>Response format:</strong> JSON<br>
+            <code style="color: #daa;">{"claims": [{"label": "...", "claim_type": "...", "assumptions": [...],
+  "conclusion": "...", "about_concepts": ["slug1", "slug2"], ...}],
+ "claim_edges": [{"source": "...", "target": "...", "type": "DEPENDS_ON",
+  "role": "existence_guarantee", ...}]}</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Edge Enrichment -->
+      <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+        <div style="background: #2a2a1e; color: #ddaa6a; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">4</div>
+        <div style="flex: 1; background: #18140e; border: 1px solid #3a2a1a; border-radius: 8px; padding: 14px;">
+          <div style="color: #ddaa6a; font-weight: bold;">Pass 3 — Cross-Section Edge Enrichment (paper-wide, single call)</div>
+          <div style="color: #aa8a5a; font-size: 11px; margin-top: 8px;">
+            One LLM call with the full paper's claims + concepts, focused on:
+          </div>
+          <div style="background: #100e08; border-radius: 6px; padding: 10px; margin-top: 8px; font-size: 11px; color: #ba8;">
+            <span style="color: #a86;">• Cross-section claim dependencies (Theorem in §4 depends on Lemma in §2)</span><br>
+            <span style="color: #a86;">• Conditional edge attributes: REQUIRES(condition=...), PROVES_VIA(technique=...)</span><br>
+            <span style="color: #a86;">• Strength classification: exact | asymptotic | approximate | existential</span><br>
+            <span style="color: #a86;">• Missing ABOUT edges (claim references concept not caught in per-section pass)</span><br><br>
+            <strong>This pass does NOT re-extract</strong> — it receives the already-extracted nodes and adds/enriches edges only.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Validate & Write -->
+      <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+        <div style="background: #2a3d2a; color: #8ad88a; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">5</div>
+        <div style="flex: 1; background: #0e180e; border: 1px solid #2a3a2a; border-radius: 8px; padding: 14px;">
+          <div style="color: #8ad88a; font-weight: bold;">Validate & Write to Neo4j</div>
+          <div style="color: #6ab86a; font-size: 11px; margin-top: 8px;">
+            <strong>Validate against schema.yaml:</strong><br>
+            <span style="color: #6a8;">• Every claim has ≥1 ABOUT edge</span><br>
+            <span style="color: #6a8;">• Every concept has ≥1 SOURCED_FROM edge</span><br>
+            <span style="color: #6a8;">• No unknown edge types or attributes</span><br>
+            <span style="color: #6a8;">• DEPENDS_ON edges don't form cycles</span><br>
+            <span style="color: #6a8;">• Log warnings/errors per severity in schema</span><br><br>
+
+            <strong>Write to Neo4j (transactional):</strong><br>
+            <span style="color: #6a8;">• MERGE :Source node (by arxiv_id)</span><br>
+            <span style="color: #6a8;">• MERGE :Concept nodes (by slug) — safe-merge: set pipeline-owned fields, skip human-owned if exists</span><br>
+            <span style="color: #6a8;">• CREATE :Provenance nodes (always append) → link to Concept + Source</span><br>
+            <span style="color: #6a8;">• CREATE :Claim nodes → link SOURCED_FROM Source, ABOUT Concepts</span><br>
+            <span style="color: #6a8;">• CREATE claim-to-claim edges with full attribute properties</span><br>
+            <span style="color: #6a8;">• Flag concepts with divergent formulations as status: review_needed</span><br>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">LLM Call Budget — Per Paper</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr style="border-bottom: 1px solid #333;">
+          <th style="text-align: left; padding: 8px; color: #888;">Pass</th>
+          <th style="text-align: left; padding: 8px; color: #888;">Calls</th>
+          <th style="text-align: left; padding: 8px; color: #888;">Parallelism</th>
+          <th style="text-align: left; padding: 8px; color: #888;">Context Size</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #6ad;">Pass 1 — Concepts</td>
+          <td style="padding: 8px; color: #aaa;">N (one per section)</td>
+          <td style="padding: 8px; color: #aaa;">Parallel (semaphore)</td>
+          <td style="padding: 8px; color: #aaa;">Section text + schema excerpt + 10-20 existing concepts</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #dd6;">Dedup confirmations</td>
+          <td style="padding: 8px; color: #aaa;">0–5 (only for 0.6–0.85 similarity)</td>
+          <td style="padding: 8px; color: #aaa;">Parallel</td>
+          <td style="padding: 8px; color: #aaa;">Two definitions only (very small)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #d6a;">Pass 2 — Claims</td>
+          <td style="padding: 8px; color: #aaa;">N (one per section)</td>
+          <td style="padding: 8px; color: #aaa;">Parallel (semaphore)</td>
+          <td style="padding: 8px; color: #aaa;">Section text + schema excerpt + full concept list</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #da6;">Pass 3 — Enrichment</td>
+          <td style="padding: 8px; color: #aaa;">1</td>
+          <td style="padding: 8px; color: #aaa;">Sequential</td>
+          <td style="padding: 8px; color: #aaa;">All extracted nodes + edges (no full text)</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; color: #8a8; font-weight: bold;">Total</td>
+          <td style="padding: 8px; color: #aaa; font-weight: bold;">2N + 1 + 0–5 dedup</td>
+          <td colspan="2" style="padding: 8px; color: #888;">For a 10-section paper: ~21–26 calls (vs current ~11)</td>
+        </tr>
+      </table>
+      <div style="color: #888; font-size: 11px; margin-top: 12px;">
+        Embedding computation is separate (local or API) — not counted as LLM calls.<br>
+        Token cost roughly 2x current pipeline due to the second extraction pass + enrichment.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Schema-Driven Prompt Generation</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.6;">
+      <div style="color: #c8a8d8; margin-bottom: 12px;">
+        The prompt generator reads <code>schema.yaml</code> at runtime and produces LLM prompts dynamically.<br>
+        This means adding a new concept type or edge type is a schema edit, not a code change.
+      </div>
+
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; background: #1a1a2a; border-radius: 8px; padding: 12px;">
+          <div style="color: #8888cc; font-weight: bold; margin-bottom: 6px;">Input: schema.yaml</div>
+          <pre style="color: #888; font-size: 10px; margin: 0; white-space: pre-wrap;">concept_types:
+  structure:
+    description: "Named mathematical objects"
+    required_fields: [name, formal_spec]
+    optional_fields: [components, notation]
+  space:
+    description: "Sets, domains, topologies"
+    ...</pre>
+        </div>
+
+        <div style="display: flex; align-items: center; color: #666; font-size: 20px;">→</div>
+
+        <div style="flex: 1; min-width: 280px; background: #1a2a1a; border-radius: 8px; padding: 12px;">
+          <div style="color: #88cc88; font-weight: bold; margin-bottom: 6px;">Output: LLM System Prompt</div>
+          <pre style="color: #888; font-size: 10px; margin: 0; white-space: pre-wrap;">Extract mathematical concepts from the text.
+
+Valid concept types:
+- structure: Named mathematical objects
+  Required: name, formal_spec
+  Optional: components, notation
+- space: Sets, domains, topologies
+  Required: name, formal_spec
+  ...
+
+Valid concept edge types:
+- GENERALIZES: Source is a more general
+  form of target. Attributes: condition
+- HAS_COMPONENT: Target is a named part
+  ...</pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

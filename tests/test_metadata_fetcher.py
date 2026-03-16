@@ -10,6 +10,7 @@ from data_loader.metadata_fetcher import (
     parse_arxiv_entry,
     parse_frontmatter_metadata,
     fetch_all_metadata,
+    build_local_metadata,
 )
 from data_loader.models import PaperInput, PaperMetadata
 
@@ -65,6 +66,33 @@ class TestParseArxivEntry:
         assert metadata.categories == ["cs.CL", "cs.LG"]
         assert metadata.primary_category == "cs.CL"
         assert metadata.source == "arxiv_api"
+
+
+class TestBuildLocalMetadata:
+    def test_uses_paper_name_as_title(self):
+        """It should use paper_name as title for local papers."""
+        paper = PaperInput(
+            arxiv_id="my_paper",
+            paper_name="My Great Paper",
+            is_local=True,
+            local_filename="my_paper.pdf",
+        )
+        meta = build_local_metadata(paper)
+        assert meta.arxiv_id == "my_paper"
+        assert meta.title == "My Great Paper"
+        assert meta.source == "local"
+        assert meta.authors == []
+        assert meta.abstract == ""
+
+    def test_falls_back_to_arxiv_id_for_title(self):
+        """It should use arxiv_id as title when paper_name is missing."""
+        paper = PaperInput(
+            arxiv_id="my_paper",
+            is_local=True,
+            local_filename="my_paper.pdf",
+        )
+        meta = build_local_metadata(paper)
+        assert meta.title == "my_paper"
 
 
 @pytest.mark.asyncio
@@ -137,3 +165,35 @@ class TestFetchAllMetadata:
 
         assert "2706.03762" in result
         assert "9999.99999" not in result
+
+    async def test_skips_local_papers(self, monkeypatch):
+        """It should not send local papers to the ArXiv API."""
+        api_called_with = []
+
+        async def mock_get(self, url, **kwargs):
+            api_called_with.append(url)
+
+            class MockResponse:
+                status_code = 200
+                text = SAMPLE_ENTRY_XML
+                def raise_for_status(self):
+                    pass
+            return MockResponse()
+
+        monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
+
+        papers = [
+            PaperInput(arxiv_id="2706.03762"),
+            PaperInput(
+                arxiv_id="local_paper",
+                is_local=True,
+                local_filename="local_paper.pdf",
+            ),
+        ]
+        async with httpx.AsyncClient() as client:
+            result = await fetch_all_metadata(papers, client)
+
+        # Only the ArXiv paper should be in the API call
+        assert len(api_called_with) == 1
+        assert "local_paper" not in api_called_with[0]
+        assert "2706.03762" in api_called_with[0]

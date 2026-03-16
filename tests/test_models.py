@@ -31,6 +31,24 @@ class TestPaperInput:
         assert p.paper_name is None
         assert p.file_type is None
 
+    def test_create_local_pdf(self):
+        """It should create PaperInput for a local PDF."""
+        p = PaperInput(
+            arxiv_id="my_paper",
+            paper_name="My Paper",
+            file_type="pdf",
+            is_local=True,
+            local_filename="my_paper.pdf",
+        )
+        assert p.is_local is True
+        assert p.local_filename == "my_paper.pdf"
+
+    def test_defaults_for_local_fields(self):
+        """It should default is_local to False and local_filename to None."""
+        p = PaperInput(arxiv_id="2706.03762")
+        assert p.is_local is False
+        assert p.local_filename is None
+
 
 class TestPaperMetadata:
     def test_create_full(self):
@@ -49,6 +67,20 @@ class TestPaperMetadata:
         assert m.title == "Attention Is All You Need"
         assert len(m.authors) == 2
         assert m.source == "arxiv_api"
+
+    def test_create_minimal_for_local(self):
+        """It should create PaperMetadata with defaults for local papers."""
+        m = PaperMetadata(
+            arxiv_id="my_paper",
+            title="My Paper",
+            source="local",
+        )
+        assert m.authors == []
+        assert m.abstract == ""
+        assert m.publication_date == ""
+        assert m.categories == []
+        assert m.primary_category == ""
+        assert m.math_subject == ""
 
 
 class TestConversionResult:

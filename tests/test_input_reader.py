@@ -75,6 +75,50 @@ class TestReadCsv:
         papers = read_csv(csv_file)
         assert papers == []
 
+    def test_detects_local_pdf(self, tmp_path):
+        """It should detect .pdf extension and create local PaperInput."""
+        csv_file = tmp_path / "local.csv"
+        csv_file.write_text(
+            'paper_name,file_path,file_type\n'
+            '"My Local Paper",my_paper.pdf,PDF\n'
+        )
+        papers = read_csv(csv_file)
+        assert len(papers) == 1
+        assert papers[0].is_local is True
+        assert papers[0].arxiv_id == "my_paper"
+        assert papers[0].local_filename == "my_paper.pdf"
+        assert papers[0].paper_name == "My Local Paper"
+        assert papers[0].file_type == "pdf"
+
+    def test_mixed_csv_arxiv_and_local(self, tmp_path):
+        """It should handle CSV with both ArXiv IDs and local PDFs."""
+        csv_file = tmp_path / "mixed.csv"
+        csv_file.write_text(
+            'paper_name,file_path,file_type\n'
+            '"ArXiv Paper",2706.03762,pdf\n'
+            '"Local Paper",achieving_pareto.pdf,PDF\n'
+        )
+        papers = read_csv(csv_file)
+        assert len(papers) == 2
+        # First is ArXiv
+        assert papers[0].is_local is False
+        assert papers[0].arxiv_id == "2706.03762"
+        # Second is local PDF
+        assert papers[1].is_local is True
+        assert papers[1].arxiv_id == "achieving_pareto"
+        assert papers[1].local_filename == "achieving_pareto.pdf"
+
+    def test_pdf_extension_case_insensitive(self, tmp_path):
+        """It should detect .PDF extension regardless of case."""
+        csv_file = tmp_path / "case.csv"
+        csv_file.write_text(
+            'paper_name,file_path,file_type\n'
+            '"Paper",my_paper.PDF,pdf\n'
+        )
+        papers = read_csv(csv_file)
+        assert len(papers) == 1
+        assert papers[0].is_local is True
+
 
 class TestReadCliPapers:
     def test_reads_cli_papers(self):

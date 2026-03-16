@@ -12,20 +12,22 @@ class PaperInput(BaseModel):
     arxiv_id: str
     paper_name: str | None = None
     file_type: str | None = None  # "pdf" or "html" hint
+    is_local: bool = False  # True = local PDF, False = ArXiv paper
+    local_filename: str | None = None  # Original PDF filename for local papers
 
 
 class PaperMetadata(BaseModel):
-    """Metadata fetched from ArXiv API or frontmatter fallback."""
+    """Metadata fetched from ArXiv API, frontmatter fallback, or local defaults."""
 
     arxiv_id: str
-    title: str
-    authors: list[str]
-    abstract: str
-    publication_date: str
-    categories: list[str]
-    primary_category: str
-    math_subject: str
-    source: str  # "arxiv_api" or "frontmatter_fallback"
+    title: str = ""
+    authors: list[str] = []
+    abstract: str = ""
+    publication_date: str = ""
+    categories: list[str] = []
+    primary_category: str = ""
+    math_subject: str = ""
+    source: str = "local"  # "arxiv_api", "frontmatter_fallback", or "local"
 
 
 class ConversionResult(BaseModel):

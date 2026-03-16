@@ -6,7 +6,12 @@
 import pytest
 from pathlib import Path
 from data_loader.orchestrator import process_batch
-from data_loader.models import PaperInput, PaperMetadata, ConversionResult, BatchResult
+from data_loader.models import (
+    PaperInput,
+    PaperMetadata,
+    ConversionResult,
+    BatchResult,
+)
 
 
 @pytest.mark.asyncio
@@ -111,3 +116,122 @@ class TestProcessBatch:
         assert isinstance(result, BatchResult)
         assert result.failed == 1
         assert result.processed == 0
+
+    async def test_local_papers_skip_arxiv_api(self, tmp_data_dir, monkeypatch):
+        """It should process local papers without calling the ArXiv API."""
+        api_called = []
+
+        async def mock_fetch_all(papers, client):
+            api_called.extend(p.arxiv_id for p in papers)
+            return {}
+
+        async def mock_convert_local(paper, for_process_dir):
+            return ConversionResult(
+                arxiv_id=paper.arxiv_id,
+                markdown_content="# Local Content",
+                converter_used="mineru",
+                conversion_warnings=[],
+            )
+
+        monkeypatch.setattr(
+            "data_loader.orchestrator.fetch_all_metadata",
+            mock_fetch_all,
+        )
+        monkeypatch.setattr(
+            "data_loader.orchestrator.convert_local_pdf",
+            mock_convert_local,
+        )
+
+        papers = [
+            PaperInput(
+                arxiv_id="local_paper",
+                paper_name="Local Paper",
+                is_local=True,
+                local_filename="local_paper.pdf",
+            ),
+        ]
+        processed_dir = tmp_data_dir / "processed"
+
+        result = await process_batch(
+            papers=papers,
+            processed_dir=processed_dir,
+            papers_dir=tmp_data_dir / "papers",
+            concurrency=5,
+            force=True,
+        )
+
+        # Local papers should not be passed to fetch_all_metadata
+        assert "local_paper" not in api_called
+        assert result.processed == 1
+        assert (processed_dir / "local_paper.json").exists()
+
+    async def test_mixed_batch_arxiv_and_local(self, tmp_data_dir, monkeypatch):
+        """It should handle a mixed batch of ArXiv and local papers."""
+        async def mock_fetch_all(papers, client):
+            # Should only receive the ArXiv paper
+            return {
+                "2706.03762": PaperMetadata(
+                    arxiv_id="2706.03762",
+                    title="Test Paper",
+                    authors=["Author"],
+                    abstract="Abstract",
+                    publication_date="2017-06-12",
+                    categories=["cs.CL"],
+                    primary_category="cs.CL",
+                    math_subject="cs.CL",
+                    source="arxiv_api",
+                ),
+            }
+
+        async def mock_convert(arxiv_id, papers_dir):
+            return ConversionResult(
+                arxiv_id=arxiv_id,
+                markdown_content="# ArXiv Content",
+                converter_used="arxiv2md",
+                conversion_warnings=[],
+            )
+
+        async def mock_convert_local(paper, for_process_dir):
+            return ConversionResult(
+                arxiv_id=paper.arxiv_id,
+                markdown_content="# Local Content",
+                converter_used="mineru",
+                conversion_warnings=[],
+            )
+
+        monkeypatch.setattr(
+            "data_loader.orchestrator.fetch_all_metadata",
+            mock_fetch_all,
+        )
+        monkeypatch.setattr(
+            "data_loader.orchestrator.convert_paper",
+            mock_convert,
+        )
+        monkeypatch.setattr(
+            "data_loader.orchestrator.convert_local_pdf",
+            mock_convert_local,
+        )
+
+        papers = [
+            PaperInput(arxiv_id="2706.03762", paper_name="ArXiv Paper"),
+            PaperInput(
+                arxiv_id="local_paper",
+                paper_name="Local Paper",
+                is_local=True,
+                local_filename="local_paper.pdf",
+            ),
+        ]
+        processed_dir = tmp_data_dir / "processed"
+
+        result = await process_batch(
+            papers=papers,
+            processed_dir=processed_dir,
+            papers_dir=tmp_data_dir / "papers",
+            concurrency=5,
+            force=True,
+        )
+
+        assert result.processed == 2
+        assert result.total == 2
+        assert (processed_dir / "2706.03762.json").exists()
+        assert (processed_dir / "local_paper.json").exists()

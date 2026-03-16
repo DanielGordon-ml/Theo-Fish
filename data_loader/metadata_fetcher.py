@@ -54,6 +54,18 @@ MATH_SUBJECTS: dict[str, str] = {
 }
 
 
+def build_local_metadata(paper: PaperInput) -> PaperMetadata:
+    """Build minimal metadata for a local PDF paper.
+
+    Uses paper_name as title, falling back to arxiv_id (filename stem).
+    """
+    return PaperMetadata(
+        arxiv_id=paper.arxiv_id,
+        title=paper.paper_name or paper.arxiv_id,
+        source="local",
+    )
+
+
 def get_math_subject(primary_category: str) -> str:
     """Resolve a category code to a human-readable math subject name.
 
@@ -96,7 +108,19 @@ def parse_arxiv_entry(entry: Any) -> PaperMetadata:
 async def _call_arxiv2md_frontmatter(paper_id: str) -> object:
     """Call arxiv2md for frontmatter extraction. Thin wrapper for monkeypatching."""
     from arxiv2md.ingestion import ingest_paper
-    return await ingest_paper(paper_id)
+
+    html_url = f"https://arxiv.org/html/{paper_id}"
+    result, _metadata = await ingest_paper(
+        arxiv_id=paper_id,
+        version=None,
+        html_url=html_url,
+        remove_refs=True,
+        remove_toc=False,
+        section_filter_mode="include",
+        sections=[],
+        include_frontmatter=True,
+    )
+    return result
 
 
 async def parse_frontmatter_metadata(arxiv_id: str) -> PaperMetadata | None:
@@ -190,7 +214,9 @@ async def fetch_all_metadata(
     Returns a dict mapping arxiv_id -> PaperMetadata.
     Papers not found via the API are omitted from the dict.
     """
-    arxiv_ids = [p.arxiv_id for p in papers]
+    # Only fetch metadata for ArXiv papers, not local PDFs
+    arxiv_papers = [p for p in papers if not p.is_local]
+    arxiv_ids = [p.arxiv_id for p in arxiv_papers]
     all_metadata: dict[str, PaperMetadata] = {}
 
     for i in range(0, len(arxiv_ids), ARXIV_API_BATCH_SIZE):

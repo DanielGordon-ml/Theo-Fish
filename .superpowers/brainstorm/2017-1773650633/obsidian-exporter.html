@@ -1,0 +1,295 @@
+<h2>Obsidian Exporter & Sync-Back</h2>
+<p class="subtitle">Neo4j → Obsidian vault (full regeneration) | Obsidian → Neo4j (scoped human-owned field sync)</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Vault Structure — Generated from Neo4j</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7;">
+<pre style="margin: 0; color: #aaa; white-space: pre-wrap;">data_vault/
+├── <span style="color: #6aaadd; font-weight: bold;">concepts/</span>                          <span style="color: #555;">← Graph A</span>
+│   ├── markov-decision-process.md
+│   ├── nash-equilibrium.md
+│   ├── bellman-operator.md
+│   ├── convexity.md
+│   └── ...
+├── <span style="color: #dd6a8a; font-weight: bold;">claims/</span>                             <span style="color: #555;">← Graph B (per-paper subfolders)</span>
+│   ├── intro-multi-armed-bandits/
+│   │   ├── theorem-1-1.md
+│   │   ├── lemma-2-3.md
+│   │   └── ...
+│   ├── regret-analysis-bandits/
+│   │   ├── theorem-4-1.md
+│   │   └── ...
+│   └── ...
+├── <span style="color: #dddd6a; font-weight: bold;">sources/</span>                            <span style="color: #555;">← Paper provenance nodes</span>
+│   ├── 1904-07272.md
+│   ├── 2103-04523.md
+│   └── ...
+└── <span style="color: #aa88cc; font-weight: bold;">_meta/</span>                              <span style="color: #555;">← Schema & maps of content</span>
+    └── schema.yaml</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Concept File — concepts/markov-decision-process.md</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 11px; line-height: 1.7;">
+<pre style="margin: 0; color: #aaa; white-space: pre-wrap;"><span style="color: #666;">---</span>
+<span style="color: #6aaadd;">slug:</span> markov-decision-process
+<span style="color: #ddaa6a;">name:</span> "Markov Decision Process"                    <span style="color: #555;"># human-owned</span>
+<span style="color: #6aaadd;">semantic_type:</span> structure
+<span style="color: #6aaadd;">rhetorical_origin:</span> definition
+<span style="color: #6aaadd;">formal_spec:</span> "(S, A, P, R, γ)"
+<span style="color: #6aaadd;">components:</span> [state_space, action_space, transition_fn, reward_fn, discount]
+<span style="color: #aabb66;">aliases:</span> [MDP, "finite MDP"]                       <span style="color: #555;"># shared (append-only)</span>
+<span style="color: #aabb66;">status:</span> canonical                                  <span style="color: #555;"># shared</span>
+<span style="color: #ddaa6a;">canonical_definition:</span> >                           <span style="color: #555;"># human-owned</span>
+  A Markov Decision Process is a tuple $(S, A, P, R, \gamma)$ where $S$ is a
+  finite state space, $A$ is a finite action space, $P: S \times A \to \Delta(S)$
+  is a transition kernel, $R: S \times A \to \mathbb{R}$ is a reward function,
+  and $\gamma \in [0,1)$ is a discount factor.
+
+<span style="color: #555;"># ─── Flat wikilinks (Obsidian graph view + backlinks) ───</span>
+<span style="color: #6aaadd;">generalizes:</span> ["[[partially-observable-mdp]]"]
+<span style="color: #6aaadd;">has_component:</span> ["[[state-space]]", "[[action-space]]", "[[transition-function]]"]
+<span style="color: #6aaadd;">instance_of:</span> ["[[stochastic-process]]"]
+<span style="color: #6aaadd;">sourced_from:</span> ["[[sources/1904-07272|Intro to Multi-Armed Bandits]]", "[[sources/2103-04523|Regret Analysis]]"]
+
+<span style="color: #555;"># ─── Structured edge metadata ───</span>
+<span style="color: #6aaadd;">generalizes_meta:</span>
+  - target: partially-observable-mdp
+    condition: "state fully observable"
+<span style="color: #6aaadd;">has_component_meta:</span>
+  - target: state-space
+  - target: action-space
+  - target: transition-function
+<span style="color: #6aaadd;">sourced_from_meta:</span>
+  - target: "1904-07272"
+    section: "Chapter 1 Foundations"
+    confidence: 0.95
+  - target: "2103-04523"
+    section: "Section 2 Preliminaries"
+    confidence: 0.92
+
+<span style="color: #ddaa6a;">human_notes:</span> ""                                     <span style="color: #555;"># human-owned</span>
+<span style="color: #6aaadd;">date_exported:</span> "2026-03-16T01:32:59+00:00"
+<span style="color: #666;">---</span>
+
+<span style="color: #8ad88a;"># Markov Decision Process</span>
+
+A Markov Decision Process is a tuple $(S, A, P, R, \gamma)$ where $S$ is a
+finite state space, $A$ is a finite action space...
+
+<span style="color: #555;"><!-- Body is pure mathematical content with natural prose wikilinks.
+     All machine-readable edge data lives exclusively in frontmatter. --></span>
+
+The [[transition-function]] $P$ maps state-action pairs to distributions
+over [[state-space|states]]. The [[bellman-operator]] provides the
+recursive structure for computing optimal [[policy|policies]].
+
+<span style="color: #8ad88a;">## Provenance</span>
+
+<span style="color: #555;"><!-- Generated from :Provenance nodes — read-only in Obsidian --></span>
+
+| Source | Section | Formulation | Confidence |
+|--------|---------|-------------|------------|
+| [[sources/1904-07272\|Intro MAB]] | Ch. 1 | "(S, A, P, R, γ) with finite S, A" | 0.95 |
+| [[sources/2103-04523\|Regret]] | §2 | "tuple (S, A, T, r, γ) with T transition" | 0.92 |
+</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Claim File — claims/intro-multi-armed-bandits/theorem-1-1.md</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 11px; line-height: 1.7;">
+<pre style="margin: 0; color: #aaa; white-space: pre-wrap;"><span style="color: #666;">---</span>
+<span style="color: #dd6a8a;">slug:</span> intro-multi-armed-bandits--theorem-1-1
+<span style="color: #dd6a8a;">label:</span> "Theorem 1.1"
+<span style="color: #dd6a8a;">claim_type:</span> theorem
+<span style="color: #dd6a8a;">assumptions:</span>
+  - "finite action space"
+  - "bounded rewards in [0,1]"
+<span style="color: #dd6a8a;">conclusion:</span> "$R_T \\leq \\sqrt{KT \\ln T}$ where $K = |A|$"
+<span style="color: #dd6a8a;">proof_technique:</span> "concentration inequalities + union bound"
+<span style="color: #dd6a8a;">strength:</span> asymptotic
+<span style="color: #dd6a8a;">section:</span> "Chapter 1 Foundational results"
+<span style="color: #ddaa6a;">status:</span> verified                                   <span style="color: #555;"># human-owned</span>
+
+<span style="color: #555;"># ─── Flat wikilinks ───</span>
+<span style="color: #dd6a8a;">about:</span> ["[[concepts/regret]]", "[[concepts/action-space]]", "[[concepts/upper-confidence-bound]]"]
+<span style="color: #dd6a8a;">depends_on:</span> ["[[claims/intro-multi-armed-bandits/lemma-1-3]]"]
+<span style="color: #dd6a8a;">enables:</span> ["[[claims/intro-multi-armed-bandits/corollary-1-2]]"]
+<span style="color: #dd6a8a;">sourced_from:</span> ["[[sources/1904-07272|Intro to Multi-Armed Bandits]]"]
+
+<span style="color: #555;"># ─── Structured edge metadata ───</span>
+<span style="color: #dd6a8a;">about_meta:</span>
+  - target: regret
+    role: primary
+    aspect: "upper bound on cumulative regret"
+  - target: action-space
+    role: scope
+    aspect: "finiteness condition"
+  - target: upper-confidence-bound
+    role: mechanism
+<span style="color: #dd6a8a;">depends_on_meta:</span>
+  - target: intro-multi-armed-bandits--lemma-1-3
+    role: bound
+    applied_to: "concentration step"
+<span style="color: #dd6a8a;">enables_meta:</span>
+  - target: intro-multi-armed-bandits--corollary-1-2
+    nature: computational
+<span style="color: #dd6a8a;">sourced_from_meta:</span>
+  - target: "1904-07272"
+    section: "Chapter 1 Foundational results"
+    confidence: 0.93
+
+<span style="color: #ddaa6a;">human_notes:</span> ""                                     <span style="color: #555;"># human-owned</span>
+<span style="color: #6aaadd;">date_exported:</span> "2026-03-16T01:32:59+00:00"
+<span style="color: #666;">---</span>
+
+<span style="color: #8ad88a;"># Theorem 1.1</span>
+
+Let $K = |A|$ be the number of actions with rewards bounded in $[0,1]$.
+Then the cumulative [[concepts/regret|regret]] satisfies:
+
+$$R_T \leq \sqrt{KT \ln T}$$
+
+<span style="color: #8ad88a;">## Proof</span>
+
+By applying [[claims/intro-multi-armed-bandits/lemma-1-3|Lemma 1.3]] to the
+[[concepts/upper-confidence-bound|UCB]] index, we obtain...
+</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Source File — sources/1904-07272.md</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 11px; line-height: 1.7;">
+<pre style="margin: 0; color: #aaa; white-space: pre-wrap;"><span style="color: #666;">---</span>
+<span style="color: #dddd6a;">arxiv_id:</span> "1904.07272"
+<span style="color: #dddd6a;">title:</span> "Introduction to Multi-Armed Bandits"
+<span style="color: #dddd6a;">authors:</span> ["Aleksandrs Slivkins"]
+<span style="color: #dddd6a;">date_published:</span> "2019-04-15"
+<span style="color: #dddd6a;">date_extracted:</span> "2026-03-16T01:32:59+00:00"
+<span style="color: #ddaa6a;">human_notes:</span> ""
+<span style="color: #666;">---</span>
+
+<span style="color: #8ad88a;"># Introduction to Multi-Armed Bandits</span>
+
+**ArXiv:** 1904.07272
+**Authors:** Aleksandrs Slivkins
+**Published:** 2019-04-15
+
+<span style="color: #8ad88a;">## Concepts Introduced</span>
+<span style="color: #555;"><!-- Auto-generated from SOURCED_FROM edges --></span>
+- [[concepts/regret]]
+- [[concepts/upper-confidence-bound]]
+- [[concepts/action-space]]
+- [[concepts/markov-decision-process]]
+
+<span style="color: #8ad88a;">## Claims</span>
+<span style="color: #555;"><!-- Auto-generated from SOURCED_FROM edges --></span>
+- [[claims/intro-multi-armed-bandits/theorem-1-1|Theorem 1.1]] — regret upper bound
+- [[claims/intro-multi-armed-bandits/lemma-1-3|Lemma 1.3]] — concentration inequality
+- [[claims/intro-multi-armed-bandits/corollary-1-2|Corollary 1.2]] — computational bound
+</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Export → Sync-Back — Asymmetric Flow</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7;">
+
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+
+        <!-- Export -->
+        <div style="flex: 1; min-width: 300px; background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 16px;">
+          <div style="color: #8ad88a; font-weight: bold; font-size: 14px; margin-bottom: 10px;">Export: Neo4j → Obsidian</div>
+          <div style="color: #6ab86a; font-size: 11px;">
+            <strong>Trigger:</strong> CLI command <code>--export</code> or after pipeline run<br>
+            <strong>Mode:</strong> Full regeneration — lossy, re-runnable<br><br>
+            <strong>Process:</strong><br>
+            1. Query all :Concept nodes → write <code>concepts/*.md</code><br>
+            2. Query all :Claim nodes grouped by source → write <code>claims/{paper}/*.md</code><br>
+            3. Query all :Source nodes → write <code>sources/*.md</code><br>
+            4. Copy <code>schema.yaml</code> to <code>_meta/</code><br><br>
+            <strong>On each file:</strong><br>
+            • Pipeline-owned fields: overwrite always<br>
+            • Human-owned fields: <strong>preserve existing values</strong><br>
+            &nbsp;&nbsp;→ Read current file, extract human-owned fields<br>
+            &nbsp;&nbsp;→ Write new file with preserved human values<br>
+            • Shared fields: union merge (never subtract)<br><br>
+            <strong>If file doesn't exist:</strong> create with pipeline defaults for human-owned fields (empty string for human_notes, initial value for name/canonical_definition)
+          </div>
+        </div>
+
+        <!-- Sync-back -->
+        <div style="flex: 1; min-width: 300px; background: #2a1a0a; border: 1px solid #4a2a1a; border-radius: 8px; padding: 16px;">
+          <div style="color: #ddaa6a; font-weight: bold; font-size: 14px; margin-bottom: 10px;">Sync-Back: Obsidian → Neo4j</div>
+          <div style="color: #aa8a5a; font-size: 11px;">
+            <strong>Trigger:</strong> CLI command <code>--sync-back</code> (manual, never automatic)<br>
+            <strong>Mode:</strong> Scoped to human-owned fields only<br><br>
+            <strong>Human-owned fields synced:</strong><br>
+            • <code>name</code> (on Concept) — canonical display name<br>
+            • <code>canonical_definition</code> (on Concept)<br>
+            • <code>human_notes</code> (on any node)<br>
+            • <code>status</code> (on Claim) — verified/unverified/disputed<br><br>
+            <strong>Shared fields synced:</strong><br>
+            • <code>aliases</code> — union of Obsidian + Neo4j values<br>
+            • <code>status</code> (on Concept) — human can resolve review_needed → canonical<br><br>
+            <strong>Pipeline-owned fields:</strong> <span style="color: #d66;">IGNORED</span> — never read from Obsidian<br><br>
+            <strong>Safety:</strong><br>
+            • Dry-run mode shows diff before writing to Neo4j<br>
+            • Each change logged with timestamp and source
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">Export Idempotency — What Happens on Re-Export</div>
+    <div class="mockup-body" style="padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.6;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr style="border-bottom: 1px solid #333;">
+          <th style="text-align: left; padding: 8px; color: #888;">Scenario</th>
+          <th style="text-align: left; padding: 8px; color: #888;">Behavior</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">New concept in Neo4j, no file in vault</td>
+          <td style="padding: 8px; color: #6a8;">Create file with pipeline defaults</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">Concept updated in Neo4j, file exists</td>
+          <td style="padding: 8px; color: #6a8;">Overwrite pipeline-owned fields, preserve human-owned</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">Human edited name/canonical_definition in Obsidian</td>
+          <td style="padding: 8px; color: #da6;">Preserved on re-export (read before write)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">Human added alias in Obsidian</td>
+          <td style="padding: 8px; color: #da6;">Union-merged — human alias kept, pipeline aliases added</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #222;">
+          <td style="padding: 8px; color: #aaa;">Concept in vault but deleted from Neo4j</td>
+          <td style="padding: 8px; color: #d66;">File removed (full regen is authoritative)</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; color: #aaa;">No changes since last export</td>
+          <td style="padding: 8px; color: #888;">Files rewritten identically (idempotent)</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

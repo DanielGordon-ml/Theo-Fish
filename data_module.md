@@ -68,12 +68,14 @@ The data cleaner is responsible for cleaning the extracted data. It should:
 - Handle missing values - implementing strategies to manage missing data, such as imputation or removal, to ensure the integrity of the dataset.
 - Ensure that the cleaned data is in a consistent format, making it easier to analyze and visualize.
 
-### Data Structurer
-The data structurer is responsible for organizing the cleaned data into a graph structure. It should:
-- Create nodes for each entity (e.g., definitions, theorems, lemmas) and edges for the relationships between them.
-- Include the proof for each theorem, lemma, proposition, etc., as part of the node data.
-- Allow for easy traversal and querying of the graph to facilitate analysis and visualization of the relationships between different concepts.
-- Ensure that the graph structure is flexible and can accommodate various types of relationships and entities as needed.
+### Knowledge Graph Builder
+The Knowledge Graph Builder is responsible for organizing the cleaned data into a graph structure. That is the heavy lifting. There are two main steps in this process:
+1. Split the `extracted_text_markdown` into smaller chunks based on sections, subsections, and other logical divisions in the paper. This allows us to isolate specific concepts and relationships for further analysis.
+2. Create a graph structure where nodes represent entities such as definitions, theorems, lemmas, and other mathematical concepts, and edges represent relationships between these entities. Each theorem, lemma, proposition, etc. must also include the proof, which is a crucial part of the mathematical content. This structured format allows for easier analysis and visualization of the relationships between different concepts in the research papers. The Knowledge Graph Builder should:
+    - Create nodes for each entity (e.g., definitions, theorems, lemmas) and edges for the relationships between them.
+    - Include the proof for each theorem, lemma, proposition, etc., as part of the node data.
+    - Allow for easy traversal and querying of the graph to facilitate analysis and visualization of the relationships between different concepts.
+    - Ensure that the graph structure is flexible and can accommodate various types of relationships and entities as needed.
 
 ### Data Enricher
 The data enricher is responsible for adding additional context or information to the structured data. It should:

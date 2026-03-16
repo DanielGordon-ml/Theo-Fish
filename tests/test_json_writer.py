@@ -65,6 +65,33 @@ class TestAssembleDocument:
         doc = assemble_document(paper_input, metadata, sample_conversion)
         assert doc.paper_name == "2706.03762"
 
+    def test_assembles_local_paper(self):
+        """It should assemble a local paper with minimal metadata."""
+        paper_input = PaperInput(
+            arxiv_id="my_paper",
+            paper_name="My Local Paper",
+            is_local=True,
+            local_filename="my_paper.pdf",
+        )
+        metadata = PaperMetadata(
+            arxiv_id="my_paper",
+            title="My Local Paper",
+            source="local",
+        )
+        conversion = ConversionResult(
+            arxiv_id="my_paper",
+            markdown_content="# Local PDF content",
+            converter_used="mineru",
+            conversion_warnings=[],
+        )
+        doc = assemble_document(paper_input, metadata, conversion)
+        assert doc.paper_name == "My Local Paper"
+        assert doc.arxiv_id == "my_paper"
+        assert doc.authors == []
+        assert doc.abstract == ""
+        assert doc.metadata_source == "local"
+        assert doc.converter_used == "mineru"
+
 
 class TestShouldSkip:
     def test_skip_when_exists(self, tmp_data_dir):

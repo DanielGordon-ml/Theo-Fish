@@ -61,12 +61,26 @@ def read_csv(csv_path: Path) -> list[PaperInput]:
     with open(csv_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            arxiv_id = normalize_arxiv_id(row["file_path"])
+            file_path = row["file_path"].strip()
+
+            # Detect local PDF by .pdf extension
+            if file_path.lower().endswith(".pdf"):
+                stem = Path(file_path).stem
+                papers.append(PaperInput(
+                    arxiv_id=stem,
+                    paper_name=row.get("paper_name") or None,
+                    file_type="pdf",
+                    is_local=True,
+                    local_filename=file_path,
+                ))
+                continue
+
+            arxiv_id = normalize_arxiv_id(file_path)
             if arxiv_id is None:
                 logger.warning(
                     "Skipping invalid ArXiv ID in CSV: %s",
-                    row["file_path"],
-                    extra={"arxiv_id": row["file_path"]},
+                    file_path,
+                    extra={"arxiv_id": file_path},
                 )
                 continue
             papers.append(PaperInput(

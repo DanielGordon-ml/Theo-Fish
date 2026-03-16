@@ -9,10 +9,15 @@ from pathlib import Path
 
 import httpx
 
+from data_loader.config import FOR_PROCESS_DIR
 from data_loader.json_writer import assemble_document, should_skip, write_document
-from data_loader.metadata_fetcher import fetch_all_metadata, parse_frontmatter_metadata
+from data_loader.metadata_fetcher import (
+    build_local_metadata,
+    fetch_all_metadata,
+    parse_frontmatter_metadata,
+)
 from data_loader.models import PaperInput, PaperResult, BatchResult
-from data_loader.paper_converter import convert_paper
+from data_loader.paper_converter import convert_local_pdf, convert_paper
 
 logger = logging.getLogger("data_loader")
 
@@ -32,26 +37,32 @@ async def _process_one(
     if should_skip(arxiv_id, processed_dir, force):
         return PaperResult(arxiv_id=arxiv_id, status="skipped")
 
-    # Check metadata — try API cache first, then frontmatter fallback
-    metadata = metadata_cache.get(arxiv_id)
-    if metadata is None:
-        logger.warning(
-            "No API metadata, trying frontmatter fallback",
-            extra={"arxiv_id": arxiv_id},
-        )
-        metadata = await parse_frontmatter_metadata(arxiv_id)
-    if metadata is None:
-        logger.error(
-            "Both API and frontmatter metadata failed — skipping",
-            extra={"arxiv_id": arxiv_id},
-        )
-        return PaperResult(
-            arxiv_id=arxiv_id, status="failed", error="no metadata",
-        )
+    # Branch on local vs ArXiv
+    if paper.is_local:
+        metadata = build_local_metadata(paper)
+        async with semaphore:
+            conversion = await convert_local_pdf(paper, FOR_PROCESS_DIR)
+    else:
+        # Check metadata — try API cache first, then frontmatter fallback
+        metadata = metadata_cache.get(arxiv_id)
+        if metadata is None:
+            logger.warning(
+                "No API metadata, trying frontmatter fallback",
+                extra={"arxiv_id": arxiv_id},
+            )
+            metadata = await parse_frontmatter_metadata(arxiv_id)
+        if metadata is None:
+            logger.error(
+                "Both API and frontmatter metadata failed — skipping",
+                extra={"arxiv_id": arxiv_id},
+            )
+            return PaperResult(
+                arxiv_id=arxiv_id, status="failed", error="no metadata",
+            )
 
-    # Convert (with concurrency limit)
-    async with semaphore:
-        conversion = await convert_paper(arxiv_id, papers_dir)
+        # Convert (with concurrency limit)
+        async with semaphore:
+            conversion = await convert_paper(arxiv_id, papers_dir)
 
     if conversion is None:
         return PaperResult(
@@ -91,9 +102,10 @@ async def process_batch(
     """
     semaphore = asyncio.Semaphore(concurrency)
 
-    # Step 1: Fetch all metadata
-    async with httpx.AsyncClient() as client:
-        metadata_cache = await fetch_all_metadata(papers, client)
+    # Step 1: Fetch metadata for ArXiv papers only (local papers skip API)
+    arxiv_papers = [p for p in papers if not p.is_local]
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        metadata_cache = await fetch_all_metadata(arxiv_papers, client)
 
     # Step 2: Process papers concurrently
     tasks = [

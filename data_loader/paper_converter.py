@@ -11,7 +11,7 @@ from pathlib import Path
 
 import httpx
 
-from data_loader.models import ConversionResult
+from data_loader.models import PaperInput, ConversionResult
 
 logger = logging.getLogger("data_loader")
 
@@ -22,7 +22,19 @@ _executor = ProcessPoolExecutor(max_workers=2)
 async def _call_arxiv2md(paper_id: str) -> object:
     """Call arxiv2md's ingest_paper. Thin wrapper for monkeypatching."""
     from arxiv2md.ingestion import ingest_paper
-    return await ingest_paper(paper_id)
+
+    html_url = f"https://arxiv.org/html/{paper_id}"
+    result, _metadata = await ingest_paper(
+        arxiv_id=paper_id,
+        version=None,
+        html_url=html_url,
+        remove_refs=True,
+        remove_toc=False,
+        section_filter_mode="include",
+        sections=[],
+        include_frontmatter=False,
+    )
+    return result
 
 
 async def convert_with_arxiv2md(arxiv_id: str) -> ConversionResult | None:
@@ -55,16 +67,20 @@ def _run_mineru(pdf_path: str, output_dir: str) -> str:
     a top-level function (picklable) and import MinerU inside.
     """
     from pathlib import Path
-    # NOTE: mineru.cli.common is an internal API path — may change between MinerU versions.
-    # If this import breaks after a MinerU update, check their docs for the new entry point.
-    from mineru.cli.common import parse_doc
+    from mineru.cli.common import do_parse
 
-    parse_doc(
-        path_list=[Path(pdf_path)],
+    pdf_bytes = Path(pdf_path).read_bytes()
+    do_parse(
         output_dir=output_dir,
-        backend="pipeline",
-        method="auto",
-        lang="en",
+        pdf_file_names=[Path(pdf_path).name],
+        pdf_bytes_list=[pdf_bytes],
+        p_lang_list=["en"],
+        parse_method="auto",
+        f_dump_md=True,
+        f_dump_middle_json=False,
+        f_dump_model_output=False,
+        f_dump_orig_pdf=False,
+        f_dump_content_list=False,
     )
 
     # MinerU writes output to output_dir/<filename>/<filename>.md
@@ -140,6 +156,44 @@ async def convert_with_mineru(
                 "MinerU conversion failed: %s",
                 str(e),
                 extra={"arxiv_id": arxiv_id},
+            )
+            return None
+
+
+async def convert_local_pdf(
+    paper: PaperInput,
+    for_process_dir: Path,
+) -> ConversionResult | None:
+    """Convert a local PDF file using MinerU directly.
+
+    Reads the PDF from for_process_dir and runs MinerU.
+    Returns None if the file is missing or conversion fails.
+    """
+    pdf_path = for_process_dir / paper.local_filename
+    if not pdf_path.exists():
+        logger.error(
+            "Local PDF not found: %s", pdf_path,
+            extra={"arxiv_id": paper.arxiv_id},
+        )
+        return None
+
+    loop = asyncio.get_running_loop()
+    with tempfile.TemporaryDirectory() as tmp_out:
+        try:
+            markdown = await loop.run_in_executor(
+                _executor, _run_mineru, str(pdf_path), tmp_out,
+            )
+            return ConversionResult(
+                arxiv_id=paper.arxiv_id,
+                markdown_content=markdown,
+                converter_used="mineru",
+                conversion_warnings=[],
+            )
+        except Exception as e:
+            logger.error(
+                "MinerU failed for local PDF %s: %s",
+                paper.local_filename, str(e),
+                extra={"arxiv_id": paper.arxiv_id},
             )
             return None
 

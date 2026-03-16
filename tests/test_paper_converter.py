@@ -5,8 +5,13 @@
 
 import pytest
 from pathlib import Path
-from data_loader.paper_converter import convert_with_arxiv2md, convert_with_mineru, convert_paper
-from data_loader.models import ConversionResult
+from data_loader.paper_converter import (
+    convert_with_arxiv2md,
+    convert_with_mineru,
+    convert_paper,
+    convert_local_pdf,
+)
+from data_loader.models import PaperInput, ConversionResult
 
 
 @pytest.mark.asyncio
@@ -102,4 +107,70 @@ class TestConvertPaper:
             mock_mineru,
         )
         result = await convert_paper("2706.03762", papers_dir=Path("/tmp"))
+        assert result is None
+
+
+@pytest.mark.asyncio
+class TestConvertLocalPdf:
+    async def test_success(self, tmp_path, monkeypatch):
+        """It should convert a local PDF using MinerU."""
+        # Create a fake PDF file
+        for_process_dir = tmp_path / "for_process"
+        for_process_dir.mkdir()
+        pdf_file = for_process_dir / "my_paper.pdf"
+        pdf_file.write_bytes(b"%PDF-1.4 fake content")
+
+        # Patch run_in_executor to call _run_mineru synchronously
+        # (ProcessPoolExecutor can't pickle local mock functions)
+        async def mock_run_in_executor(executor, func, *args):
+            return "# Extracted Content\n\nSome text from PDF."
+
+        import asyncio
+        loop = asyncio.get_event_loop()
+        monkeypatch.setattr(loop, "run_in_executor", mock_run_in_executor)
+
+        paper = PaperInput(
+            arxiv_id="my_paper",
+            is_local=True,
+            local_filename="my_paper.pdf",
+        )
+        result = await convert_local_pdf(paper, for_process_dir)
+        assert result is not None
+        assert result.arxiv_id == "my_paper"
+        assert result.converter_used == "mineru"
+        assert "Extracted Content" in result.markdown_content
+
+    async def test_missing_pdf_returns_none(self, tmp_path):
+        """It should return None when the PDF file does not exist."""
+        for_process_dir = tmp_path / "for_process"
+        for_process_dir.mkdir()
+
+        paper = PaperInput(
+            arxiv_id="missing",
+            is_local=True,
+            local_filename="missing.pdf",
+        )
+        result = await convert_local_pdf(paper, for_process_dir)
+        assert result is None
+
+    async def test_mineru_failure_returns_none(self, tmp_path, monkeypatch):
+        """It should return None when MinerU fails on a local PDF."""
+        for_process_dir = tmp_path / "for_process"
+        for_process_dir.mkdir()
+        pdf_file = for_process_dir / "bad.pdf"
+        pdf_file.write_bytes(b"%PDF-1.4 corrupt")
+
+        async def mock_run_in_executor(executor, func, *args):
+            raise RuntimeError("MinerU parse error")
+
+        import asyncio
+        loop = asyncio.get_event_loop()
+        monkeypatch.setattr(loop, "run_in_executor", mock_run_in_executor)
+
+        paper = PaperInput(
+            arxiv_id="bad",
+            is_local=True,
+            local_filename="bad.pdf",
+        )
+        result = await convert_local_pdf(paper, for_process_dir)
         assert result is None
