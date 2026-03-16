@@ -15,11 +15,11 @@ from graph_builder.models.section import Section
 logger = logging.getLogger("graph_builder")
 
 
-async def load_paper(arxiv_id: str) -> tuple[str, list[Section]]:
+async def load_paper(arxiv_id: str) -> tuple[str, list[Section], str]:
     """Load cleaned JSON and split into sections.
 
     @param arxiv_id ArXiv identifier
-    @returns Tuple of (title, sections)
+    @returns Tuple of (title, sections, full_text)
     @raises FileNotFoundError if cleaned JSON does not exist
     """
     from graph_builder.extraction.section_splitter import split_into_sections
@@ -29,7 +29,7 @@ async def load_paper(arxiv_id: str) -> tuple[str, list[Section]]:
     title = paper_data.get("title", arxiv_id)
     markdown = paper_data.get("extracted_text_markdown", "")
     sections = split_into_sections(markdown)
-    return title, sections
+    return title, sections, markdown
 
 
 def _find_json_path(arxiv_id: str) -> Path:

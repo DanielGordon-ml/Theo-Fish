@@ -86,13 +86,13 @@ async def _execute_pipeline(
     embedding_client: EmbeddingClient | None,
 ) -> BuildResult:
     """Run the full pipeline, raising on unrecoverable errors."""
-    title, sections = await load_paper(arxiv_id)
+    title, sections, full_text = await load_paper(arxiv_id)
 
     if not options.force and await check_already_built(arxiv_id, neo4j_client):
         return BuildResult(arxiv_id=arxiv_id, status="skipped")
 
     return await _run_all_passes(
-        arxiv_id, title, sections, options,
+        arxiv_id, title, sections, full_text, options,
         llm_client, neo4j_client, embedding_client,
     )
 
@@ -101,6 +101,7 @@ async def _run_all_passes(
     arxiv_id: str,
     title: str,
     sections: list[Section],
+    full_text: str,
     options: PipelineOptions,
     llm_client: DeepSeekClient,
     neo4j_client: Neo4jClient,
