@@ -32,6 +32,14 @@ class Neo4jClient:
             auth=(user, password),
         )
 
+    async def __aenter__(self):
+        """Support async context manager protocol."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Close driver on context exit."""
+        await self.close()
+
     async def close(self) -> None:
         """Close the driver and release connection pool resources."""
         await self._driver.close()

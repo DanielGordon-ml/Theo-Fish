@@ -54,7 +54,7 @@ def _concept_output_format() -> list[str]:
         "## Output Format",
         "Return ONLY valid JSON:",
         _JSON_FENCE,
-        '{"concepts": [{"type": "<concept_type>", "name": "<name>", '
+        '{"concepts": [{"semantic_type": "<one of the types above>", "name": "<name>", '
         '"formal_spec": "<spec>", "...other fields": "..."}]}',
         _FENCE_END,
         "",
@@ -128,8 +128,9 @@ def _claim_output_format() -> list[str]:
         "## Output Format",
         "Return ONLY valid JSON:",
         _JSON_FENCE,
-        '{"claims": [{"type": "<claim_type>", "name": "<name>", '
-        '"statement": "<statement>", "...other fields": "..."}]}',
+        '{"claims": [{"claim_type": "<one of the types above>", "label": "<e.g. Theorem 1.1>", '
+        '"statement": "<full statement>", "assumptions": ["..."], "conclusion": "<...>", '
+        '"about_concepts": ["<concept_slug_1>", "<concept_slug_2>"]}]}',
         _FENCE_END,
         "",
         "Rules:",

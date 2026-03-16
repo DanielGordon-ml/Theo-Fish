@@ -133,11 +133,15 @@ def _build_concept(entry: Any, valid_types: set[str]) -> ConceptNode | None:
         return None
 
     name = entry.get("name")
-    semantic_type = entry.get("semantic_type")
+    semantic_type = entry.get("semantic_type") or entry.get("type")
 
     if not name:
         logger.warning("Skipping invalid concept entry: missing 'name' — %r", entry)
         return None
+
+    # Normalize the key for downstream consumption
+    if semantic_type and "semantic_type" not in entry:
+        entry["semantic_type"] = semantic_type
 
     if semantic_type not in valid_types:
         logger.warning(
@@ -170,12 +174,18 @@ def _build_claim(
         logger.warning("Skipping malformed claim entry (not a dict): %r", entry)
         return None
 
-    label = entry.get("label")
-    claim_type = entry.get("claim_type")
+    label = entry.get("label") or entry.get("name")
+    claim_type = entry.get("claim_type") or entry.get("type")
 
     if not label:
         logger.warning("Skipping invalid claim entry: missing 'label' — %r", entry)
         return None
+
+    # Normalize keys for downstream consumption
+    if label and "label" not in entry:
+        entry["label"] = label
+    if claim_type and "claim_type" not in entry:
+        entry["claim_type"] = claim_type
 
     if claim_type not in valid_types:
         logger.warning(
