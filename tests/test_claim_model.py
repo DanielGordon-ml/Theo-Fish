@@ -44,3 +44,22 @@ class TestClaimNode:
             assumptions=["finite action space", "bounded rewards"],
         )
         assert node.assumptions == ["finite action space", "bounded rewards"]
+
+    def test_it_should_default_confidence_to_zero(self):
+        """It should set confidence to 0.0 when not provided."""
+        claim = ClaimNode(
+            source_paper_slug="test-paper",
+            label="Theorem 1",
+            claim_type="theorem",
+        )
+        assert claim.confidence == 0.0
+
+    def test_it_should_accept_confidence_value(self):
+        """It should store a provided confidence value."""
+        claim = ClaimNode(
+            source_paper_slug="test-paper",
+            label="Theorem 1",
+            claim_type="theorem",
+            confidence=0.95,
+        )
+        assert claim.confidence == 0.95

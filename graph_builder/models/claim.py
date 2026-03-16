@@ -24,6 +24,7 @@ class ClaimNode(BaseModel):
     proof: str = ""
     section: str = ""
     status: str = "unverified"
+    confidence: float = 0.0
     human_notes: str = ""
     date_modified: str = ""
 
