@@ -4,4 +4,5 @@
 """
 
 from graph_builder.llm.llm_client import DeepSeekClient, LLMResponse
+from graph_builder.llm.protocol import LLMClient
 from graph_builder.llm.response_parser import parse_concepts, parse_claims, parse_edges
