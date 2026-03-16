@@ -48,10 +48,14 @@ async def neo4j_container():
     """Start a Neo4j testcontainer for integration tests."""
     from testcontainers.neo4j import Neo4jContainer
 
-    container = Neo4jContainer("neo4j:5.26-community")
+    container = Neo4jContainer(
+        "neo4j:5.26-community",
+        username="neo4j",
+        password="testpassword123",
+    )
     container.start()
     bolt_url = container.get_connection_url()
-    yield {"url": bolt_url, "user": "neo4j", "password": "test"}
+    yield {"url": bolt_url, "user": "neo4j", "password": "testpassword123"}
     container.stop()
 
 
