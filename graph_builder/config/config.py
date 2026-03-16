@@ -25,6 +25,11 @@ DEEPSEEK_MODEL = "deepseek-chat"
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 LLM_THINKING = os.environ.get("LLM_THINKING", "True").lower() == "true"
 
+# Anthropic / Claude
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+CLAUDE_MODEL = "claude-opus-4-6"
+CLAIM_LLM = os.environ.get("CLAIM_LLM", "claude")
+
 # Embedding
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small")
 EMBEDDING_DIMENSIONS = int(os.environ.get("EMBEDDING_DIMENSIONS", "1536"))
