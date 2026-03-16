@@ -14,6 +14,9 @@ from graph_builder.models.edges import ClaimEdge, ConceptEdge, CouplingEdge
 
 logger = logging.getLogger("graph_builder")
 
+# Keys the LLM returns that are not ClaimNode fields — filter before construction
+_CLAIM_EXTRA_KEYS = {"about_concepts", "location"}
+
 
 def parse_concepts(json_str: str, schema: GraphSchema) -> list[ConceptNode]:
     """Parse LLM JSON response for concept extraction into ConceptNode objects.
@@ -196,9 +199,11 @@ def _build_claim(
         return None
 
     try:
+        filtered = {k: v for k, v in entry.items()
+                    if v is not None and k not in _CLAIM_EXTRA_KEYS}
         return ClaimNode(
             source_paper_slug=paper_slug,
-            **{k: v for k, v in entry.items() if v is not None},
+            **filtered,
         )
     except Exception as err:
         logger.warning("Skipping malformed claim entry '%s': %s", label, err)

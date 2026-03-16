@@ -76,6 +76,13 @@ SCHEMA = _make_schema()
 
 PAPER_SLUG = "test-paper-2024"
 
+_VALID_CLAIM = {
+    "label": "Theorem 4.1",
+    "claim_type": "theorem",
+    "conclusion": "Policy converges under mild assumptions.",
+    "assumptions": ["MDP is finite"],
+}
+
 
 # ---------------------------------------------------------------------------
 # parse_concepts tests
@@ -257,6 +264,46 @@ class TestParseClaims:
 
         assert len(result) == 1
         assert result[0].label == "Theorem 1"
+
+    def test_it_should_parse_proof_field(self):
+        """It should populate ClaimNode.proof from LLM response."""
+        schema = _make_schema()
+        claim_data = {**_VALID_CLAIM, "proof": "By induction on n."}
+        json_str = json.dumps({"claims": [claim_data]})
+        claims = parse_claims(json_str, PAPER_SLUG, schema)
+        assert claims[0].proof == "By induction on n."
+
+    def test_it_should_parse_proof_technique_field(self):
+        """It should populate ClaimNode.proof_technique from LLM response."""
+        schema = _make_schema()
+        claim_data = {**_VALID_CLAIM, "proof_technique": "induction"}
+        json_str = json.dumps({"claims": [claim_data]})
+        claims = parse_claims(json_str, PAPER_SLUG, schema)
+        assert claims[0].proof_technique == "induction"
+
+    def test_it_should_parse_strength_field(self):
+        """It should populate ClaimNode.strength from LLM response."""
+        schema = _make_schema()
+        claim_data = {**_VALID_CLAIM, "strength": "exact"}
+        json_str = json.dumps({"claims": [claim_data]})
+        claims = parse_claims(json_str, PAPER_SLUG, schema)
+        assert claims[0].strength == "exact"
+
+    def test_it_should_parse_confidence_field(self):
+        """It should populate ClaimNode.confidence from LLM response."""
+        schema = _make_schema()
+        claim_data = {**_VALID_CLAIM, "confidence": 0.85}
+        json_str = json.dumps({"claims": [claim_data]})
+        claims = parse_claims(json_str, PAPER_SLUG, schema)
+        assert claims[0].confidence == 0.85
+
+    def test_it_should_ignore_about_concepts_in_claim_construction(self):
+        """It should not pass about_concepts to ClaimNode constructor."""
+        schema = _make_schema()
+        claim_data = {**_VALID_CLAIM, "about_concepts": ["slug1", "slug2"]}
+        json_str = json.dumps({"claims": [claim_data]})
+        claims = parse_claims(json_str, PAPER_SLUG, schema)
+        assert len(claims) == 1  # Should not raise validation error
 
 
 # ---------------------------------------------------------------------------
