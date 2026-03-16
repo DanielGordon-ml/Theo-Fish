@@ -127,6 +127,16 @@ MATCH (c:Concept {slug: $concept_slug})
 CREATE (cl)-[:ABOUT {role: $role, aspect: $aspect}]->(c)
 """
 
+_CLEAR_CLAIMS_CYPHER = """
+MATCH (cl:Claim {source_paper_slug: $paper_slug})
+DETACH DELETE cl
+"""
+
+_CLEAR_PROVENANCES_CYPHER = """
+MATCH (p:Provenance {source_arxiv_id: $arxiv_id})
+DETACH DELETE p
+"""
+
 # Schema DDL — uniqueness constraints and indexes
 _SCHEMA_STATEMENTS = [
     "CREATE CONSTRAINT concept_slug_unique IF NOT EXISTS FOR (c:Concept) REQUIRE c.slug IS UNIQUE",
@@ -246,6 +256,24 @@ class GraphWriter:
             edges,
             _COUPLING_EDGE_CYPHER,
             _coupling_edge_params,
+        )
+
+    async def clear_paper_claims(self, paper_slug: str) -> None:
+        """Delete all claim nodes and their edges for a given paper.
+
+        @param paper_slug Source paper slug to match
+        """
+        await self._client.execute_write(
+            _CLEAR_CLAIMS_CYPHER, paper_slug=paper_slug,
+        )
+
+    async def clear_paper_provenances(self, arxiv_id: str) -> None:
+        """Delete all provenance nodes and their edges for a given paper.
+
+        @param arxiv_id ArXiv ID of the source paper
+        """
+        await self._client.execute_write(
+            _CLEAR_PROVENANCES_CYPHER, arxiv_id=arxiv_id,
         )
 
     async def create_schema_constraints(self) -> None:

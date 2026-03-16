@@ -250,6 +250,32 @@ class TestWriteSource:
         assert kwargs["title"] == "A Paper"
 
 
+class TestClearMethods:
+    """Tests for GraphWriter clear_paper_claims / clear_paper_provenances."""
+
+    @pytest.mark.asyncio
+    async def test_it_should_clear_paper_claims(self):
+        """It should execute DETACH DELETE for claims of a given paper."""
+        client = _make_mock_client()
+        writer = GraphWriter(client)
+        await writer.clear_paper_claims("my-paper-slug")
+        client.execute_write.assert_called_once()
+        cypher = client.execute_write.call_args[0][0]
+        assert "DETACH DELETE" in cypher
+        assert "source_paper_slug" in cypher
+
+    @pytest.mark.asyncio
+    async def test_it_should_clear_paper_provenances(self):
+        """It should execute DETACH DELETE for provenances of a given paper."""
+        client = _make_mock_client()
+        writer = GraphWriter(client)
+        await writer.clear_paper_provenances("arxiv-123")
+        client.execute_write.assert_called_once()
+        cypher = client.execute_write.call_args[0][0]
+        assert "DETACH DELETE" in cypher
+        assert "source_arxiv_id" in cypher
+
+
 class TestCreateSchemaConstraints:
     """Tests for GraphWriter.create_schema_constraints()."""
 
