@@ -104,8 +104,11 @@ def _make_options(**kwargs) -> PipelineOptions:
 
 
 def _mock_neo4j() -> MagicMock:
-    """Build a mock Neo4jClient."""
-    return MagicMock()
+    """Build a mock Neo4jClient with async-compatible methods."""
+    client = MagicMock()
+    client.execute_write = AsyncMock()
+    client.execute_write_tx = AsyncMock()
+    return client
 
 
 def _mock_embedding() -> MagicMock:
@@ -134,13 +137,14 @@ def _patch_pipeline(overrides: dict | None = None):
     overrides = overrides or {}
 
     defaults = {
-        "load": ("Test Paper", [_make_section("Intro", 0)]),
+        "load": ("Test Paper", [_make_section("Intro", 0)], "Full paper text"),
         "check": False,
         "p1": [[_make_concept("X")]],
         "merge": [_make_merged("X", "2401.00001")],
         "p2": ([_make_claim("Thm1", "test-paper")], []),
         "p3a": ([], []),
         "p3b": [],
+        "p4": ([], []),
         "validate": _valid_result(),
         "write": {"concepts": 1, "claims": 1, "edges": 0},
     }
@@ -154,12 +158,13 @@ def _patch_pipeline(overrides: dict | None = None):
         "p2": f"{_MODULE}._run_pass2",
         "p3a": f"{_MODULE}._run_pass3a",
         "p3b": f"{_MODULE}._run_pass3b",
+        "p4": f"{_MODULE}._run_pass4",
         "validate": f"{_MODULE}.validate_paper",
         "write": f"{_MODULE}.write_to_neo4j",
     }
 
     # validate_paper is sync; the rest are async
-    async_keys = {"load", "check", "p1", "merge", "p2", "p3a", "p3b", "write"}
+    async_keys = {"load", "check", "p1", "merge", "p2", "p3a", "p3b", "p4", "write"}
 
     patches = {}
     active = []
@@ -227,6 +232,9 @@ class TestProcessPaperPassOrder:
             mocks["p3b"].side_effect = lambda *a, **kw: (
                 call_order.append("pass3b") or []
             )
+            mocks["p4"].side_effect = lambda *a, **kw: (
+                call_order.append("pass4") or ([], [])
+            )
             mocks["validate"].side_effect = lambda *a, **kw: (
                 call_order.append("validate") or _valid_result()
             )
@@ -238,7 +246,7 @@ class TestProcessPaperPassOrder:
                 arxiv_id, _make_options(), llm, _mock_neo4j(), _mock_embedding(),
             )
 
-        expected = ["pass1", "merge", "pass2", "pass3a", "pass3b", "validate", "write"]
+        expected = ["pass1", "merge", "pass2", "pass3a", "pass3b", "pass4", "validate", "write"]
         assert call_order == expected
         assert result.status == "built"
 
@@ -298,7 +306,7 @@ class TestProcessPaperPartialFailure:
         sections = [_make_section(f"Sec {i}", i) for i in range(3)]
 
         with _patch_pipeline({
-            "load": ("Test Paper", sections),
+            "load": ("Test Paper", sections, "Full paper text"),
             "p1": section_concepts,
             "merge": merged,
             "write": {"concepts": 2, "claims": 1, "edges": 1},
@@ -323,7 +331,7 @@ class TestProcessPaperAbortThreshold:
         section_concepts = [[], [], [], [_make_concept("X")]]
 
         with _patch_pipeline({
-            "load": ("Test Paper", sections),
+            "load": ("Test Paper", sections, "Full paper text"),
             "p1": section_concepts,
         }):
             result = await process_paper(
@@ -416,3 +424,81 @@ class TestProcessPaperBuildResult:
         assert result.status == "failed"
         assert result.arxiv_id == arxiv_id
         assert result.error is not None
+
+
+class TestDedupCouplingEdges:
+    """Tests for coupling edge deduplication."""
+
+    def test_it_should_remove_duplicate_coupling_edges(self):
+        """It should keep only unique (claim_slug, concept_slug) pairs."""
+        from graph_builder.orchestrator.orchestrator import _dedup_coupling_edges
+
+        edges = [
+            CouplingEdge(claim_slug="c1", concept_slug="x", role="primary"),
+            CouplingEdge(claim_slug="c1", concept_slug="x", role="scope"),
+            CouplingEdge(claim_slug="c1", concept_slug="y", role="primary"),
+        ]
+        result = _dedup_coupling_edges(edges)
+        assert len(result) == 2
+
+    def test_it_should_keep_later_entries_over_earlier(self):
+        """It should prefer the last occurrence of a duplicate key."""
+        from graph_builder.orchestrator.orchestrator import _dedup_coupling_edges
+
+        edges = [
+            CouplingEdge(claim_slug="c1", concept_slug="x", role="primary"),
+            CouplingEdge(claim_slug="c1", concept_slug="x", role="mechanism"),
+        ]
+        result = _dedup_coupling_edges(edges)
+        assert len(result) == 1
+        assert result[0].role == "mechanism"
+
+
+class TestProcessPaperClearOnForce:
+    """Tests for clear-on-force logic."""
+
+    @pytest.mark.asyncio
+    async def test_it_should_clear_claims_and_provenances_when_force_is_true(self):
+        """It should call clear_paper_claims and clear_paper_provenances on force."""
+        arxiv_id = "2401.00001"
+        options = _make_options(force=True)
+        llm = MagicMock()
+        llm.call = AsyncMock()
+        neo4j = _mock_neo4j()
+
+        with _patch_pipeline({"check": True}) as mocks:
+            # Patch GraphWriter to capture clear calls
+            with patch(f"{_MODULE}.GraphWriter") as mock_writer_cls:
+                mock_writer = MagicMock()
+                mock_writer.clear_paper_claims = AsyncMock()
+                mock_writer.clear_paper_provenances = AsyncMock()
+                mock_writer_cls.return_value = mock_writer
+
+                result = await process_paper(
+                    arxiv_id, options, llm, neo4j, _mock_embedding(),
+                )
+
+        assert result.status == "built"
+        mock_writer.clear_paper_claims.assert_called_once()
+        mock_writer.clear_paper_provenances.assert_called_once()
+
+
+class TestProcessPaperDualLLM:
+    """Tests for dual LLM client support."""
+
+    @pytest.mark.asyncio
+    async def test_it_should_accept_claim_llm_client_parameter(self):
+        """It should accept claim_llm_client as an optional parameter."""
+        arxiv_id = "2401.00001"
+        llm = MagicMock()
+        llm.call = AsyncMock()
+        claim_llm = MagicMock()
+        claim_llm.call = AsyncMock()
+
+        with _patch_pipeline():
+            result = await process_paper(
+                arxiv_id, _make_options(), llm, _mock_neo4j(),
+                _mock_embedding(), claim_llm_client=claim_llm,
+            )
+
+        assert result.status == "built"
