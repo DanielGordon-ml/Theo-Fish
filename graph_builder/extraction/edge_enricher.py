@@ -9,7 +9,7 @@ import logging
 
 from graph_builder.config.schema_types import GraphSchema
 from graph_builder.extraction.prompt_generator import build_edge_enrichment_prompt
-from graph_builder.llm.llm_client import DeepSeekClient
+from graph_builder.llm.protocol import LLMClient
 from graph_builder.llm.response_parser import parse_edges
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.concept import ConceptNode
@@ -24,7 +24,7 @@ async def enrich_section_edges(
     all_concepts: list[ConceptNode],
     all_claims: list[ClaimNode],
     schema: GraphSchema,
-    llm_client: DeepSeekClient,
+    llm_client: LLMClient,
 ) -> tuple[list[ClaimEdge], list[CouplingEdge]]:
     """Extract edges for all claims in a section in one LLM call.
 

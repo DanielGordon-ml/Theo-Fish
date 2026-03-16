@@ -8,7 +8,7 @@ import logging
 
 from graph_builder.config.schema_types import GraphSchema
 from graph_builder.extraction.prompt_generator import build_concept_prompt
-from graph_builder.llm.llm_client import DeepSeekClient
+from graph_builder.llm.protocol import LLMClient
 from graph_builder.llm.response_parser import parse_concepts
 from graph_builder.models.concept import ConceptNode
 from graph_builder.models.section import Section
@@ -24,7 +24,7 @@ _KNOWN_CONCEPTS_HEADER = (
 async def extract_concepts_from_section(
     section: Section,
     schema: GraphSchema,
-    llm_client: DeepSeekClient,
+    llm_client: LLMClient,
     existing_concepts: list[dict] | None = None,
 ) -> list[ConceptNode]:
     """Extract concept nodes from a single paper section via the LLM.

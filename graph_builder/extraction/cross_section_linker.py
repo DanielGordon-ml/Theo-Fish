@@ -10,7 +10,7 @@ import logging
 
 from graph_builder.config.schema_types import GraphSchema
 from graph_builder.extraction.prompt_generator import build_gap_fill_prompt
-from graph_builder.llm.llm_client import DeepSeekClient
+from graph_builder.llm.protocol import LLMClient
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.concept import ConceptNode
 from graph_builder.models.edges import ClaimEdge
@@ -26,7 +26,7 @@ async def find_cross_section_edges(
     all_concepts: list[ConceptNode],
     existing_edges: list[ClaimEdge],
     schema: GraphSchema,
-    llm_client: DeepSeekClient,
+    llm_client: LLMClient,
 ) -> list[ClaimEdge]:
     """Find cross-section implicit dependencies not yet in existing_edges.
 
