@@ -105,6 +105,8 @@ def _format_claim_type(name: str, defn: ClaimTypeDef) -> list[str]:
     ]
     if defn.optional_fields:
         block.append(f"Optional fields: {', '.join(defn.optional_fields)}")
+    if hasattr(defn, "strength_values") and defn.strength_values:
+        block.append(f"Strength values: {', '.join(defn.strength_values)}")
     block.append("")
     return block
 
@@ -126,14 +128,26 @@ def _claim_output_format() -> list[str]:
     """Return the output format instructions for claim extraction."""
     return [
         "## Output Format",
-        "Return ONLY valid JSON:",
+        "Return ONLY valid JSON with no additional text:",
         _JSON_FENCE,
-        '{"claims": [{"claim_type": "<one of the types above>", "label": "<e.g. Theorem 1.1>", '
-        '"statement": "<full statement>", "assumptions": ["..."], "conclusion": "<...>", '
+        '{"claims": [{"claim_type": "<one of the types above>", '
+        '"label": "<e.g. Theorem III.3>", '
+        '"statement": "<full verbatim statement, preserving math notation>", '
+        '"assumptions": ["<assumption 1>", "..."], '
+        '"conclusion": "<main result>", '
+        '"proof": "<full proof text if present, empty string if not>", '
+        '"proof_technique": "<e.g. induction, contradiction, constructive>", '
+        '"strength": "<exact|asymptotic|approximate|existential>", '
+        '"confidence": 0.95, '
         '"about_concepts": ["<concept_slug_1>", "<concept_slug_2>"]}]}',
         _FENCE_END,
         "",
         "Rules:",
+        "- Extract the FULL statement verbatim from the paper, preserving all math notation. Do not summarize.",
+        "- Extract the FULL proof text if present in the section or in a deferred proof block. Preserve all math steps.",
+        "- proof_technique is REQUIRED for theorem, lemma, and proposition types.",
+        "- confidence: your confidence that the extraction is complete and accurate (0.0-1.0).",
+        "- Each concept in about_concepts must be unique. Do not list the same concept twice.",
         "- Only extract types listed above.",
         "- Do NOT extract concept definitions or structures.",
         "- Every claim must reference at least one concept by slug.",

@@ -170,6 +170,31 @@ class TestBuildClaimPrompt:
         lower = prompt.lower()
         assert "assertion" in lower or "claim" in lower or "statement" in lower
 
+    def test_it_should_include_proof_field_in_claim_output_format(self, schema):
+        """It should instruct the LLM to extract proof text."""
+        prompt = build_claim_prompt(schema)
+        assert '"proof"' in prompt
+
+    def test_it_should_include_proof_technique_in_claim_output_format(self, schema):
+        """It should instruct the LLM to extract proof_technique."""
+        prompt = build_claim_prompt(schema)
+        assert '"proof_technique"' in prompt
+
+    def test_it_should_include_strength_in_claim_output_format(self, schema):
+        """It should instruct the LLM to extract strength."""
+        prompt = build_claim_prompt(schema)
+        assert '"strength"' in prompt
+
+    def test_it_should_include_confidence_in_claim_output_format(self, schema):
+        """It should instruct the LLM to extract confidence."""
+        prompt = build_claim_prompt(schema)
+        assert '"confidence"' in prompt
+
+    def test_it_should_include_verbatim_extraction_rule(self, schema):
+        """It should instruct verbatim statement extraction."""
+        prompt = build_claim_prompt(schema)
+        assert "verbatim" in prompt.lower()
+
 
 class TestBuildEdgeEnrichmentPrompt:
     """Tests for build_edge_enrichment_prompt."""
