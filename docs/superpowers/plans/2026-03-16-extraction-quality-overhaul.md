@@ -1932,28 +1932,42 @@ from graph_builder.extraction.claim_verifier import verify_section_claims
 from graph_builder.llm.protocol import LLMClient
 ```
 
-**4b. Update `process_paper` signature** — accept two LLM clients:
+**4b. Update `process_paper` signature** — add `claim_llm_client` at the END (after `embedding_client`) to preserve positional compatibility:
 
 ```python
 async def process_paper(
     arxiv_id: str,
     options: PipelineOptions,
     llm_client: LLMClient,
-    claim_llm_client: LLMClient | None = None,
-    neo4j_client: Neo4jClient | None = None,
+    neo4j_client: Neo4jClient,
     embedding_client: EmbeddingClient | None = None,
+    claim_llm_client: LLMClient | None = None,
 ) -> BuildResult:
 ```
 
-When `claim_llm_client is None`, fall back to `llm_client` (backward-compatible). Pass both through `_execute_pipeline` and `_run_all_passes`.
+When `claim_llm_client is None`, fall back to `llm_client`. This preserves backward compatibility — existing tests that call `process_paper(arxiv_id, options, llm, neo4j, embedding)` with 5 positional args continue to work since `claim_llm_client` is appended at the end with a default.
 
-**IMPORTANT:** This keeps the existing call signature working. Existing tests that pass `(arxiv_id, options, llm, neo4j, embedding)` will still work because `claim_llm_client` defaults to `None`.
+Pass both clients through `_execute_pipeline` and `_run_all_passes` (resolving `claim_llm_client or llm_client` at the top).
 
-Also update the `_patch_pipeline` helper in `tests/test_v2_orchestrator.py` to patch `load_paper` with a 3-tuple default:
+**4b-ii. Update `_patch_pipeline` helper in `tests/test_v2_orchestrator.py`:**
 
-Read `tests/test_v2_orchestrator.py` and find the `_patch_pipeline` helper. Change the `"load"` default from `("Test Paper", [_make_section("Intro", 0)])` to `("Test Paper", [_make_section("Intro", 0)], "Full paper text")`.
+Read `tests/test_v2_orchestrator.py` and make these changes to `_patch_pipeline`:
 
-Also add a patch for `_run_pass4` (or `verify_section_claims`) returning `([], [])` by default, so existing tests don't hit real LLM calls during verification.
+1. Change the `"load"` default from `("Test Paper", [_make_section("Intro", 0)])` to `("Test Paper", [_make_section("Intro", 0)], "Full paper text for proof linking")`
+
+2. Find ALL test call sites that override `"load"` with a 2-tuple (e.g., `"load": ("Test Paper", sections)`) and update them to 3-tuples: `"load": ("Test Paper", sections, "Full paper text")`
+
+3. Add a `"p4"` entry to the `defaults` dict that returns `([], [])`:
+```python
+"p4": ([], []),
+```
+
+4. Add a `"p4"` entry to the `targets` dict that patches `verify_section_claims` (or the orchestrator's `_run_pass4` wrapper):
+```python
+"p4": "graph_builder.orchestrator.orchestrator._run_pass4",
+```
+
+And in the patching loop, ensure `_run_pass4` is patched with an `AsyncMock` returning `([], [])` by default.
 
 **4c. Update `_run_all_passes` signature** — accept `full_text` and `claim_llm_client`:
 
@@ -2329,7 +2343,7 @@ async def _run(args: argparse.Namespace) -> int:
             logger.info("Processing: %s", paper_id)
             result = await process_paper(
                 paper_id, options, deepseek_client,
-                claude_client, neo4j_client,
+                neo4j_client, claim_llm_client=claude_client,
             )
             if result.status == "built":
                 built += 1
