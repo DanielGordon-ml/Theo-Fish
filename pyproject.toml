@@ -11,12 +11,18 @@ dependencies = [
     "feedparser",
     "fastapi>=0.115",
     "uvicorn[standard]",
+    "openai>=1.0",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "neo4j>=5.0",
+    "numpy>=1.24",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
+    "testcontainers[neo4j]>=4.0",
 ]
 
 [build-system]
@@ -24,4 +30,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["data_loader"]
+packages = ["data_loader", "data_cleaner", "graph_builder", "graph_builder_v1"]
+
+[tool.pytest.ini_options]
+markers = [
+    "unit: no external dependencies",
+    "integration: requires Neo4j Docker",
+    "e2e: full pipeline smoke test",
+    "slow: tests taking >10s",
+]
+asyncio_mode = "auto"

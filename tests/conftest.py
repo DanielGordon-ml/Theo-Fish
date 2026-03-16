@@ -28,3 +28,45 @@ def sample_csv(tmp_path):
     csv_file = tmp_path / "papers.csv"
     csv_file.write_text(csv_content)
     return csv_file
+
+
+import asyncio
+import pytest
+from neo4j import AsyncGraphDatabase
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create a single event loop for the entire test session."""
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
+async def neo4j_container():
+    """Start a Neo4j testcontainer for integration tests."""
+    from testcontainers.neo4j import Neo4jContainer
+
+    container = Neo4jContainer("neo4j:5.26-community")
+    container.start()
+    bolt_url = container.get_connection_url()
+    yield {"url": bolt_url, "user": "neo4j", "password": "test"}
+    container.stop()
+
+
+@pytest.fixture
+async def neo4j_client(neo4j_container):
+    """Provide a Neo4j client that cleans the DB between tests."""
+    from graph_builder.graph.neo4j_client import Neo4jClient
+
+    client = Neo4jClient(
+        uri=neo4j_container["url"],
+        user=neo4j_container["user"],
+        password=neo4j_container["password"],
+    )
+    yield client
+    # Clean DB between tests
+    async with client._driver.session() as session:
+        await session.run("MATCH (n) DETACH DELETE n")
+    await client.close()

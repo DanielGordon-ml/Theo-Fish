@@ -1,0 +1,200 @@
+# Knowledge Graph Schema — Source of Truth
+# This file drives extraction prompts, validation, and vault export.
+# To add a new edge type or node type, add it here. Pipeline picks it up.
+
+version: "2.1"
+last_updated: "2026-03-16"
+
+concept_types:
+  structure:
+    description: "Named mathematical objects and constructions"
+    examples: ["Markov Decision Process", "Nash Equilibrium", "policy"]
+    required_fields: [name, formal_spec]
+    optional_fields: [components, notation, parametrization]
+  space:
+    description: "Sets, domains, manifolds, topological spaces"
+    examples: ["policy space", "state space", "simplex"]
+    required_fields: [name, formal_spec]
+    optional_fields: [dimensionality, topology, base_field]
+  operator:
+    description: "Functions, maps, transformations between spaces"
+    examples: ["Bellman operator", "policy gradient", "projection"]
+    required_fields: [name, domain, codomain]
+    optional_fields: [formal_spec, linearity, continuity]
+  property:
+    description: "Attributes that structures or spaces can possess"
+    examples: ["ergodicity", "convexity", "Lipschitz continuity"]
+    required_fields: [name, applies_to]
+    optional_fields: [formal_spec, negation]
+  quantity:
+    description: "Measurable or computable scalar/vector values"
+    examples: ["expected return", "regret", "KL divergence"]
+    required_fields: [name, formal_spec]
+    optional_fields: [range, unit, computability]
+  relation:
+    description: "Named binary or n-ary relationships"
+    examples: ["dominance", "Pareto optimality", "equivalence"]
+    required_fields: [name, arity, formal_spec]
+    optional_fields: [symmetry, transitivity, reflexivity]
+  class:
+    description: "Families or categories of structures"
+    examples: ["potential games", "linear MDPs", "extensive-form games"]
+    required_fields: [name, member_type]
+    optional_fields: [formal_spec, defining_property]
+  problem:
+    description: "Named problems or tasks to be solved"
+    examples: ["multi-armed bandit problem", "optimal stopping problem"]
+    required_fields: [name, input_spec, objective]
+    optional_fields: [formal_spec, hardness, known_solutions]
+  criterion:
+    description: "Objective functions, loss functions, optimality conditions"
+    examples: ["expected regret minimization", "Nash social welfare"]
+    required_fields: [name, formal_spec]
+    optional_fields: [direction, domain, convexity]
+
+claim_types:
+  theorem:
+    description: "Major proven result"
+    required_fields: [name, assumptions, conclusion, proof_technique]
+    optional_fields: [strength, tightness]
+    strength_values: [exact, asymptotic, approximate, existential]
+  lemma:
+    description: "Supporting proven result used by other claims"
+    required_fields: [name, assumptions, conclusion]
+    optional_fields: [proof_technique, used_by]
+  proposition:
+    description: "Intermediate result, standalone but not central"
+    required_fields: [name, assumptions, conclusion]
+    optional_fields: [proof_technique]
+  corollary:
+    description: "Direct consequence of a theorem or proposition"
+    required_fields: [name, conclusion, derived_from]
+    optional_fields: [assumptions]
+  conjecture:
+    description: "Unproven claim"
+    required_fields: [name, statement]
+    optional_fields: [evidence_for, evidence_against, status]
+    status_values: [open, partially_resolved, resolved, disproven]
+  algorithm:
+    description: "Procedural claim — this method achieves specified behavior"
+    required_fields: [name, input_spec, output_spec, guarantee]
+    optional_fields: [complexity, convergence_rate, assumptions]
+
+edges:
+  concept_edges:
+    generalizes:
+      inverse: specializes
+      description: "Source is a more general form of target"
+      attributes: [condition]
+    specializes:
+      inverse: generalizes
+      description: "Source is a special case of target"
+      attributes: [restriction]
+    has_component:
+      inverse: component_of
+      description: "Target is a named part of source's definition"
+      attributes: []
+    instance_of:
+      inverse: has_instance
+      description: "Source is a concrete example of target"
+      attributes: [parameters]
+    dual_of:
+      inverse: dual_of
+      description: "Source and target are dual constructions"
+      attributes: [duality_type]
+    equipped_with:
+      description: "Source space/structure carries target as additional structure"
+      attributes: [compatibility_condition]
+  claim_edges:
+    depends_on:
+      description: "Source claim's proof uses target claim"
+      attributes: [role, applied_to]
+      role_values: [existence_guarantee, bound, construction, base_case, inductive_step]
+    enables:
+      description: "Source claim makes target claim possible"
+      attributes: [nature]
+      nature_values: [constructive, existential, computational, relaxation]
+    strengthens:
+      inverse: weakens
+      description: "Source tightens the bound or relaxes assumptions of target"
+      attributes: [dimension]
+      dimension_values: [tighter_bound, weaker_assumptions, broader_scope]
+    weakens:
+      inverse: strengthens
+      description: "Source is a weaker version of target"
+      attributes: [dimension]
+    contradicts:
+      description: "Source and target cannot both hold"
+      attributes: [resolution]
+    equivalent_to:
+      description: "Source and target are logically equivalent"
+      attributes: [under_assumptions]
+  coupling_edges:
+    about:
+      description: "Claim concerns this concept"
+      attributes: [role, aspect]
+      role_values: [primary, scope, mechanism, bound_target, construction_input]
+  provenance_edges:
+    sourced_from:
+      description: "Entity was extracted from this source"
+      attributes: [section, page, confidence]
+    formulation_of:
+      description: "Provenance node records a per-paper formulation of a concept"
+      attributes: [match_method, match_confidence]
+
+validation:
+  rules:
+    - "every Claim node must have at least one 'about' edge"
+    - "every Concept node must have at least one Provenance node linked via 'formulation_of'"
+    - "'corollary' claims must have at least one 'depends_on' edge"
+    - "'depends_on' edges must not form cycles"
+    - "'generalizes' and 'specializes' must be consistent inverses"
+    - "every edge type used must exist in this schema"
+    - "every attribute used on an edge must be listed in that edge's attributes"
+  severity:
+    error: [missing_about, missing_provenance, unknown_edge_type, inconsistent_inverse]
+    warning: [cycle_in_depends_on, missing_proof_technique, unknown_attribute, corollary_without_depends_on]
+    info: [concept_with_single_source, claim_without_enables]
+
+field_ownership:
+  pipeline_owned:
+    - slug
+    - semantic_type
+    - rhetorical_origin
+    - formal_spec
+    - components
+    - ts_domain
+    - ts_codomain
+    - ts_applies_to
+    - ts_member_type
+    - ts_objective
+    - type_specific_fields
+    - source_paper_slug
+    - label
+    - claim_type
+    - assumptions
+    - conclusion
+    - proof_technique
+    - strength
+    - statement
+    - proof
+    - section
+    - embedding
+    - arxiv_id
+    - title
+    - authors
+    - date_published
+    - date_extracted
+    - date_modified
+    - formulation
+    - extraction_confidence
+    - concept_slug
+    - source_arxiv_id
+  human_owned:
+    - name
+    - canonical_definition
+    - human_notes
+    - status
+  shared:
+    - aliases
+    - status
