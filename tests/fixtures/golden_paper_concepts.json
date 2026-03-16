@@ -1,0 +1,70 @@
+{
+  "paper_1_section_1": {
+    "concepts": [
+      {
+        "name": "Nash Equilibrium",
+        "semantic_type": "structure",
+        "canonical_definition": "A strategy profile where no player can unilaterally improve their payoff",
+        "formal_spec": "sigma* in Sigma s.t. forall i, u_i(sigma*) >= u_i(sigma_i, sigma*_{-i})",
+        "aliases": ["NE", "Nash equilibrium"]
+      },
+      {
+        "name": "action space",
+        "semantic_type": "space",
+        "canonical_definition": "The set of all available strategies for a player",
+        "formal_spec": "A_i = finite set of pure strategies for player i",
+        "aliases": ["strategy space"]
+      },
+      {
+        "name": "utility function",
+        "semantic_type": "operator",
+        "canonical_definition": "A function mapping strategy profiles to real-valued payoffs for each player",
+        "formal_spec": "u_i: Sigma -> R, maps joint strategy profiles to player i payoff",
+        "aliases": ["payoff function"]
+      }
+    ]
+  },
+  "paper_1_section_2": {
+    "concepts": [
+      {
+        "name": "price of anarchy",
+        "semantic_type": "quantity",
+        "canonical_definition": "Ratio of worst Nash equilibrium social welfare to optimal social welfare",
+        "formal_spec": "PoA = W(OPT) / min_{sigma in NE} W(sigma)",
+        "aliases": ["PoA"]
+      },
+      {
+        "name": "coalition",
+        "semantic_type": "class",
+        "canonical_definition": "A subset of players who coordinate deviations jointly",
+        "formal_spec": "S subset N, where N is the set of all players",
+        "aliases": ["player coalition", "coordinated group"]
+      },
+      {
+        "name": "k-strong equilibrium",
+        "semantic_type": "structure",
+        "canonical_definition": "A strategy profile where no coalition of size at most k can profitably deviate",
+        "formal_spec": "sigma* is k-SE iff forall S with |S| <= k, forall sigma_S in Sigma_S, exists i in S: u_i(sigma*) >= u_i(sigma_S, sigma*_{-S})",
+        "aliases": ["k-SE", "strong equilibrium"]
+      }
+    ]
+  },
+  "paper_2_section_1": {
+    "concepts": [
+      {
+        "name": "Nash Equilibrium",
+        "semantic_type": "structure",
+        "canonical_definition": "Fixed point of best-response dynamics in a strategic-form game",
+        "formal_spec": "sigma* s.t. sigma_i* in BR_i(sigma*_{-i}) for all players i",
+        "aliases": ["NE"]
+      },
+      {
+        "name": "congestion game",
+        "semantic_type": "structure",
+        "canonical_definition": "A game where player payoffs depend only on the number of players using each resource",
+        "formal_spec": "G = (N, R, (A_i), (c_r)) where c_r: N -> R is resource cost",
+        "aliases": ["routing game"]
+      }
+    ]
+  }
+}

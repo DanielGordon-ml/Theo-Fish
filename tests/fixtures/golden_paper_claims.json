@@ -1,0 +1,60 @@
+{
+  "paper_1_section_2": {
+    "claims": [
+      {
+        "label": "Lemma 1",
+        "claim_type": "lemma",
+        "statement": "For any k-strong equilibrium sigma*, every coalition S of size at most k cannot improve all members simultaneously.",
+        "conclusion": "No coalition of size <= k can jointly deviate to improve all members",
+        "proof_technique": "By contradiction: assume a profitable deviation exists, derive contradiction with equilibrium condition.",
+        "proof": "Suppose coalition S deviates to sigma_S. By k-SE definition, some player i in S has u_i(sigma*) >= u_i(sigma_S, sigma*_{-S}). Contradiction.",
+        "assumptions": ["sigma* is a k-strong equilibrium", "|S| <= k"],
+        "strength": "strong",
+        "section": "Main Results",
+        "about_concepts": ["k-strong-equilibrium", "coalition"]
+      },
+      {
+        "label": "Theorem 1",
+        "claim_type": "theorem",
+        "statement": "The Price of Anarchy of any k-strong equilibrium is bounded by (1 - 1/e)^{-1} when k = O(log n).",
+        "conclusion": "PoA(k-SE) <= (1 - 1/e)^{-1} for k = O(log n)",
+        "proof_technique": "Smoothness argument combined with coalition-resistance bound.",
+        "proof": "Apply smoothness framework to k-SE. Use Lemma 1 to bound deviation gain. Compute ratio against optimal.",
+        "assumptions": ["k = O(log n)", "game is lambda-smooth"],
+        "strength": "strong",
+        "section": "Main Results",
+        "about_concepts": ["price-of-anarchy", "k-strong-equilibrium", "nash-equilibrium"]
+      },
+      {
+        "label": "Corollary 1",
+        "claim_type": "corollary",
+        "statement": "For k = 1, the PoA bound of Theorem 1 recovers the standard Price of Anarchy bound for Nash Equilibria.",
+        "conclusion": "Theorem 1 generalises the classical PoA bound when k = 1",
+        "proof_technique": "Direct substitution of k = 1 into Theorem 1.",
+        "proof": "Set k = 1 in Theorem 1. k-SE reduces to standard NE. Bound matches classical result.",
+        "assumptions": ["k = 1"],
+        "strength": "moderate",
+        "section": "Main Results",
+        "about_concepts": ["price-of-anarchy", "nash-equilibrium"]
+      }
+    ]
+  },
+  "paper_1_edges": {
+    "claim_edges": [
+      {
+        "source_slug": "PAPER_SLUG--theorem-1",
+        "target_slug": "PAPER_SLUG--lemma-1",
+        "edge_type": "depends_on",
+        "attributes": {"condition": "Theorem 1 proof invokes Lemma 1 to bound coalition deviation"}
+      },
+      {
+        "source_slug": "PAPER_SLUG--corollary-1",
+        "target_slug": "PAPER_SLUG--theorem-1",
+        "edge_type": "derived_from",
+        "attributes": {"condition": "Corollary is obtained by substituting k=1 into Theorem 1"}
+      }
+    ],
+    "coupling_edges": [],
+    "concept_edges": []
+  }
+}
