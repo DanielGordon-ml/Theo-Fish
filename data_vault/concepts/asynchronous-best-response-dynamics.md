@@ -3,7 +3,8 @@ slug: asynchronous-best-response-dynamics
 name: asynchronous best response dynamics
 semantic_type: operator
 canonical_definition: ''
-formal_spec: ''
+formal_spec: A dynamic process where agents or groups asynchronously perform best
+  responses.
 aliases: []
 status: canonical
 human_notes: ''

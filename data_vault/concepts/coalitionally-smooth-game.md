@@ -3,7 +3,7 @@ slug: coalitionally-smooth-game
 name: coalitionally smooth game
 semantic_type: class
 canonical_definition: ''
-formal_spec: ''
+formal_spec: A class of games where smoothness conditions apply to coalitions of agents.
 aliases: []
 status: canonical
 human_notes: ''

@@ -2,25 +2,34 @@
 slug: k-strong-price-of-anarchy--corollary-2
 label: Corollary 2
 claim_type: corollary
-statement: For the class of resource allocation problems 𝒢_n × {w}, if the value of
-  (Qζ) satisfies ρ_ζ* = Q*(n, w, k), then SPoA_k*(𝒢_n, w) = 1 / Q*(n, w, k) is a tight
-  bound and a solution ũ_ζ to (Qζ) is an optimal utility rule.
-proof: ''
+statement: For the class of resource allocation problems $\mathcal{G}_n \times \{w\}$,
+  if the value of $(\mathrm{Q}\zeta)$ satisfies $\rho_\zeta^\star = Q^\star(n, w,
+  k)$, then $\mathrm{SPoA}_k^\star(\mathcal{G}_n, w) = 1/Q^\star(n, w, k)$ is a tight
+  bound and a solution $\widetilde{u}_\zeta$ to $(\mathrm{Q}\zeta)$ is an optimal
+  utility rule.
+proof: This follows immediately from $1/\rho_\zeta^\star = \frac{\lambda_\zeta}{1+\mu_\zeta}$
+  being a lower bound on $\mathrm{SPoA}_k^\star(\mathcal{G}_n, w)$ and the reciprocal
+  of the value of $(\mathrm{Q}[k])$, $1/Q^\star$ being an upper bound. When the two
+  match, the bound must be tight.
 strength: ''
 status: unverified
 human_notes: ''
 about:
-- '[[concepts/linear-program-qz]]'
-- '[[concepts/optimal-k-strong-price-of-anarchy]]'
-- '[[concepts/utility-rule-u]]'
+- '[[concepts/optimal-utility-rule]]'
+- '[[concepts/k-strong-price-of-anarchy]]'
+- '[[concepts/resource-allocation-games]]'
+- '[[concepts/class-of-resource-allocation-problems]]'
 about_meta:
-- target: '[[concepts/linear-program-qz]]'
+- target: '[[concepts/optimal-utility-rule]]'
   role: primary
   aspect: ''
-- target: '[[concepts/optimal-k-strong-price-of-anarchy]]'
+- target: '[[concepts/k-strong-price-of-anarchy]]'
   role: primary
   aspect: ''
-- target: '[[concepts/utility-rule-u]]'
+- target: '[[concepts/resource-allocation-games]]'
+  role: primary
+  aspect: ''
+- target: '[[concepts/class-of-resource-allocation-problems]]'
   role: primary
   aspect: ''
 depends_on: []
@@ -36,4 +45,9 @@ sourced_from_meta:
 
 # Corollary 2
 
-For the class of resource allocation problems 𝒢_n × {w}, if the value of (Qζ) satisfies ρ_ζ* = Q*(n, w, k), then SPoA_k*(𝒢_n, w) = 1 / Q*(n, w, k) is a tight bound and a solution ũ_ζ to (Qζ) is an optimal utility rule.
+For the class of resource allocation problems $\mathcal{G}_n \times \{w\}$, if the value of $(\mathrm{Q}\zeta)$ satisfies $\rho_\zeta^\star = Q^\star(n, w, k)$, then $\mathrm{SPoA}_k^\star(\mathcal{G}_n, w) = 1/Q^\star(n, w, k)$ is a tight bound and a solution $\widetilde{u}_\zeta$ to $(\mathrm{Q}\zeta)$ is an optimal utility rule.
+
+
+## Proof
+
+This follows immediately from $1/\rho_\zeta^\star = \frac{\lambda_\zeta}{1+\mu_\zeta}$ being a lower bound on $\mathrm{SPoA}_k^\star(\mathcal{G}_n, w)$ and the reciprocal of the value of $(\mathrm{Q}[k])$, $1/Q^\star$ being an upper bound. When the two match, the bound must be tight.

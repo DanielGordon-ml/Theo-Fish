@@ -3,7 +3,8 @@ slug: smooth-game
 name: smooth game
 semantic_type: class
 canonical_definition: ''
-formal_spec: ''
+formal_spec: A class of games with smoothness properties, often used to bound equilibrium
+  inefficiency.
 aliases: []
 status: canonical
 human_notes: ''

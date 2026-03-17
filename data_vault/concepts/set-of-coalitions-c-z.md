@@ -3,8 +3,7 @@ slug: set-of-coalitions-c-z
 name: set of coalitions C_ζ
 semantic_type: space
 canonical_definition: ''
-formal_spec: The set of all coalitions of size ζ, i.e., subsets of agents N of size
-  ζ, denoted C_ζ.
+formal_spec: 'C_ζ = {Γ ⊆ N : |Γ| = ζ}'
 aliases: []
 status: canonical
 human_notes: ''
@@ -20,22 +19,10 @@ equivalent_to: []
 equivalent_to_meta: []
 instantiates: []
 instantiates_meta: []
-sourced_from:
-- '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-sourced_from_meta:
-- target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-  section: ''
-  page: ''
-  confidence: 0.0
+sourced_from: []
+sourced_from_meta: []
 ---
 
 # set of coalitions C_ζ
 
 
-
-
-## Provenance
-
-| Source | Section | Formulation | Confidence |
-|--------|---------|-------------|------------|
-| [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |

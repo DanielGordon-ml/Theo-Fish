@@ -3,8 +3,8 @@ slug: strong-nash-equilibrium
 name: Strong Nash equilibrium
 semantic_type: structure
 canonical_definition: ''
-formal_spec: A strategy profile where no coalition of players can deviate to improve
-  the payoff of every member of the coalition.
+formal_spec: A Nash equilibrium where no coalition of players can jointly deviate
+  to improve the payoffs of all members.
 aliases: []
 status: canonical
 human_notes: ''

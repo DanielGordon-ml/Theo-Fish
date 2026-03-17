@@ -3,8 +3,9 @@ slug: expected-cumulative-welfare-bound
 name: Expected cumulative welfare bound
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: E[1/T ∑_{t=1}^T W(a^t)] ≥ (T-1)/(2T) * (∑_{ζ=1}^k p_ζ λ_ζ)/(1+∑_{ζ=1}^k
-  p_ζ μ_ζ) * W(a^{opt}), as given in Theorem IV.2.
+formal_spec: A lower bound on the expected average welfare over T steps in the asynchronous
+  dynamics, given by (T-1)/(2T) * (∑_{ζ=1}^{k} p_ζ λ_ζ) / (1 + ∑_{ζ=1}^{k} p_ζ μ_ζ)
+  * W(a^{opt}), as derived in Theorem IV.2.
 aliases: []
 status: canonical
 human_notes: ''

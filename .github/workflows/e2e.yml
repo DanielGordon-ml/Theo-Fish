@@ -1,0 +1,25 @@
+name: E2E Pipeline Smoke Test
+
+on:
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+  schedule:
+    - cron: '0 0 * * *' # Runs every night at 2:00 AM UTC
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install Python 3.10
+        run: uv python install 3.10
+      - name: Install dependencies
+        run: uv sync
+      
+      - name: Run E2E Tests
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: uv run pytest tests/ -v -m e2e

@@ -1,6 +1,16 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.pyc
 .venv/
 *.egg-info/
 dist/
 logs/*.log
+.env
+
+# .claude repository
+.claude/
+.superpowers/
+docs/
+CLAUDE.md
+
+

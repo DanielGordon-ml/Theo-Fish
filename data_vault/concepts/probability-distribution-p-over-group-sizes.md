@@ -3,8 +3,9 @@ slug: probability-distribution-p-over-group-sizes
 name: Probability distribution p over group sizes
 semantic_type: structure
 canonical_definition: ''
-formal_spec: p = (p_1, p_2, ..., p_k) where p_ζ ≥ 0 for ζ = 1 to k and Σ_{ζ=1}^k p_ζ
-  = 1, representing the probability that an updating group has size ζ.
+formal_spec: A probability distribution p = (p_1, ..., p_k) where p_ζ = Pr(|Γ^t| =
+  ζ) for ζ ∈ {1,...,k}, specifying the likelihood of selecting a group of size ζ in
+  the asynchronous dynamics.
 aliases: []
 status: canonical
 human_notes: ''

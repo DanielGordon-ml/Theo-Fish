@@ -3,8 +3,7 @@ slug: label-set-l
 name: label set ℒ
 semantic_type: space
 canonical_definition: ''
-formal_spec: A set of tuples (e,x,o) where e, x, o are non-negative integers, used
-  in the parameterization of games.
+formal_spec: A set of labels, denoted L.
 aliases: []
 status: canonical
 human_notes: ''
@@ -21,9 +20,9 @@ equivalent_to_meta: []
 instantiates: []
 instantiates_meta: []
 sourced_from:
-- '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- '[[sources/1904.07272|Introduction to Multi-Armed Bandits]]'
 sourced_from_meta:
-- target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- target: '[[sources/1904.07272|Introduction to Multi-Armed Bandits]]'
   section: ''
   page: ''
   confidence: 0.0
@@ -38,4 +37,4 @@ sourced_from_meta:
 
 | Source | Section | Formulation | Confidence |
 |--------|---------|-------------|------------|
-| [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |
+| [[sources/1904.07272]] |  | "" | 0.0 |

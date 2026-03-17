@@ -3,9 +3,7 @@ slug: k-strong-price-of-anarchy-spoa-k
 name: k-Strong Price of Anarchy SPoA_k
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: For a class of games, SPoA_k is the ratio of the optimal welfare to the
-  worst-case welfare achieved by a k-strong Nash equilibrium, as referenced in Corollary
-  1.
+formal_spec: min_{a^{kSNE} ∈ kSNE(G,W)} W(a^{kSNE}) / max_{a^{opt} ∈ 𝒜} W(a^{opt})
 aliases: []
 status: canonical
 human_notes: ''
@@ -21,22 +19,10 @@ equivalent_to: []
 equivalent_to_meta: []
 instantiates: []
 instantiates_meta: []
-sourced_from:
-- '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-sourced_from_meta:
-- target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-  section: ''
-  page: ''
-  confidence: 0.0
+sourced_from: []
+sourced_from_meta: []
 ---
 
 # k-Strong Price of Anarchy SPoA_k
 
 
-
-
-## Provenance
-
-| Source | Section | Formulation | Confidence |
-|--------|---------|-------------|------------|
-| [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |

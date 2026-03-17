@@ -3,7 +3,7 @@ slug: set-of-groups-of-size-k
 name: set of groups of size k
 semantic_type: space
 canonical_definition: ''
-formal_spec: $\mathcal{C}_k = \{\Gamma \subseteq N \mid |\Gamma| = k\}$
+formal_spec: \mathcal{C}_k = \{\Gamma \subseteq N \mid |\Gamma| = k\}
 aliases: []
 status: canonical
 human_notes: ''

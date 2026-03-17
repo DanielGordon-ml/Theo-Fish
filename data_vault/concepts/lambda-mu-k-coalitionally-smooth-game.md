@@ -3,8 +3,8 @@ slug: lambda-mu-k-coalitionally-smooth-game
 name: (λ, μ)-k-coalitionally smooth game
 semantic_type: class
 canonical_definition: ''
-formal_spec: a generalization of smooth games where parameters λ and μ characterize
-  smoothness conditions for groups up to size k
+formal_spec: A class of games that satisfy specific smoothness inequalities with parameters
+  λ and μ for groups of up to k agents.
 aliases: []
 status: canonical
 human_notes: ''

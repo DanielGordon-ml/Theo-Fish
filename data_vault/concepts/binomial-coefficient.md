@@ -3,7 +3,7 @@ slug: binomial-coefficient
 name: binomial coefficient
 semantic_type: operator
 canonical_definition: ''
-formal_spec: $\binom{n}{k} = \frac{n!}{(n-k)!k!}$ with $\binom{n}{k}=0$ if $n<k$
+formal_spec: \frac{n!}{(n-k)!k!} for n \geq k, 0 for n < k
 aliases: []
 status: canonical
 human_notes: ''

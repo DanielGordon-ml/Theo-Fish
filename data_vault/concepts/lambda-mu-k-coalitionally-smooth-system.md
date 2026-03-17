@@ -3,8 +3,9 @@ slug: lambda-mu-k-coalitionally-smooth-system
 name: (λ,μ)-k-coalitionally smooth system
 semantic_type: property
 canonical_definition: ''
-formal_spec: A property defined by parameters λ_ζ and μ_ζ for ζ = 1 to k, satisfying
-  condition (5) in the paper, which relates welfare improvements to optimal welfare.
+formal_spec: A property where for all joint actions a and groups Γ of size ζ, there
+  exist parameters λ_ζ, μ_ζ such that W(a_Γ^{opt}, a_{-Γ}) ≥ λ_ζ W(a^{opt}) - μ_ζ
+  W(a), as referenced in condition (5).
 aliases: []
 status: canonical
 human_notes: ''

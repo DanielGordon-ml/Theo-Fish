@@ -3,8 +3,8 @@ slug: price-of-anarchy
 name: Price of anarchy
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: The ratio of the worst-case Nash equilibrium cost to the optimal cost
-  in a game, measuring inefficiency.
+formal_spec: The ratio between the optimal social welfare and the social welfare at
+  the worst Nash equilibrium in a game.
 aliases: []
 status: canonical
 human_notes: ''
@@ -22,8 +22,18 @@ instantiates: []
 instantiates_meta: []
 sourced_from:
 - '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- '[[sources/achieving_pareto_optimality_through_distributed_learning|achieving_pareto_optimality_through_distributed_learning]]'
+- '[[sources/1904.07272|Introduction to Multi-Armed Bandits]]'
 sourced_from_meta:
 - target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/achieving_pareto_optimality_through_distributed_learning|achieving_pareto_optimality_through_distributed_learning]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/1904.07272|Introduction to Multi-Armed Bandits]]'
   section: ''
   page: ''
   confidence: 0.0
@@ -39,3 +49,5 @@ sourced_from_meta:
 | Source | Section | Formulation | Confidence |
 |--------|---------|-------------|------------|
 | [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |
+| [[sources/achieving_pareto_optimality_through_distributed_learning]] |  | "" | 0.0 |
+| [[sources/1904.07272]] |  | "" | 0.0 |

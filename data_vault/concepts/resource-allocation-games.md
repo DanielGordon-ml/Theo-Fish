@@ -3,8 +3,8 @@ slug: resource-allocation-games
 name: resource allocation games
 semantic_type: class
 canonical_definition: ''
-formal_spec: A family of games where agents allocate or compete for resources, with
-  utilities defined based on resource usage patterns.
+formal_spec: Games where agents compete or collaborate to allocate resources, with
+  payoffs based on resource usage.
 aliases: []
 status: canonical
 human_notes: ''

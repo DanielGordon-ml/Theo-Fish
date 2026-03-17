@@ -3,8 +3,7 @@ slug: combined-smoothness-optimization-problem-p-k
 name: combined smoothness optimization problem (P[k])
 semantic_type: problem
 canonical_definition: ''
-formal_spec: Linear program minimizing ρ with variables ρ and ν_ζ for ζ in [k], subject
-  to constraints from smoothness conditions for each ζ.
+formal_spec: Linear program defined as (P[k]) in Theorem III.3 with variables ρ, {ν_ζ}.
 aliases: []
 status: canonical
 human_notes: ''
@@ -20,22 +19,10 @@ equivalent_to: []
 equivalent_to_meta: []
 instantiates: []
 instantiates_meta: []
-sourced_from:
-- '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-sourced_from_meta:
-- target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-  section: ''
-  page: ''
-  confidence: 0.0
+sourced_from: []
+sourced_from_meta: []
 ---
 
 # combined smoothness optimization problem (P[k])
 
 
-
-
-## Provenance
-
-| Source | Section | Formulation | Confidence |
-|--------|---------|-------------|------------|
-| [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |

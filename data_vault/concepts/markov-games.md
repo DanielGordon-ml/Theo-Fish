@@ -3,8 +3,7 @@ slug: markov-games
 name: Markov Games
 semantic_type: class
 canonical_definition: ''
-formal_spec: Stochastic games with state transitions governed by a Markov process,
-  involving sequential decision-making.
+formal_spec: Stochastic games with state transitions following a Markov process.
 aliases: []
 status: canonical
 human_notes: ''

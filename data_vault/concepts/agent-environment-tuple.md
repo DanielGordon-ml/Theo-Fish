@@ -3,7 +3,7 @@ slug: agent-environment-tuple
 name: agent environment tuple
 semantic_type: structure
 canonical_definition: ''
-formal_spec: $G = (N, \mathcal{A})$
+formal_spec: G = (N, \mathcal{A})
 aliases: []
 status: canonical
 human_notes: ''

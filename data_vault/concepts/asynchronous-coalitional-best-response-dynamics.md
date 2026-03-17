@@ -3,8 +3,7 @@ slug: asynchronous-coalitional-best-response-dynamics
 name: asynchronous coalitional best response dynamics
 semantic_type: problem
 canonical_definition: ''
-formal_spec: A dynamic process where coalitions of agents update their strategies
-  asynchronously via best responses, with probabilistic convergence guarantees.
+formal_spec: ''
 aliases: []
 status: canonical
 human_notes: ''

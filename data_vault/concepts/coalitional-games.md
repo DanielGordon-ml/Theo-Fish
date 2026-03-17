@@ -3,8 +3,7 @@ slug: coalitional-games
 name: Coalitional games
 semantic_type: class
 canonical_definition: ''
-formal_spec: Games focusing on coalition formation and the distribution of payoffs
-  among players in cooperative settings.
+formal_spec: Games focusing on coalition formation and payoff distribution among coalitions.
 aliases: []
 status: canonical
 human_notes: ''

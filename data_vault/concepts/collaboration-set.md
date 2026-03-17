@@ -3,7 +3,7 @@ slug: collaboration-set
 name: collaboration set
 semantic_type: space
 canonical_definition: ''
-formal_spec: $\mathcal{C} \subseteq 2^N$
+formal_spec: \mathcal{C} \subseteq 2^N
 aliases: []
 status: canonical
 human_notes: ''

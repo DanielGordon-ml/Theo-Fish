@@ -3,7 +3,8 @@ slug: group-best-response
 name: group best response
 semantic_type: operator
 canonical_definition: ''
-formal_spec: ''
+formal_spec: A function that maps current actions of a group to a new action profile
+  that maximizes the group's payoff given others' actions.
 aliases: []
 status: canonical
 human_notes: ''
@@ -21,8 +22,13 @@ instantiates: []
 instantiates_meta: []
 sourced_from:
 - '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
 sourced_from_meta:
 - target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
   section: ''
   page: ''
   confidence: 0.0
@@ -38,3 +44,4 @@ sourced_from_meta:
 | Source | Section | Formulation | Confidence |
 |--------|---------|-------------|------------|
 | [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |
+| [[sources/cooperative_multi_player_bandit_optimization]] |  | "" | 0.0 |

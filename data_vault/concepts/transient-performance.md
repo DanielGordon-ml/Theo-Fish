@@ -3,8 +3,8 @@ slug: transient-performance
 name: transient performance
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: The cumulative social welfare summed over time steps during the dynamics
-  from an initial state until convergence to equilibrium.
+formal_spec: The cumulative welfare accumulated during the dynamics before reaching
+  an equilibrium state.
 aliases: []
 status: canonical
 human_notes: ''

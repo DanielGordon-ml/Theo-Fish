@@ -3,9 +3,9 @@ slug: asynchronous-k-coalitional-best-response-dynamics
 name: Asynchronous k-Coalitional Best-Response Dynamics
 semantic_type: operator
 canonical_definition: ''
-formal_spec: Dynamics where at each time t, updating group Γ^t is selected randomly
-  with probability p_ζ for size ζ, and chooses best response a_Γ^{t+1} ∈ argmax_{a_Γ
-  ∈ A_Γ} W(a_Γ, a_{-Γ}^t).
+formal_spec: At each time t, a group Γ^t is selected randomly with probability p_{|Γ^t|},
+  and updates to a best response action to maximize W, similar to the round-robin
+  best response selection.
 aliases: []
 status: canonical
 human_notes: ''

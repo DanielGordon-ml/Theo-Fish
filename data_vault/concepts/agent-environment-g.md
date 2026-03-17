@@ -3,7 +3,8 @@ slug: agent-environment-g
 name: agent environment G
 semantic_type: structure
 canonical_definition: ''
-formal_spec: \(G = (N, \mathcal{A}, \mathcal{R}, \{v_r\}_{r \in \mathcal{R}})\)
+formal_spec: G = (R, N, {A_i}_{i∈N}, w) where R is resource set, N is agent set, A_i
+  is action set for agent i, w is local welfare function
 aliases: []
 status: canonical
 human_notes: ''

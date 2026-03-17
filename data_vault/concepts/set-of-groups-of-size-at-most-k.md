@@ -3,7 +3,8 @@ slug: set-of-groups-of-size-at-most-k
 name: set of groups of size at most k
 semantic_type: space
 canonical_definition: ''
-formal_spec: $\mathcal{C}_{[k]} = \bigcup_{\zeta \in [k]} \mathcal{C}_{\zeta}$
+formal_spec: The set of all subsets of N with cardinality at most k, representing
+  possible collaborative groups.
 aliases: []
 status: canonical
 human_notes: ''

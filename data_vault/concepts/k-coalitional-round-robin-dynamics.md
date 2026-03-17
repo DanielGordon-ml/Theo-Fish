@@ -3,9 +3,9 @@ slug: k-coalitional-round-robin-dynamics
 name: k-Coalitional Round-Robin Dynamics
 semantic_type: operator
 canonical_definition: ''
-formal_spec: Dynamics where groups Γ ∈ C_[k] update sequentially in a fixed order
-  σ, choosing a best response a_Γ^{t+1} ∈ argmax_{a_Γ ∈ A_Γ} W(a_Γ, a_{-Γ}^t) to increase
-  welfare, with ties broken as specified.
+formal_spec: 'Described in Algorithm 1: groups update sequentially in order σ, selecting
+  best responses to maximize welfare W, with ties broken uniformly at random or by
+  maintaining current action if already optimal.'
 aliases: []
 status: canonical
 human_notes: ''

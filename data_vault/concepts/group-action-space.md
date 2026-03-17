@@ -3,7 +3,7 @@ slug: group-action-space
 name: group action space
 semantic_type: space
 canonical_definition: ''
-formal_spec: $\mathcal{A}_{\Gamma} = \prod_{i \in \Gamma} \mathcal{A}_i$
+formal_spec: \mathcal{A}_{\Gamma} = \prod_{i \in \Gamma} \mathcal{A}_i
 aliases: []
 status: canonical
 human_notes: ''

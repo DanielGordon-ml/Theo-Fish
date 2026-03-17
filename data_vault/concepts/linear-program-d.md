@@ -3,9 +3,7 @@ slug: linear-program-d
 name: linear program (D)
 semantic_type: problem
 canonical_definition: ''
-formal_spec: 'As defined in the text with constraints: ∑_{e,x,o} ( (n choose ζ) w(e+x)
-  - ∑_{0≤α≤e, 0≤β≤o, α+β≤ζ} (e choose α)(o choose β)(n-e-o choose ζ-α-β) w(e+x+β-α)
-  ) θ(e,x,o) ≥ 0 for all ζ ∈ [k], and ∑_{e,x,o} w(e+x) θ(e,x,o) = 1.'
+formal_spec: ''
 aliases: []
 status: canonical
 human_notes: ''

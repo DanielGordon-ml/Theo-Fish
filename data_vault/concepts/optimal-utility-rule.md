@@ -3,8 +3,8 @@ slug: optimal-utility-rule
 name: optimal utility rule
 semantic_type: criterion
 canonical_definition: ''
-formal_spec: A designed utility function for agents that aims to optimize system welfare
-  by altering the set of equilibria and improving the $k$-strong price of anarchy.
+formal_spec: A utility function designed for agents to optimize, with the goal of
+  maximizing the k-strong price of anarchy of the system.
 aliases: []
 status: canonical
 human_notes: ''

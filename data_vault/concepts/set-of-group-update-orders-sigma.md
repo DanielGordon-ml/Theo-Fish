@@ -3,8 +3,8 @@ slug: set-of-group-update-orders-sigma
 name: Set of group update orders Σ
 semantic_type: space
 canonical_definition: ''
-formal_spec: Σ is the set of all permutations of the groups in C_[k], with size (n
-  choose k)!, where σ(z) for z ∈ {1, ..., binom(n,k)} indexes a group Γ ∈ C_[k].
+formal_spec: Σ_{(n choose k)}, the set of all permutations of the groups in C_k, where
+  σ(z) for z ∈ {1, ..., binom{n}{k}} indexes a group Γ ∈ C_k.
 aliases: []
 status: canonical
 human_notes: ''

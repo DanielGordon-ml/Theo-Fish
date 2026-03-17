@@ -1,0 +1,40 @@
+---
+slug: fake-cost-function-on-arm
+name: fake cost function on arm
+semantic_type: operator
+canonical_definition: ''
+formal_spec: ĉ_t(a) = c_t(a_t)/q_t(a_t) if a_t = a, else 0.
+aliases: []
+status: canonical
+human_notes: ''
+generalizes: []
+generalizes_meta: []
+has_component: []
+has_component_meta: []
+depends_on: []
+depends_on_meta: []
+related_to: []
+related_to_meta: []
+equivalent_to: []
+equivalent_to_meta: []
+instantiates: []
+instantiates_meta: []
+sourced_from:
+- '[[sources/1904.07272|Introduction to Multi-Armed Bandits]]'
+sourced_from_meta:
+- target: '[[sources/1904.07272|Introduction to Multi-Armed Bandits]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+---
+
+# fake cost function on arm
+
+
+
+
+## Provenance
+
+| Source | Section | Formulation | Confidence |
+|--------|---------|-------------|------------|
+| [[sources/1904.07272]] |  | "" | 0.0 |

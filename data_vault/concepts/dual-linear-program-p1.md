@@ -3,8 +3,7 @@ slug: dual-linear-program-p1
 name: dual linear program (P1)
 semantic_type: problem
 canonical_definition: ''
-formal_spec: 'Derived as the dual of (D): min_{ρ, {ν_ζ ≥ 0}} ρ subject to b^⊤ - ρ
-  d^⊤ + ∑_{ζ∈[k]} ν_ζ c_ζ ≤ 0, where b, d, c_ζ are coefficients from (D).'
+formal_spec: ''
 aliases: []
 status: canonical
 human_notes: ''

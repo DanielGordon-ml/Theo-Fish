@@ -3,8 +3,8 @@ slug: local-welfare-rule-w
 name: local welfare rule w
 semantic_type: operator
 canonical_definition: ''
-formal_spec: 'w: {0,...,n} → R_{≥0} with w(0)=0 and w(y)>0 for y>0, defining the contribution
-  per resource based on number of agents assigned.'
+formal_spec: An operator computing local welfare based on actions, often used in distributed
+  settings.
 aliases: []
 status: canonical
 human_notes: ''
@@ -20,22 +20,10 @@ equivalent_to: []
 equivalent_to_meta: []
 instantiates: []
 instantiates_meta: []
-sourced_from:
-- '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-sourced_from_meta:
-- target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-  section: ''
-  page: ''
-  confidence: 0.0
+sourced_from: []
+sourced_from_meta: []
 ---
 
 # local welfare rule w
 
 
-
-
-## Provenance
-
-| Source | Section | Formulation | Confidence |
-|--------|---------|-------------|------------|
-| [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |

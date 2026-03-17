@@ -3,8 +3,8 @@ slug: differential-games
 name: Differential games
 semantic_type: class
 canonical_definition: ''
-formal_spec: Games described by differential equations, typically involving continuous-time
-  dynamics and control.
+formal_spec: Games with dynamics described by differential equations, typically in
+  continuous time.
 aliases: []
 status: canonical
 human_notes: ''

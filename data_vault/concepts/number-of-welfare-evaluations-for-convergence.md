@@ -3,8 +3,9 @@ slug: number-of-welfare-evaluations-for-convergence
 name: Number of welfare evaluations for convergence
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: Bounded by O(m^n * (1/(1-1/m))^{c}) as per Proposition IV.1, where m
-  = max_{i∈N} |A_i|, n = |N|, and c is a constant related to k.
+formal_spec: The total number of times the welfare function W is evaluated during
+  the execution of the k-coalitional round-robin dynamics until convergence, bounded
+  by O(m^n (1/(1-1/m))^#) as stated in Proposition IV.1.
 aliases: []
 status: canonical
 human_notes: ''

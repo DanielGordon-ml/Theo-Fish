@@ -3,7 +3,7 @@ slug: joint-action-space
 name: joint action space
 semantic_type: space
 canonical_definition: ''
-formal_spec: $\mathcal{A} = \mathcal{A}_1 \times \cdots \times \mathcal{A}_n$
+formal_spec: The space of all possible assignments a mapping players to arms.
 aliases: []
 status: canonical
 human_notes: ''
@@ -21,8 +21,29 @@ instantiates: []
 instantiates_meta: []
 sourced_from:
 - '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- '[[sources/achieving_pareto_optimality_through_distributed_learning|achieving_pareto_optimality_through_distributed_learning]]'
+- '[[sources/2509.25921|Achieving Pareto Optimality in Games via Single-bit Feedback]]'
+- '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
+- '[[sources/distributed_multi_player_bandits_a_game_of_thrones_approach|distributed_multi_player_bandits_a_game_of_thrones_approach]]'
 sourced_from_meta:
 - target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/achieving_pareto_optimality_through_distributed_learning|achieving_pareto_optimality_through_distributed_learning]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/2509.25921|Achieving Pareto Optimality in Games via Single-bit
+    Feedback]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/distributed_multi_player_bandits_a_game_of_thrones_approach|distributed_multi_player_bandits_a_game_of_thrones_approach]]'
   section: ''
   page: ''
   confidence: 0.0
@@ -38,3 +59,7 @@ sourced_from_meta:
 | Source | Section | Formulation | Confidence |
 |--------|---------|-------------|------------|
 | [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |
+| [[sources/achieving_pareto_optimality_through_distributed_learning]] |  | "" | 0.0 |
+| [[sources/2509.25921]] |  | "" | 0.0 |
+| [[sources/cooperative_multi_player_bandit_optimization]] |  | "" | 0.0 |
+| [[sources/distributed_multi_player_bandits_a_game_of_thrones_approach]] |  | "" | 0.0 |

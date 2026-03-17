@@ -3,8 +3,8 @@ slug: common-objective-function
 name: common objective function
 semantic_type: criterion
 canonical_definition: ''
-formal_spec: a function mapping the joint action profile of agents to a real number,
-  representing the system welfare to be maximized
+formal_spec: sum of individual utility functions, denoted as P_{m=1}^{N} u_m(x), on
+  which stochastic gradient steps are taken
 aliases: []
 status: canonical
 human_notes: ''
@@ -22,8 +22,18 @@ instantiates: []
 instantiates_meta: []
 sourced_from:
 - '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- '[[sources/chernoff_hoeffding_bounds_for_markov_chains|chernoff_hoeffding_bounds_for_markov_chains]]'
+- '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
 sourced_from_meta:
 - target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/chernoff_hoeffding_bounds_for_markov_chains|chernoff_hoeffding_bounds_for_markov_chains]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
   section: ''
   page: ''
   confidence: 0.0
@@ -39,3 +49,5 @@ sourced_from_meta:
 | Source | Section | Formulation | Confidence |
 |--------|---------|-------------|------------|
 | [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |
+| [[sources/chernoff_hoeffding_bounds_for_markov_chains]] |  | "" | 0.0 |
+| [[sources/cooperative_multi_player_bandit_optimization]] |  | "" | 0.0 |

@@ -3,7 +3,8 @@ slug: utility-function-u
 name: utility function U
 semantic_type: operator
 canonical_definition: ''
-formal_spec: '\(U : \mathcal{A} \to \mathbb{R}_{\geq 0}\)'
+formal_spec: $u_n(x) = \sum_{r=1}^{R} x_{n,r} - \frac{1}{20} \sum_{r=1}^{R} x_{n,r}
+  \left( \sum_{m=1}^{N} x_{m,r} \right)^2$
 aliases: []
 status: canonical
 human_notes: ''
@@ -21,8 +22,19 @@ instantiates: []
 instantiates_meta: []
 sourced_from:
 - '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+- '[[sources/2509.25921|Achieving Pareto Optimality in Games via Single-bit Feedback]]'
+- '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
 sourced_from_meta:
 - target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/2509.25921|Achieving Pareto Optimality in Games via Single-bit
+    Feedback]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+- target: '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
   section: ''
   page: ''
   confidence: 0.0
@@ -38,3 +50,5 @@ sourced_from_meta:
 | Source | Section | Formulation | Confidence |
 |--------|---------|-------------|------------|
 | [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |
+| [[sources/2509.25921]] |  | "" | 0.0 |
+| [[sources/cooperative_multi_player_bandit_optimization]] |  | "" | 0.0 |

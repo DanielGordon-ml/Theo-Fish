@@ -3,7 +3,7 @@ slug: collaborative-multi-agent-system
 name: collaborative multi-agent system
 semantic_type: structure
 canonical_definition: ''
-formal_spec: $(G, W, \mathcal{C})$
+formal_spec: (G, W, \mathcal{C})
 aliases: []
 status: canonical
 human_notes: ''

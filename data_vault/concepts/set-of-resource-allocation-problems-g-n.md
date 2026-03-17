@@ -1,0 +1,41 @@
+---
+slug: set-of-resource-allocation-problems-g-n
+name: set-of-resource-allocation-problems-G_n
+semantic_type: class
+canonical_definition: ''
+formal_spec: A family of resource allocation problems parameterized by the number
+  of agents n, often with specific structural properties.
+aliases: []
+status: canonical
+human_notes: ''
+generalizes: []
+generalizes_meta: []
+has_component: []
+has_component_meta: []
+depends_on: []
+depends_on_meta: []
+related_to: []
+related_to_meta: []
+equivalent_to: []
+equivalent_to_meta: []
+instantiates: []
+instantiates_meta: []
+sourced_from:
+- '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
+sourced_from_meta:
+- target: '[[sources/cooperative_multi_player_bandit_optimization|cooperative_multi_player_bandit_optimization]]'
+  section: ''
+  page: ''
+  confidence: 0.0
+---
+
+# set-of-resource-allocation-problems-G_n
+
+
+
+
+## Provenance
+
+| Source | Section | Formulation | Confidence |
+|--------|---------|-------------|------------|
+| [[sources/cooperative_multi_player_bandit_optimization]] |  | "" | 0.0 |

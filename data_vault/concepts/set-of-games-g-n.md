@@ -3,8 +3,7 @@ slug: set-of-games-g-n
 name: set of games 𝒢_n
 semantic_type: class
 canonical_definition: ''
-formal_spec: The class of all games with n players and a welfare function defined
-  by w.
+formal_spec: class of resource allocation games with n players
 aliases: []
 status: canonical
 human_notes: ''

@@ -1,0 +1,60 @@
+name: Theo-Fish CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  lint-and-typecheck:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync
+      # Assuming you use standard tools like ruff or mypy. Adjust as needed.
+      - name: Lint with Ruff
+        run: uv run ruff check .
+      - name: Format Check
+        run: uv run ruff format --check .
+
+  unit-tests:
+    name: Unit Tests
+    needs: lint-and-typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install Python 3.10
+        run: uv python install 3.10
+      - name: Install dependencies
+        run: uv sync
+      - name: Run Unit Tests
+        run: uv run pytest tests/ -v -m unit
+
+  integration-tests:
+    name: Neo4j Integration Tests
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install Python 3.10
+        run: uv python install 3.10
+      - name: Install dependencies
+        run: uv sync
+      - name: Run Integration Tests
+        # Testcontainers will automatically use the runner's Docker daemon
+        run: uv run pytest tests/ -v -m integration

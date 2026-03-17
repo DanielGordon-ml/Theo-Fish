@@ -3,7 +3,8 @@ slug: utility-rule-u
 name: utility rule u
 semantic_type: operator
 canonical_definition: ''
-formal_spec: '\(u : [n] \to \mathbb{R}_{\geq 0}\) with \(u(0)=0\)'
+formal_spec: 'u : [n] → R_≥0 with u(0)=0, used to derive the utility function U(a)
+  = ∑_{r ∈ R} v_r u(|a|_r).'
 aliases: []
 status: canonical
 human_notes: ''

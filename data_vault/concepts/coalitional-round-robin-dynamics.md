@@ -3,7 +3,8 @@ slug: coalitional-round-robin-dynamics
 name: coalitional round-robin dynamics
 semantic_type: operator
 canonical_definition: ''
-formal_spec: ''
+formal_spec: A dynamic process where groups of agents update their actions in a round-robin
+  order.
 aliases: []
 status: canonical
 human_notes: ''

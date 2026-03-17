@@ -1,11 +1,9 @@
 ---
 slug: resource-allocation-game
 name: resource allocation game
-semantic_type: class
+semantic_type: problem
 canonical_definition: ''
-formal_spec: A class of games where agents select subsets of resources, with system
-  welfare W(a) = sum_{r in R} v_r w(|a|_r), and agent actions a_i ⊆ R from constrained
-  sets.
+formal_spec: ''
 aliases: []
 status: canonical
 human_notes: ''

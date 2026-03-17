@@ -3,9 +3,8 @@ slug: label-parameter-vector-theta
 name: label parameter vector θ
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: For each label (e,x,o) in T, θ(e,x,o) = sum_{r in R_{(e,x,o)}} v_r, where
-  e_r, x_r, o_r are counts of agents using resource r in specific ways, and T is the
-  set of possible labels.
+formal_spec: 'θ ∈ ℝ≥0^{|T|} where T = {(e,x,o) ∈ ℕ≥0^3 : 1 ≤ e+x+o ≤ n}, and θ(e,x,o)
+  = ∑_{r∈R_(e,x,o)} v_r.'
 aliases: []
 status: canonical
 human_notes: ''
@@ -21,22 +20,10 @@ equivalent_to: []
 equivalent_to_meta: []
 instantiates: []
 instantiates_meta: []
-sourced_from:
-- '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-sourced_from_meta:
-- target: '[[sources/k_strong_price_of_anarchy|k_strong_price_of_anarchy]]'
-  section: ''
-  page: ''
-  confidence: 0.0
+sourced_from: []
+sourced_from_meta: []
 ---
 
 # label parameter vector θ
 
 
-
-
-## Provenance
-
-| Source | Section | Formulation | Confidence |
-|--------|---------|-------------|------------|
-| [[sources/k_strong_price_of_anarchy]] |  | "" | 0.0 |

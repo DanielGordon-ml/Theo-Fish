@@ -3,7 +3,8 @@ slug: set-of-k-strong-nash-equilibria
 name: set of k-strong Nash equilibria
 semantic_type: space
 canonical_definition: ''
-formal_spec: $k\mathrm{SNE}(G,W) \subseteq \mathcal{A}$
+formal_spec: k\mathrm{SNE}(G, W) = \{a \in \mathcal{A} \mid a \text{ is a k-strong
+  Nash equilibrium}\}
 aliases: []
 status: canonical
 human_notes: ''

@@ -3,8 +3,8 @@ slug: welfare-function-w
 name: Welfare function W
 semantic_type: operator
 canonical_definition: ''
-formal_spec: 'A function W: A → ℝ that assigns a real-valued welfare to each joint
-  action a ∈ A.'
+formal_spec: 'A function W: A → ℝ that assigns a welfare value to each joint action,
+  used to evaluate and compare actions in the dynamics.'
 aliases: []
 status: canonical
 human_notes: ''

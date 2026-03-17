@@ -3,8 +3,8 @@ slug: strong-price-of-anarchy
 name: Strong price of anarchy
 semantic_type: quantity
 canonical_definition: ''
-formal_spec: The maximum ratio of the social cost at a strong Nash equilibrium to
-  the optimal social cost in a game.
+formal_spec: The ratio of the welfare at the worst strong Nash equilibrium to the
+  optimal welfare.
 aliases: []
 status: canonical
 human_notes: ''
