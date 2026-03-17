@@ -37,7 +37,7 @@ jobs:
       - name: Install Python 3.11
         run: uv python install 3.11
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra dev
       - name: Run Unit Tests
         run: uv run pytest tests/ -v -m unit
 
@@ -54,7 +54,7 @@ jobs:
       - name: Install Python 3.11
         run: uv python install 3.11
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra dev
       - name: Run Integration Tests
         # Testcontainers will automatically use the runner's Docker daemon
         run: uv run pytest tests/ -v -m integration
