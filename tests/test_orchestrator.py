@@ -4,7 +4,6 @@
 """
 
 import pytest
-from pathlib import Path
 from data_loader.orchestrator import process_batch
 from data_loader.models import (
     PaperInput,

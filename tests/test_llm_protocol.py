@@ -5,7 +5,6 @@
 
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
 
 from graph_builder.llm.protocol import LLMClient
 from graph_builder.llm.llm_client import LLMResponse

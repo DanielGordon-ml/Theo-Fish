@@ -3,7 +3,6 @@
 @description Tests for the Claude Opus 4.6 async client with mocked Anthropic SDK.
 """
 
-import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest

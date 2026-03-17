@@ -16,7 +16,6 @@ from graph_builder.extraction.claim_verifier import (
 )
 from graph_builder.llm.llm_client import LLMResponse
 from graph_builder.models.claim import ClaimNode
-from graph_builder.models.edges import CouplingEdge
 
 
 def _make_claim(

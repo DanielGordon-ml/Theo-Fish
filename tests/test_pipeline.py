@@ -5,7 +5,6 @@
 
 import json
 
-import pytest
 
 from data_loader.models import PaperDocument
 

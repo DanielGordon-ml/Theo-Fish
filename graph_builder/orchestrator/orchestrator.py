@@ -27,7 +27,6 @@ from graph_builder.llm.protocol import LLMClient
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.concept import ConceptNode
 from graph_builder.models.edges import ClaimEdge, CouplingEdge
-from graph_builder.models.provenance import ProvenanceNode
 from graph_builder.models.results import BuildResult
 from graph_builder.models.section import Section
 from graph_builder.orchestrator.pass_helpers import (

@@ -3,7 +3,6 @@
 @description Tests for input reading, normalization, and deduplication.
 """
 
-import pytest
 from data_loader.input_reader import normalize_arxiv_id, read_csv, read_cli_papers, merge_inputs
 from data_loader.models import PaperInput
 

@@ -259,7 +259,7 @@ class TestProcessPaperSkip:
         """It should return 'skipped' if paper is already built and force=False."""
         arxiv_id = "2401.00001"
 
-        with _patch_pipeline({"check": True}) as mocks:
+        with _patch_pipeline({"check": True}):
             result = await process_paper(
                 arxiv_id, _make_options(), MagicMock(), _mock_neo4j(),
             )
@@ -466,7 +466,7 @@ class TestProcessPaperClearOnForce:
         llm.call = AsyncMock()
         neo4j = _mock_neo4j()
 
-        with _patch_pipeline({"check": True}) as mocks:
+        with _patch_pipeline({"check": True}):
             # Patch GraphWriter to capture clear calls
             with patch(f"{_MODULE}.GraphWriter") as mock_writer_cls:
                 mock_writer = MagicMock()

@@ -6,7 +6,6 @@
 import json
 import logging
 
-import pytest
 
 from graph_builder.config.schema_types import (
     ClaimTypeDef,

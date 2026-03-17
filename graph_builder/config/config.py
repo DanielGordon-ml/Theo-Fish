@@ -4,11 +4,10 @@
 """
 
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 
-from data_loader.config import DATA_DIR, PROJECT_ROOT, sanitize_arxiv_id
+from data_loader.config import DATA_DIR, PROJECT_ROOT
 
 # Load .env from Theo-Fish root
 load_dotenv(PROJECT_ROOT.parent / ".env")

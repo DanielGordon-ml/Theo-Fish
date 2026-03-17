@@ -3,8 +3,9 @@
 @description Shared test fixtures.
 """
 
+import asyncio
+
 import pytest
-from pathlib import Path
 
 
 @pytest.fixture
@@ -28,11 +29,6 @@ def sample_csv(tmp_path):
     csv_file = tmp_path / "papers.csv"
     csv_file.write_text(csv_content)
     return csv_file
-
-
-import asyncio
-import pytest
-from neo4j import AsyncGraphDatabase
 
 
 @pytest.fixture(scope="session")

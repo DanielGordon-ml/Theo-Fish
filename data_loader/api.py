@@ -6,7 +6,6 @@
 import asyncio
 import json
 import logging
-from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel

@@ -64,7 +64,7 @@ def main() -> None:
     if not args.csv and not args.paper:
         parser.error("Provide at least one of --csv or --paper")
 
-    print(f"Processing paper(s)...")
+    print("Processing paper(s)...")
 
     # Run pipeline via SDK
     batch_result = asyncio.run(

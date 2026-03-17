@@ -10,12 +10,10 @@ Neo4j).  All tests are unit-level: no live services required.
 """
 
 import json
-import os
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-import yaml
 
 from graph_builder.config.schema_types import (
     ClaimTypeDef,
@@ -29,12 +27,6 @@ from graph_builder.config.schema_types import (
 from graph_builder.llm.llm_client import LLMResponse
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.concept import ConceptNode
-from graph_builder.models.edges import (
-    ClaimEdge,
-    ConceptEdge,
-    CouplingEdge,
-    SourcedFromEdge,
-)
 from graph_builder.models.provenance import ProvenanceNode
 from graph_builder.models.source import SourceNode
 from graph_builder.orchestrator.orchestrator import PipelineOptions, process_paper

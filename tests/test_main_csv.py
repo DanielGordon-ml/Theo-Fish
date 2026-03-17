@@ -3,7 +3,6 @@
 @description Tests for _read_id_file multi-column CSV parsing support.
 """
 
-import pytest
 
 
 class TestReadIdFileMultiColumnCsv:

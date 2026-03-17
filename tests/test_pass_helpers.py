@@ -4,7 +4,6 @@
 concept list building, claims-by-section grouping, and fallback merge.
 """
 
-import pytest
 
 from graph_builder.extraction.concept_merger import MergedConcept
 from graph_builder.extraction.dedup.dedup_cascade import DedupResult

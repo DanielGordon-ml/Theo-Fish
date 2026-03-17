@@ -3,7 +3,6 @@
 @description Tests for the proof-linking pre-pass that maps claim labels to proof text.
 """
 
-import pytest
 
 from graph_builder.extraction.proof_linker import build_proof_map
 

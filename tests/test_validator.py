@@ -3,7 +3,6 @@
 @description Tests for graph validation rules: errors, warnings, cycles, and inverse consistency.
 """
 
-import pytest
 
 from graph_builder.config.schema_types import (
     EdgeCategories,
@@ -19,7 +18,6 @@ from graph_builder.models.claim import ClaimNode
 from graph_builder.models.concept import ConceptNode
 from graph_builder.models.edges import ClaimEdge, ConceptEdge, CouplingEdge
 from graph_builder.models.provenance import ProvenanceNode
-from graph_builder.models.results import ValidationResult
 from graph_builder.validation.cycle_detector import detect_depends_on_cycles
 from graph_builder.validation.validator import validate_paper
 
@@ -411,7 +409,6 @@ class TestMultipleIssues:
         )
 
         # missing_about for claim_no_about AND missing_provenance for concept_b
-        error_text = " ".join(result.errors)
         assert any("missing_about" in e for e in result.errors)
         assert any("missing_provenance" in e for e in result.errors)
         # corollary_without_depends_on for claim_with_about

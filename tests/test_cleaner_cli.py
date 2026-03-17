@@ -3,11 +3,9 @@
 @description Tests for the data cleaner CLI.
 """
 
-import json
 import subprocess
 import sys
 
-import pytest
 
 from data_loader.models import PaperDocument
 

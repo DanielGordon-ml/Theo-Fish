@@ -27,7 +27,7 @@ from graph_builder.models.provenance import ProvenanceNode
 from graph_builder.models.source import SourceNode
 from graph_builder.vault.manifest import write_manifest
 from graph_builder.vault.obsidian_exporter import export_vault
-from graph_builder.vault.sync_back import SyncChange, sync_back
+from graph_builder.vault.sync_back import sync_back
 
 # ---------------------------------------------------------------------------
 # Constants

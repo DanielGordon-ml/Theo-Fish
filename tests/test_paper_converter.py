@@ -7,7 +7,6 @@ import pytest
 from pathlib import Path
 from data_loader.paper_converter import (
     convert_with_arxiv2md,
-    convert_with_mineru,
     convert_paper,
     convert_local_pdf,
 )

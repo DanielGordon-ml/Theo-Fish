@@ -5,7 +5,6 @@
 
 import json
 import pytest
-from pathlib import Path
 from data_loader.json_writer import assemble_document, write_document, should_skip
 from data_loader.models import PaperInput, PaperMetadata, ConversionResult, PaperDocument
 

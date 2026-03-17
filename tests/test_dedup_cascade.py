@@ -3,12 +3,12 @@
 @description Tests for the full dedup cascade orchestration.
 """
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from graph_builder.models.concept import ConceptNode
-from graph_builder.extraction.dedup.dedup_cascade import DedupResult, run_dedup_cascade
+from graph_builder.extraction.dedup.dedup_cascade import run_dedup_cascade
 from graph_builder.extraction.dedup.embedding_client import EmbeddingClient
 
 

@@ -4,7 +4,6 @@
 parsing only — no actual execution of pipeline actions.
 """
 
-import argparse
 from pathlib import Path
 
 import pytest

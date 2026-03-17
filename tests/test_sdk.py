@@ -4,14 +4,11 @@
 """
 
 import pytest
-from pathlib import Path
 from data_loader.sdk import load_paper, load_papers, is_processed
 from data_loader.errors import LoaderError
 from data_loader.models import (
     PaperResult,
     BatchResult,
-    PaperMetadata,
-    ConversionResult,
 )
 
 

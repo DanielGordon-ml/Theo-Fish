@@ -7,7 +7,6 @@ and auto-fixes issues. Routes low-confidence claims to review.
 import json
 import logging
 
-from graph_builder.llm.llm_client import LLMResponse
 from graph_builder.llm.protocol import LLMClient
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.edges import CouplingEdge

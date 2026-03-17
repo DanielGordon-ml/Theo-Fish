@@ -12,7 +12,7 @@ from data_loader.metadata_fetcher import (
     fetch_all_metadata,
     build_local_metadata,
 )
-from data_loader.models import PaperInput, PaperMetadata
+from data_loader.models import PaperInput
 
 
 class TestGetMathSubject:
@@ -191,7 +191,7 @@ class TestFetchAllMetadata:
             ),
         ]
         async with httpx.AsyncClient() as client:
-            result = await fetch_all_metadata(papers, client)
+            await fetch_all_metadata(papers, client)
 
         # Only the ArXiv paper should be in the API call
         assert len(api_called_with) == 1

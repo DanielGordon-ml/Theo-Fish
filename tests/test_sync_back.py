@@ -14,7 +14,7 @@ import pytest
 import yaml
 
 from graph_builder.vault.manifest import write_manifest
-from graph_builder.vault.sync_back import SyncChange, sync_back
+from graph_builder.vault.sync_back import sync_back
 
 # ---------------------------------------------------------------------------
 # Constants

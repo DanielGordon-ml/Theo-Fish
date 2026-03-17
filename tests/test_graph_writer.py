@@ -3,7 +3,7 @@
 @description Unit tests for GraphWriter — all Neo4j calls are mocked.
 """
 
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 

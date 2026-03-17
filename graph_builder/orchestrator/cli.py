@@ -8,11 +8,9 @@ and vault sync-back operations.
 import argparse
 import asyncio
 import logging
-import sys
 from pathlib import Path
 
 from graph_builder.config.config import (
-    CLEANED_DIR,
     DEFAULT_CONCURRENCY,
     DEEPSEEK_API_KEY,
     LLM_THINKING,

@@ -9,9 +9,6 @@ from pathlib import Path
 from graph_builder.config.schema_loader import load_schema
 from graph_builder.config.schema_types import (
     GraphSchema,
-    ConceptTypeDef,
-    ClaimTypeDef,
-    EdgeDef,
 )
 
 

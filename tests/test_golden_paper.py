@@ -16,7 +16,7 @@ pipeline runs against actual ArXiv papers.
 import json
 from contextlib import contextmanager
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -320,7 +320,6 @@ def _patch_pipeline(overrides: dict | None = None):
     """
     overrides = overrides or {}
 
-    paper1_slug = slugify(_PAPER_1_TITLE)
     claims = _paper1_claims()
     coupling = _paper1_coupling_edges(claims)
 
@@ -661,10 +660,6 @@ class TestPhase2CrossPaperDedup:
         merged_p1 = _paper1_all_merged()
         merged_p2 = _paper2_all_merged_with_nash_shared()
 
-        all_slugs = (
-            [m.concept.slug for m in merged_p1]
-            + [m.concept.slug for m in merged_p2]
-        )
         # Nash Equilibrium slug appears in both but should have distinct
         # Provenance nodes, not duplicate Concept nodes.
         # The concept-level slug must appear exactly ONCE per merged list

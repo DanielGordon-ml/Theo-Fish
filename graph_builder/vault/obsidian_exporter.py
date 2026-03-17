@@ -12,7 +12,6 @@ name) are read from existing files before staging so they survive re-export.
 
 import shutil
 from pathlib import Path
-from typing import Any
 
 import yaml
 
@@ -20,14 +19,6 @@ from graph_builder.graph.graph_reader import GraphReader
 from graph_builder.graph.neo4j_client import Neo4jClient
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.concept import ConceptNode
-from graph_builder.models.edges import (
-    ClaimEdge,
-    CouplingEdge,
-    ConceptEdge,
-    SourcedFromEdge,
-)
-from graph_builder.models.provenance import ProvenanceNode
-from graph_builder.models.source import SourceNode
 from graph_builder.vault.body_renderer import (
     render_claim_body,
     render_concept_body,
