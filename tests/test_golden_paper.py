@@ -335,6 +335,7 @@ def _patch_pipeline(overrides: dict | None = None):
                 _make_section("Introduction", "Game theory intro content.", 0),
                 _make_section("Main Results", "Theorems and lemmas.", 1),
             ],
+            "Game theory intro content.\n\nTheorems and lemmas.",
         ),
         "check": False,
         "p1": [_paper1_concepts_section1(), _paper1_concepts_section2()],
@@ -718,6 +719,7 @@ class TestPhase2CrossPaperDedup:
                             "Introduction", "Nash equilibrium in congestion games.", 0
                         ),
                     ],
+                    "Nash equilibrium in congestion games.",
                 ),
                 "p1": [p2_concepts],
                 "merge": p2_merged,
