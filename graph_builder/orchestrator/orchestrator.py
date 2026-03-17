@@ -83,13 +83,19 @@ async def process_paper(
     effective_claim_llm = claim_llm_client or llm_client
     try:
         return await _execute_pipeline(
-            arxiv_id, options, llm_client, neo4j_client,
-            embedding_client, effective_claim_llm,
+            arxiv_id,
+            options,
+            llm_client,
+            neo4j_client,
+            embedding_client,
+            effective_claim_llm,
         )
     except Exception as err:
         logger.error("Pipeline failed for %s: %s", arxiv_id, err)
         return BuildResult(
-            arxiv_id=arxiv_id, status="failed", error=str(err),
+            arxiv_id=arxiv_id,
+            status="failed",
+            error=str(err),
         )
 
 
@@ -108,8 +114,15 @@ async def _execute_pipeline(
         return BuildResult(arxiv_id=arxiv_id, status="skipped")
 
     return await _run_all_passes(
-        arxiv_id, title, sections, full_text, options,
-        llm_client, neo4j_client, embedding_client, claim_llm_client,
+        arxiv_id,
+        title,
+        sections,
+        full_text,
+        options,
+        llm_client,
+        neo4j_client,
+        embedding_client,
+        claim_llm_client,
     )
 
 
@@ -129,26 +142,43 @@ async def _run_all_passes(
     paper_slug = slugify(title)
 
     per_section_concepts = await _run_pass1(
-        sections, options.schema, llm_client, reader, options.concurrency,
+        sections,
+        options.schema,
+        llm_client,
+        reader,
+        options.concurrency,
     )
 
     if _check_failure_ratio(per_section_concepts, len(sections)):
         return _abort_result(arxiv_id)
 
     merged = await _run_merge(
-        per_section_concepts, reader, embedding_client, llm_client, arxiv_id,
+        per_section_concepts,
+        reader,
+        embedding_client,
+        llm_client,
+        arxiv_id,
     )
 
     # Build proof map before claim extraction so proofs are available
     proof_map = build_proof_map(full_text)
 
     claims, coupling_edges = await _run_pass2(
-        sections, options.schema, claim_llm_client, merged, paper_slug,
-        options.concurrency, proof_map,
+        sections,
+        options.schema,
+        claim_llm_client,
+        merged,
+        paper_slug,
+        options.concurrency,
+        proof_map,
     )
 
     claim_edges, extra_coupling = await _run_pass3a(
-        sections, claims, merged, options.schema, llm_client,
+        sections,
+        claims,
+        merged,
+        options.schema,
+        llm_client,
         options.concurrency,
     )
     coupling_edges.extend(extra_coupling)
@@ -157,21 +187,37 @@ async def _run_all_passes(
     coupling_edges = _dedup_coupling_edges(coupling_edges)
 
     gap_fill_edges = await _run_pass3b(
-        claims, merged, claim_edges, options.schema, llm_client,
+        claims,
+        merged,
+        claim_edges,
+        options.schema,
+        llm_client,
     )
     claim_edges.extend(gap_fill_edges)
 
     # Pass 4: claim verification with proof context
     p4_claims, p4_coupling = await _run_pass4(
-        sections, claims, proof_map, claim_llm_client,
-        paper_slug, options.concurrency,
+        sections,
+        claims,
+        proof_map,
+        claim_llm_client,
+        paper_slug,
+        options.concurrency,
     )
     claims.extend(p4_claims)
     coupling_edges.extend(p4_coupling)
 
     return await _build_and_write(
-        arxiv_id, title, sections, options, merged, claims,
-        claim_edges, coupling_edges, neo4j_client, paper_slug,
+        arxiv_id,
+        title,
+        sections,
+        options,
+        merged,
+        claims,
+        claim_edges,
+        coupling_edges,
+        neo4j_client,
+        paper_slug,
     )
 
 
@@ -205,8 +251,13 @@ async def _build_and_write(
     provenance_list = [m.provenance for m in merged]
 
     validation_result = validate_paper(
-        concept_list, claims, [], claim_edges, coupling_edges,
-        provenance_list, options.schema,
+        concept_list,
+        claims,
+        [],
+        claim_edges,
+        coupling_edges,
+        provenance_list,
+        options.schema,
     )
 
     if validation_result.warnings:
@@ -222,7 +273,12 @@ async def _build_and_write(
     writer = GraphWriter(neo4j_client)
     source = build_source_node(arxiv_id, title)
     counts = await write_to_neo4j(
-        writer, source, merged, claims, claim_edges, coupling_edges,
+        writer,
+        source,
+        merged,
+        claims,
+        claim_edges,
+        coupling_edges,
     )
 
     return BuildResult(
@@ -259,7 +315,11 @@ async def _run_pass1(
     semaphore = asyncio.Semaphore(concurrency)
     tasks = [
         extract_concepts_guarded(
-            section, schema, llm_client, existing, semaphore,
+            section,
+            schema,
+            llm_client,
+            existing,
+            semaphore,
         )
         for section in sections
     ]
@@ -318,8 +378,11 @@ async def _run_merge(
     if embedding_client is None:
         return fallback_merge(per_section_concepts, arxiv_id)
     return await merge_concepts(
-        per_section_concepts, reader, embedding_client,
-        llm_client, arxiv_id,
+        per_section_concepts,
+        reader,
+        embedding_client,
+        llm_client,
+        arxiv_id,
     )
 
 
@@ -347,8 +410,13 @@ async def _run_pass2(
     semaphore = asyncio.Semaphore(concurrency)
     tasks = [
         extract_claims_guarded(
-            section, schema, llm_client, concept_list_data,
-            paper_slug, semaphore, proof_map,
+            section,
+            schema,
+            llm_client,
+            concept_list_data,
+            paper_slug,
+            semaphore,
+            proof_map,
         )
         for section in sections
     ]
@@ -380,8 +448,13 @@ async def _run_pass3a(
 
     tasks = [
         enrich_section_guarded(
-            section, claims_by_section.get(section.heading, []),
-            all_concepts, claims, schema, llm_client, semaphore,
+            section,
+            claims_by_section.get(section.heading, []),
+            all_concepts,
+            claims,
+            schema,
+            llm_client,
+            semaphore,
         )
         for section in sections
     ]
@@ -408,7 +481,11 @@ async def _run_pass3b(
     all_concepts = [m.concept for m in merged]
     try:
         return await find_cross_section_edges(
-            claims, all_concepts, existing_edges, schema, llm_client,
+            claims,
+            all_concepts,
+            existing_edges,
+            schema,
+            llm_client,
         )
     except Exception as err:
         logger.warning("Cross-section gap-fill failed: %s", err)
@@ -452,8 +529,12 @@ async def _run_pass4(
     semaphore = asyncio.Semaphore(concurrency)
     tasks = [
         verify_section_guarded(
-            section, claims_by_section.get(section.heading, []),
-            proof_map, llm_client, paper_slug, semaphore,
+            section,
+            claims_by_section.get(section.heading, []),
+            proof_map,
+            llm_client,
+            paper_slug,
+            semaphore,
         )
         for section in sections
     ]

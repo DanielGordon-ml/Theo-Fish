@@ -251,7 +251,11 @@ async def _run_sync_back(args: argparse.Namespace) -> None:
     for change in changes:
         logger.info(
             "%s  %s.%s: %r -> %r",
-            prefix, change.node_type, change.field, change.old_value, change.new_value,
+            prefix,
+            change.node_type,
+            change.field,
+            change.old_value,
+            change.new_value,
         )
 
 
@@ -274,6 +278,8 @@ def _log_result(result) -> None:
             result.edge_count,
         )
     elif result.status == "skipped":
-        logger.info("Skipped %s (already built; use --force to rebuild).", result.arxiv_id)
+        logger.info(
+            "Skipped %s (already built; use --force to rebuild).", result.arxiv_id
+        )
     else:
         logger.error("Failed %s: %s", result.arxiv_id, result.error)

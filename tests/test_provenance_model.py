@@ -17,6 +17,7 @@ class TestProvenanceNode:
         assert node.concept_slug == "markov-decision-process"
         assert node.source_arxiv_id == "1904.07272"
 
+
 class TestFormulationEdge:
     def test_match_metadata(self):
         """It should carry match method and confidence."""

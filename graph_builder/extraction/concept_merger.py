@@ -60,14 +60,19 @@ async def merge_concepts(
     results: list[MergedConcept] = []
     for concept in unique:
         dedup_result = await run_dedup_cascade(
-            concept, graph_reader, embedding_client, llm_client,
+            concept,
+            graph_reader,
+            embedding_client,
+            llm_client,
         )
         provenance = _build_provenance(concept, source_arxiv_id)
-        results.append(MergedConcept(
-            concept=concept,
-            dedup_result=dedup_result,
-            provenance=provenance,
-        ))
+        results.append(
+            MergedConcept(
+                concept=concept,
+                dedup_result=dedup_result,
+                provenance=provenance,
+            )
+        )
 
     return results
 
@@ -75,6 +80,7 @@ async def merge_concepts(
 # ---------------------------------------------------------------------------
 # Private helpers
 # ---------------------------------------------------------------------------
+
 
 def _flatten(per_section: list[list[ConceptNode]]) -> list[ConceptNode]:
     """Flatten a nested list of ConceptNode lists into a single list.

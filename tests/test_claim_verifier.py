@@ -26,18 +26,25 @@ def _make_claim(
 ) -> ClaimNode:
     """Build a minimal ClaimNode for testing."""
     return ClaimNode(
-        slug=slug, source_paper_slug="paper",
-        label=label, claim_type=claim_type, statement=statement,
+        slug=slug,
+        source_paper_slug="paper",
+        label=label,
+        claim_type=claim_type,
+        statement=statement,
     )
 
 
 def _make_mock_client(response_data: dict) -> MagicMock:
     """Return a mock LLM client returning the given verification JSON."""
     client = MagicMock()
-    client.call = AsyncMock(return_value=LLMResponse(
-        content=json.dumps(response_data),
-        input_tokens=100, output_tokens=50, model="claude-opus-4-6",
-    ))
+    client.call = AsyncMock(
+        return_value=LLMResponse(
+            content=json.dumps(response_data),
+            input_tokens=100,
+            output_tokens=50,
+            model="claude-opus-4-6",
+        )
+    )
     return client
 
 
@@ -47,24 +54,42 @@ class TestApplyCorrections:
     def test_it_should_update_statement_field(self):
         """It should overwrite a claim's statement when corrected."""
         claim = _make_claim()
-        corrections = [{"claim_slug": "paper--theorem-1", "field": "statement",
-                        "issue": "paraphrased", "corrected_value": "The exact bound is 2."}]
+        corrections = [
+            {
+                "claim_slug": "paper--theorem-1",
+                "field": "statement",
+                "issue": "paraphrased",
+                "corrected_value": "The exact bound is 2.",
+            }
+        ]
         apply_corrections([claim], corrections)
         assert claim.statement == "The exact bound is 2."
 
     def test_it_should_reject_label_corrections(self):
         """It should skip corrections that target the label field."""
         claim = _make_claim(label="Theorem 1")
-        corrections = [{"claim_slug": "paper--theorem-1", "field": "label",
-                        "issue": "wrong label", "corrected_value": "Theorem 2"}]
+        corrections = [
+            {
+                "claim_slug": "paper--theorem-1",
+                "field": "label",
+                "issue": "wrong label",
+                "corrected_value": "Theorem 2",
+            }
+        ]
         apply_corrections([claim], corrections)
         assert claim.label == "Theorem 1"
 
     def test_it_should_skip_unknown_slugs(self):
         """It should silently skip corrections for non-existent claims."""
         claim = _make_claim()
-        corrections = [{"claim_slug": "paper--nonexistent", "field": "statement",
-                        "issue": "wrong", "corrected_value": "new value"}]
+        corrections = [
+            {
+                "claim_slug": "paper--nonexistent",
+                "field": "statement",
+                "issue": "wrong",
+                "corrected_value": "new value",
+            }
+        ]
         apply_corrections([claim], corrections)
         assert claim.statement == "The bound holds."
 
@@ -75,14 +100,22 @@ class TestApplyFlags:
     def test_it_should_set_review_needed_for_low_confidence(self):
         """It should set status to review_needed when confidence < 0.7."""
         claim = _make_claim()
-        flags = [{"claim_slug": "paper--theorem-1", "issue": "proof truncated", "confidence": 0.4}]
+        flags = [
+            {
+                "claim_slug": "paper--theorem-1",
+                "issue": "proof truncated",
+                "confidence": 0.4,
+            }
+        ]
         apply_flags([claim], flags)
         assert claim.status == "review_needed"
 
     def test_it_should_not_flag_high_confidence(self):
         """It should not modify status when confidence >= 0.7."""
         claim = _make_claim()
-        flags = [{"claim_slug": "paper--theorem-1", "issue": "minor", "confidence": 0.8}]
+        flags = [
+            {"claim_slug": "paper--theorem-1", "issue": "minor", "confidence": 0.8}
+        ]
         apply_flags([claim], flags)
         assert claim.status == "unverified"
 
@@ -92,8 +125,14 @@ class TestBuildMissingClaims:
 
     def test_it_should_create_claim_nodes_from_missing_entries(self):
         """It should construct ClaimNodes from missing_claims data."""
-        missing = [{"label": "Lemma 3", "claim_type": "lemma",
-                     "statement": "The auxiliary bound holds.", "about_concepts": ["regret"]}]
+        missing = [
+            {
+                "label": "Lemma 3",
+                "claim_type": "lemma",
+                "statement": "The auxiliary bound holds.",
+                "about_concepts": ["regret"],
+            }
+        ]
         claims, edges = build_missing_claims(missing, "paper", "Section III")
         assert len(claims) == 1
         assert claims[0].label == "Lemma 3"
@@ -111,8 +150,14 @@ class TestBuildMissingClaims:
 
     def test_it_should_create_multiple_coupling_edges(self):
         """It should create one coupling edge per about_concepts entry."""
-        missing = [{"label": "Theorem 5", "claim_type": "theorem",
-                     "statement": "Result.", "about_concepts": ["regret", "loss"]}]
+        missing = [
+            {
+                "label": "Theorem 5",
+                "claim_type": "theorem",
+                "statement": "Result.",
+                "about_concepts": ["regret", "loss"],
+            }
+        ]
         claims, edges = build_missing_claims(missing, "paper", "Section II")
         assert len(claims) == 1
         assert len(edges) == 2
@@ -126,10 +171,18 @@ class TestVerifySectionClaims:
     @pytest.mark.asyncio
     async def test_it_should_return_empty_results_on_no_issues(self):
         """It should return empty lists when verification finds no problems."""
-        client = _make_mock_client({"missing_claims": [], "corrections": [], "flags": []})
+        client = _make_mock_client(
+            {"missing_claims": [], "corrections": [], "flags": []}
+        )
         claims = [_make_claim()]
         new_claims, new_edges = await verify_section_claims(
-            "section text", {}, claims, None, client, "paper", "Section I",
+            "section text",
+            {},
+            claims,
+            None,
+            client,
+            "paper",
+            "Section I",
         )
         assert new_claims == []
         assert new_edges == []
@@ -137,14 +190,24 @@ class TestVerifySectionClaims:
     @pytest.mark.asyncio
     async def test_it_should_apply_corrections_in_place(self):
         """It should mutate existing claims based on corrections."""
-        client = _make_mock_client({
-            "missing_claims": [],
-            "corrections": [{"claim_slug": "paper--theorem-1", "field": "proof_technique",
-                             "issue": "missing", "corrected_value": "induction"}],
-            "flags": [],
-        })
+        client = _make_mock_client(
+            {
+                "missing_claims": [],
+                "corrections": [
+                    {
+                        "claim_slug": "paper--theorem-1",
+                        "field": "proof_technique",
+                        "issue": "missing",
+                        "corrected_value": "induction",
+                    }
+                ],
+                "flags": [],
+            }
+        )
         claims = [_make_claim()]
-        await verify_section_claims("section text", {}, claims, None, client, "paper", "Section I")
+        await verify_section_claims(
+            "section text", {}, claims, None, client, "paper", "Section I"
+        )
         assert claims[0].proof_technique == "induction"
 
     @pytest.mark.asyncio
@@ -154,7 +217,13 @@ class TestVerifySectionClaims:
         client.call = AsyncMock(side_effect=RuntimeError("LLM down"))
         claims = [_make_claim()]
         new_claims, new_edges = await verify_section_claims(
-            "section text", {}, claims, None, client, "paper", "Section I",
+            "section text",
+            {},
+            claims,
+            None,
+            client,
+            "paper",
+            "Section I",
         )
         assert new_claims == []
         assert new_edges == []
@@ -162,9 +231,17 @@ class TestVerifySectionClaims:
     @pytest.mark.asyncio
     async def test_it_should_return_empty_when_no_claims(self):
         """It should return empty results when claims list is empty."""
-        client = _make_mock_client({"missing_claims": [], "corrections": [], "flags": []})
+        client = _make_mock_client(
+            {"missing_claims": [], "corrections": [], "flags": []}
+        )
         new_claims, new_edges = await verify_section_claims(
-            "section text", {}, [], None, client, "paper", "Section I",
+            "section text",
+            {},
+            [],
+            None,
+            client,
+            "paper",
+            "Section I",
         )
         assert new_claims == []
         assert new_edges == []
@@ -175,13 +252,23 @@ class TestVerifySectionClaims:
     async def test_it_should_handle_invalid_json_response(self):
         """It should return empty results when LLM returns invalid JSON."""
         client = MagicMock()
-        client.call = AsyncMock(return_value=LLMResponse(
-            content="not valid json {{{",
-            input_tokens=100, output_tokens=50, model="claude-opus-4-6",
-        ))
+        client.call = AsyncMock(
+            return_value=LLMResponse(
+                content="not valid json {{{",
+                input_tokens=100,
+                output_tokens=50,
+                model="claude-opus-4-6",
+            )
+        )
         claims = [_make_claim()]
         new_claims, new_edges = await verify_section_claims(
-            "section text", {}, claims, None, client, "paper", "Section I",
+            "section text",
+            {},
+            claims,
+            None,
+            client,
+            "paper",
+            "Section I",
         )
         assert new_claims == []
         assert new_edges == []

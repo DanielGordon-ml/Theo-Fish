@@ -4,7 +4,6 @@
 concept list building, claims-by-section grouping, and fallback merge.
 """
 
-
 from graph_builder.extraction.concept_merger import MergedConcept
 from graph_builder.extraction.dedup.dedup_cascade import DedupResult
 from graph_builder.models.claim import ClaimNode
@@ -29,16 +28,21 @@ def _make_concept(name: str) -> ConceptNode:
 def _make_claim(label: str, section: str) -> ClaimNode:
     """Build a ClaimNode with the given label and section."""
     return ClaimNode(
-        label=label, source_paper_slug="test-paper",
-        claim_type="theorem", section=section,
+        label=label,
+        source_paper_slug="test-paper",
+        claim_type="theorem",
+        section=section,
     )
 
 
 def _make_section(heading: str, index: int) -> Section:
     """Build a Section with the given heading."""
     return Section(
-        heading=heading, level=2, content="content",
-        char_count=7, index=index,
+        heading=heading,
+        level=2,
+        content="content",
+        char_count=7,
+        index=index,
     )
 
 
@@ -48,12 +52,16 @@ def _make_merged(name: str, arxiv_id: str) -> MergedConcept:
     return MergedConcept(
         concept=concept,
         dedup_result=DedupResult(
-            slug=concept.slug, is_new=True,
-            match_method="new", match_confidence=0.0,
+            slug=concept.slug,
+            is_new=True,
+            match_method="new",
+            match_confidence=0.0,
         ),
         provenance=ProvenanceNode(
-            concept_slug=concept.slug, source_arxiv_id=arxiv_id,
-            formulation="def", formal_spec="spec",
+            concept_slug=concept.slug,
+            source_arxiv_id=arxiv_id,
+            formulation="def",
+            formal_spec="spec",
         ),
     )
 

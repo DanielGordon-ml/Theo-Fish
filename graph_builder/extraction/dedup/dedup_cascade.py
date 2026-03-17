@@ -23,7 +23,7 @@ logger = logging.getLogger("graph_builder")
 _LLM_SYSTEM_PROMPT = (
     "You are a mathematics ontology expert. "
     "Determine whether two concept names refer to the same mathematical concept. "
-    "Reply only with JSON: {\"is_same_concept\": true} or {\"is_same_concept\": false}."
+    'Reply only with JSON: {"is_same_concept": true} or {"is_same_concept": false}.'
 )
 
 
@@ -64,7 +64,10 @@ async def run_dedup_cascade(
         return alias_result
 
     return await _run_embedding_cascade(
-        concept, graph_reader, embedding_client, llm_client,
+        concept,
+        graph_reader,
+        embedding_client,
+        llm_client,
     )
 
 
@@ -111,7 +114,8 @@ async def _run_embedding_cascade(
     """
     embedding = await embedding_client.embed_single(concept.name)
     matches = await graph_reader.vector_similarity_search(
-        embedding, top_k=DEDUP_SHORTLIST_SIZE,
+        embedding,
+        top_k=DEDUP_SHORTLIST_SIZE,
     )
 
     if not matches:
@@ -166,7 +170,9 @@ async def _confirm_with_llm(
     except Exception as exc:
         logger.warning(
             "LLM dedup confirmation failed for '%s' vs '%s': %s",
-            concept.slug, candidate_slug, exc,
+            concept.slug,
+            candidate_slug,
+            exc,
         )
         return _new_result(concept)
 

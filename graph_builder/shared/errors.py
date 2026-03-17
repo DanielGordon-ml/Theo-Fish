@@ -26,7 +26,10 @@ class DedupConflictError(Exception):
     """Raised when concept dedup finds an ambiguous match."""
 
     def __init__(
-        self, new_slug: str, existing_slug: str, similarity: float,
+        self,
+        new_slug: str,
+        existing_slug: str,
+        similarity: float,
     ):
         super().__init__(
             f"Ambiguous match: '{new_slug}' \u2194 '{existing_slug}' "

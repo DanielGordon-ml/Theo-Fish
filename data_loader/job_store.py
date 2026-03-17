@@ -45,5 +45,8 @@ class JobStore:
                 job[key] = value
 
         # Auto-set completed_at when status becomes terminal
-        if kwargs.get("status") in ("completed", "failed") and job["completed_at"] is None:
+        if (
+            kwargs.get("status") in ("completed", "failed")
+            and job["completed_at"] is None
+        ):
             job["completed_at"] = datetime.now(timezone.utc).isoformat()

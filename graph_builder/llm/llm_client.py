@@ -82,7 +82,9 @@ class DeepSeekClient:
         """
         async with self._semaphore:
             return await self._call_with_retries(
-                system_prompt, user_prompt, thinking,
+                system_prompt,
+                user_prompt,
+                thinking,
             )
 
     async def _call_with_retries(
@@ -98,16 +100,21 @@ class DeepSeekClient:
         for attempt in range(MAX_RETRIES + 1):
             try:
                 return await self._execute_call(
-                    system_prompt, user_prompt, resolved,
+                    system_prompt,
+                    user_prompt,
+                    resolved,
                 )
             except (RateLimitError, APIError) as err:
                 last_error = err
                 if not self._is_retryable(err) or attempt == MAX_RETRIES:
                     raise
-                delay = _BASE_DELAY * (2 ** attempt) + random.uniform(0, 1)
+                delay = _BASE_DELAY * (2**attempt) + random.uniform(0, 1)
                 logger.warning(
                     "LLM call failed (attempt %d/%d), retrying in %.1fs: %s",
-                    attempt + 1, MAX_RETRIES + 1, delay, str(err),
+                    attempt + 1,
+                    MAX_RETRIES + 1,
+                    delay,
+                    str(err),
                     extra={"arxiv_id": "llm"},
                 )
                 await asyncio.sleep(delay)

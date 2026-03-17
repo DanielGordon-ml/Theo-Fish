@@ -114,10 +114,12 @@ async def get_existing_concepts(
     for slug in slugs:
         concept = await reader.get_existing_concept(slug)
         if concept is not None:
-            results.append({
-                "slug": concept.slug,
-                "semantic_type": concept.semantic_type,
-            })
+            results.append(
+                {
+                    "slug": concept.slug,
+                    "semantic_type": concept.semantic_type,
+                }
+            )
     return results
 
 
@@ -161,19 +163,23 @@ def _build_merged_list(
     """
     results: list[MergedConcept] = []
     for concept in seen.values():
-        results.append(MergedConcept(
-            concept=concept,
-            dedup_result=dedup_cls(
-                slug=concept.slug, is_new=True,
-                match_method="new", match_confidence=0.0,
-            ),
-            provenance=ProvenanceNode(
-                concept_slug=concept.slug,
-                source_arxiv_id=arxiv_id,
-                formulation=concept.canonical_definition,
-                formal_spec=concept.formal_spec,
-            ),
-        ))
+        results.append(
+            MergedConcept(
+                concept=concept,
+                dedup_result=dedup_cls(
+                    slug=concept.slug,
+                    is_new=True,
+                    match_method="new",
+                    match_confidence=0.0,
+                ),
+                provenance=ProvenanceNode(
+                    concept_slug=concept.slug,
+                    source_arxiv_id=arxiv_id,
+                    formulation=concept.canonical_definition,
+                    formal_spec=concept.formal_spec,
+                ),
+            )
+        )
     return results
 
 
@@ -201,13 +207,16 @@ async def extract_concepts_guarded(
     async with semaphore:
         try:
             return await extract_concepts_from_section(
-                section, schema, llm_client,
+                section,
+                schema,
+                llm_client,
                 existing_concepts=existing,
             )
         except Exception as err:
             logger.warning(
                 "Concept extraction failed for '%s': %s",
-                section.heading, err,
+                section.heading,
+                err,
             )
             return []
 
@@ -235,13 +244,18 @@ async def extract_claims_guarded(
     async with semaphore:
         try:
             return await extract_claims_from_section(
-                section, schema, llm_client,
-                concept_list, paper_slug, proof_map,
+                section,
+                schema,
+                llm_client,
+                concept_list,
+                paper_slug,
+                proof_map,
             )
         except Exception as err:
             logger.warning(
                 "Claim extraction failed for '%s': %s",
-                section.heading, err,
+                section.heading,
+                err,
             )
             return [], []
 
@@ -269,13 +283,18 @@ async def enrich_section_guarded(
     async with semaphore:
         try:
             return await enrich_section_edges(
-                section_claims, section.content, all_concepts,
-                all_claims, schema, llm_client,
+                section_claims,
+                section.content,
+                all_concepts,
+                all_claims,
+                schema,
+                llm_client,
             )
         except Exception as err:
             logger.warning(
                 "Edge enrichment failed for '%s': %s",
-                section.heading, err,
+                section.heading,
+                err,
             )
             return [], []
 
@@ -301,12 +320,18 @@ async def verify_section_guarded(
     async with semaphore:
         try:
             return await verify_section_claims(
-                section.content, proof_map, section_claims,
-                None, llm_client, paper_slug, section.heading,
+                section.content,
+                proof_map,
+                section_claims,
+                None,
+                llm_client,
+                paper_slug,
+                section.heading,
             )
         except Exception as err:
             logger.warning(
                 "Verification failed for '%s': %s",
-                section.heading, err,
+                section.heading,
+                err,
             )
             return [], []

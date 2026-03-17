@@ -56,7 +56,9 @@ class TestEmbeddingClientEmbedBatch:
         fake_embedding = [0.0] * 1536
         mock_client = _make_mock_openai([fake_embedding])
 
-        client = EmbeddingClient(openai_client=mock_client, model="text-embedding-3-small")
+        client = EmbeddingClient(
+            openai_client=mock_client, model="text-embedding-3-small"
+        )
         await client.embed_batch(["test"])
 
         mock_client.embeddings.create.assert_called_once()

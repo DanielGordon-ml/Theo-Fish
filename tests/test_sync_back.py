@@ -150,14 +150,13 @@ class TestConceptHumanFields:
     """Human-owned concept fields are written back to Neo4j when changed."""
 
     @pytest.mark.asyncio
-    async def test_it_should_read_human_owned_fields_from_concept_file(
-        self, tmp_path
-    ):
+    async def test_it_should_read_human_owned_fields_from_concept_file(self, tmp_path):
         """sync_back returns SyncChange for each human-owned field that differs."""
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "banach-space",
+            vault_dir,
+            "banach-space",
             {
                 "slug": "banach-space",
                 "name": "Banach Space (corrected)",
@@ -180,14 +179,13 @@ class TestConceptHumanFields:
         assert "human_notes" in field_names
 
     @pytest.mark.asyncio
-    async def test_it_should_produce_sync_change_with_correct_metadata(
-        self, tmp_path
-    ):
+    async def test_it_should_produce_sync_change_with_correct_metadata(self, tmp_path):
         """Each SyncChange has correct node_type, slug, old_value, new_value."""
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "banach-space",
+            vault_dir,
+            "banach-space",
             {
                 "slug": "banach-space",
                 "name": "Banach Space",
@@ -227,7 +225,8 @@ class TestPipelineFieldsIgnored:
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "banach-space",
+            vault_dir,
+            "banach-space",
             {
                 "slug": "banach-space",
                 "name": "Banach Space",
@@ -247,8 +246,13 @@ class TestPipelineFieldsIgnored:
 
         changes = await sync_back(vault_dir, mock_client)
 
-        pipeline_fields = {"semantic_type", "formal_spec", "rhetorical_origin",
-                           "components", "embedding"}
+        pipeline_fields = {
+            "semantic_type",
+            "formal_spec",
+            "rhetorical_origin",
+            "components",
+            "embedding",
+        }
         synced_fields = {c.field for c in changes}
         assert synced_fields.isdisjoint(pipeline_fields), (
             f"Pipeline fields were synced: {synced_fields & pipeline_fields}"
@@ -269,7 +273,8 @@ class TestAliasUnionMerge:
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "banach-space",
+            vault_dir,
+            "banach-space",
             {
                 "slug": "banach-space",
                 "name": "Banach Space",
@@ -280,11 +285,13 @@ class TestAliasUnionMerge:
             },
         )
         mock_client = _make_mock_client(
-            concept_rows=[_concept_neo4j_row(
-                "banach-space",
-                name="Banach Space",
-                aliases=["B-space", "Banach-space-legacy"],
-            )]
+            concept_rows=[
+                _concept_neo4j_row(
+                    "banach-space",
+                    name="Banach Space",
+                    aliases=["B-space", "Banach-space-legacy"],
+                )
+            ]
         )
 
         changes = await sync_back(vault_dir, mock_client)
@@ -297,14 +304,13 @@ class TestAliasUnionMerge:
         assert "Banach-space-legacy" in merged
 
     @pytest.mark.asyncio
-    async def test_it_should_not_subtract_aliases_absent_from_obsidian(
-        self, tmp_path
-    ):
+    async def test_it_should_not_subtract_aliases_absent_from_obsidian(self, tmp_path):
         """Neo4j-only aliases are preserved even if absent from vault file."""
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "hilbert-space",
+            vault_dir,
+            "hilbert-space",
             {
                 "slug": "hilbert-space",
                 "name": "Hilbert Space",
@@ -315,11 +321,13 @@ class TestAliasUnionMerge:
             },
         )
         mock_client = _make_mock_client(
-            concept_rows=[_concept_neo4j_row(
-                "hilbert-space",
-                name="Hilbert Space",
-                aliases=["H-space", "inner-product-space"],
-            )]
+            concept_rows=[
+                _concept_neo4j_row(
+                    "hilbert-space",
+                    name="Hilbert Space",
+                    aliases=["H-space", "inner-product-space"],
+                )
+            ]
         )
 
         changes = await sync_back(vault_dir, mock_client)
@@ -345,7 +353,8 @@ class TestDryRun:
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "banach-space",
+            vault_dir,
+            "banach-space",
             {
                 "slug": "banach-space",
                 "name": "Banach Space",
@@ -370,7 +379,8 @@ class TestDryRun:
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         _write_concept_file(
-            vault_dir, "banach-space",
+            vault_dir,
+            "banach-space",
             {
                 "slug": "banach-space",
                 "name": "Banach Space",
@@ -409,7 +419,8 @@ class TestTimestampFiltering:
 
         old_mtime = export_ts.timestamp() - 3600
         _write_concept_file(
-            vault_dir, "old-concept",
+            vault_dir,
+            "old-concept",
             {
                 "slug": "old-concept",
                 "name": "Old Concept",
@@ -437,7 +448,8 @@ class TestTimestampFiltering:
 
         new_mtime = export_ts.timestamp() + 3600
         _write_concept_file(
-            vault_dir, "new-concept",
+            vault_dir,
+            "new-concept",
             {
                 "slug": "new-concept",
                 "name": "New Concept (edited)",
@@ -474,7 +486,8 @@ class TestClaimFiles:
         _write_manifest(vault_dir, _EXPORT_TS)
         claim_slug = "paper-slug--lemma-1"
         _write_claim_file(
-            vault_dir, claim_slug,
+            vault_dir,
+            claim_slug,
             {
                 "slug": claim_slug,
                 "label": "Lemma 1",
@@ -501,15 +514,14 @@ class TestClaimFiles:
         assert status_change.new_value == "verified"
 
     @pytest.mark.asyncio
-    async def test_it_should_ignore_pipeline_owned_claim_fields(
-        self, tmp_path
-    ):
+    async def test_it_should_ignore_pipeline_owned_claim_fields(self, tmp_path):
         """statement, proof, strength etc. are never synced from claim files."""
         vault_dir = tmp_path / "vault"
         _write_manifest(vault_dir, _EXPORT_TS)
         claim_slug = "paper-slug--theorem-2"
         _write_claim_file(
-            vault_dir, claim_slug,
+            vault_dir,
+            claim_slug,
             {
                 "slug": claim_slug,
                 "label": "Theorem 2",
@@ -544,14 +556,13 @@ class TestMissingManifest:
     """When no manifest exists, all files are processed (no timestamp gate)."""
 
     @pytest.mark.asyncio
-    async def test_it_should_handle_missing_manifest_gracefully(
-        self, tmp_path
-    ):
+    async def test_it_should_handle_missing_manifest_gracefully(self, tmp_path):
         """If no manifest file exists, process all vault files."""
         vault_dir = tmp_path / "vault"
         # Deliberately do NOT write a manifest
         _write_concept_file(
-            vault_dir, "orphan-concept",
+            vault_dir,
+            "orphan-concept",
             {
                 "slug": "orphan-concept",
                 "name": "Orphan Concept",
@@ -570,9 +581,7 @@ class TestMissingManifest:
         assert "orphan-concept" in {c.slug for c in changes}
 
     @pytest.mark.asyncio
-    async def test_it_should_not_raise_when_vault_dirs_are_empty(
-        self, tmp_path
-    ):
+    async def test_it_should_not_raise_when_vault_dirs_are_empty(self, tmp_path):
         """Empty concepts/ and claims/ dirs produce an empty change list."""
         vault_dir = tmp_path / "vault"
         (vault_dir / "concepts").mkdir(parents=True)

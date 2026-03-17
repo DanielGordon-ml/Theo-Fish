@@ -50,7 +50,7 @@ def _strip_metadata_prefix(text: str) -> tuple[str, int]:
     if not match:
         return text, 0
 
-    text = text[match.end():]
+    text = text[match.end() :]
     # Strip trailing ' from content='...' wrapper
     text = _CONTENT_SUFFIX.sub("", text)
     return text.lstrip(), 1

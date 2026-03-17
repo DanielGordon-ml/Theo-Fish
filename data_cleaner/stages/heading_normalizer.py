@@ -26,8 +26,13 @@ _NUMBERED_SUBSECTION = re.compile(r"^\d+\.\s")
 
 # Special sections that should be h2 in MinerU output
 SPECIAL_SECTIONS = {
-    "abstract", "references", "bibliography", "appendix",
-    "acknowledgments", "acknowledgements", "conclusion",
+    "abstract",
+    "references",
+    "bibliography",
+    "appendix",
+    "acknowledgments",
+    "acknowledgements",
+    "conclusion",
     "conclusions",
 }
 
@@ -70,7 +75,9 @@ def _classify_mineru_heading(title_text: str) -> int:
     return 1
 
 
-def _normalize_mineru(text: str, code_ranges: list[tuple[int, int]]) -> tuple[str, dict[str, int]]:
+def _normalize_mineru(
+    text: str, code_ranges: list[tuple[int, int]]
+) -> tuple[str, dict[str, int]]:
     """Normalize MinerU output: demote all-h1 headings based on patterns."""
     changes = 0
     duplicate_titles = 0
@@ -116,7 +123,9 @@ def _normalize_mineru(text: str, code_ranges: list[tuple[int, int]]) -> tuple[st
     return result, details
 
 
-def _normalize_arxiv2md(text: str, code_ranges: list[tuple[int, int]]) -> tuple[str, dict[str, int]]:
+def _normalize_arxiv2md(
+    text: str, code_ranges: list[tuple[int, int]]
+) -> tuple[str, dict[str, int]]:
     """Normalize arxiv2md output: promote headings to fill from h1."""
     # Find minimum heading level outside code blocks
     min_level = 7

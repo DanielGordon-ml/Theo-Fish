@@ -4,7 +4,6 @@
 """
 
 
-
 class TestReadIdFileMultiColumnCsv:
     """Tests for _read_id_file() with multi-column CSV format."""
 

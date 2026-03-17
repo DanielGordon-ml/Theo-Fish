@@ -57,6 +57,7 @@ def validate_paper(
 # Individual rule checkers
 # ---------------------------------------------------------------------------
 
+
 def _check_missing_about(
     claims: list[ClaimNode],
     coupling_edges: list[CouplingEdge],
@@ -182,7 +183,11 @@ def _check_inconsistent_inverses(
         defn = edge_categories.concept_edges.get(edge.edge_type)
         if defn is None or defn.inverse is None:
             continue
-        inverse_exists = (edge.target_slug, edge.source_slug, edge.edge_type) in edge_pairs
+        inverse_exists = (
+            edge.target_slug,
+            edge.source_slug,
+            edge.edge_type,
+        ) in edge_pairs
         if inverse_exists:
             errors.append(
                 f"inconsistent_inverse: '{edge.source_slug}' {edge.edge_type} '{edge.target_slug}' "

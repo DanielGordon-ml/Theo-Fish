@@ -3,7 +3,6 @@
 @description Tests for manifest.py: write and read export-manifest.json.
 """
 
-
 from graph_builder.vault.manifest import read_manifest, write_manifest
 
 # ---------------------------------------------------------------------------

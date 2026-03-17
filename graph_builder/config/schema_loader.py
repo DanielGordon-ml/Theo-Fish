@@ -19,8 +19,13 @@ from graph_builder.config.schema_types import (
 )
 
 _VALID_TOP_KEYS = {
-    "version", "last_updated", "concept_types", "claim_types",
-    "edges", "validation", "field_ownership",
+    "version",
+    "last_updated",
+    "concept_types",
+    "claim_types",
+    "edges",
+    "validation",
+    "field_ownership",
 }
 
 
@@ -50,9 +55,7 @@ def _check_unknown_keys(raw: dict) -> None:
     """Reject unrecognized top-level keys."""
     unknown = set(raw.keys()) - _VALID_TOP_KEYS
     if unknown:
-        raise ValueError(
-            f"Unknown top-level keys in schema.yaml: {unknown}"
-        )
+        raise ValueError(f"Unknown top-level keys in schema.yaml: {unknown}")
 
 
 def _parse_concept_types(raw: dict) -> dict[str, ConceptTypeDef]:

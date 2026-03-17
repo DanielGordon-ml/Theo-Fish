@@ -27,6 +27,7 @@ from graph_builder.models.section import Section
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_schema() -> GraphSchema:
     """Build a minimal GraphSchema sufficient for claim extractor tests."""
     return GraphSchema(
@@ -108,6 +109,7 @@ _CONCEPT_LIST = [
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestExtractClaimsFromSection:
     """Tests for extract_claims_from_section()."""
 
@@ -119,7 +121,11 @@ class TestExtractClaimsFromSection:
         client = _make_mock_client([_VALID_CLAIM])
 
         claims, edges = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         assert len(claims) == 1
@@ -134,7 +140,11 @@ class TestExtractClaimsFromSection:
         client = _make_mock_client([_VALID_CLAIM])
 
         await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         system_prompt, _ = client.call.call_args[0]
@@ -146,18 +156,24 @@ class TestExtractClaimsFromSection:
         """It should stamp source_paper_slug on every returned ClaimNode."""
         schema = _make_schema()
         section = _make_section()
-        client = _make_mock_client([
-            _VALID_CLAIM,
-            {
-                "label": "Lemma 2.1",
-                "claim_type": "lemma",
-                "conclusion": "The bound is tight.",
-                "about_concepts": ["regret"],
-            },
-        ])
+        client = _make_mock_client(
+            [
+                _VALID_CLAIM,
+                {
+                    "label": "Lemma 2.1",
+                    "claim_type": "lemma",
+                    "conclusion": "The bound is tight.",
+                    "about_concepts": ["regret"],
+                },
+            ]
+        )
 
         claims, _ = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "my-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "my-paper",
         )
 
         assert all(c.source_paper_slug == "my-paper" for c in claims)
@@ -170,7 +186,11 @@ class TestExtractClaimsFromSection:
         client = _make_mock_client([_VALID_CLAIM])
 
         claims, edges = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         assert len(edges) == 2
@@ -187,7 +207,11 @@ class TestExtractClaimsFromSection:
         client = _make_mock_client([])
 
         claims, edges = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         assert claims == []
@@ -199,15 +223,21 @@ class TestExtractClaimsFromSection:
         schema = _make_schema()
         section = _make_section()
         client = MagicMock()
-        client.call = AsyncMock(return_value=LLMResponse(
-            content="not valid json {{{",
-            input_tokens=10,
-            output_tokens=5,
-            model="deepseek-chat",
-        ))
+        client.call = AsyncMock(
+            return_value=LLMResponse(
+                content="not valid json {{{",
+                input_tokens=10,
+                output_tokens=5,
+                model="deepseek-chat",
+            )
+        )
 
         claims, edges = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         assert claims == []
@@ -222,7 +252,11 @@ class TestExtractClaimsFromSection:
         client = _make_mock_client([])
 
         await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         _, user_prompt = client.call.call_args[0]
@@ -241,7 +275,11 @@ class TestExtractClaimsFromSection:
         client = _make_mock_client([claim_no_about])
 
         claims, edges = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         assert len(claims) == 1
@@ -256,7 +294,11 @@ class TestExtractClaimsFromSection:
         client.call = AsyncMock(side_effect=RuntimeError("LLM unavailable"))
 
         claims, edges = await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
         )
 
         assert claims == []
@@ -274,7 +316,11 @@ class TestExtractClaimsFromSection:
         proof_map = {"Theorem III.3": "We proceed by induction."}
 
         await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
             proof_map=proof_map,
         )
 
@@ -291,7 +337,11 @@ class TestExtractClaimsFromSection:
         proof_map = {"Theorem III.3": "Some proof."}
 
         await extract_claims_from_section(
-            section, schema, client, _CONCEPT_LIST, "test-paper",
+            section,
+            schema,
+            client,
+            _CONCEPT_LIST,
+            "test-paper",
             proof_map=proof_map,
         )
 

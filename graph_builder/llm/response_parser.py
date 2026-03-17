@@ -111,6 +111,7 @@ def parse_edges(
 # Private helpers
 # ---------------------------------------------------------------------------
 
+
 def _parse_json(json_str: str) -> dict | None:
     """Attempt to parse a JSON string, logging a warning on failure.
 
@@ -199,8 +200,11 @@ def _build_claim(
         return None
 
     try:
-        filtered = {k: v for k, v in entry.items()
-                    if v is not None and k not in _CLAIM_EXTRA_KEYS}
+        filtered = {
+            k: v
+            for k, v in entry.items()
+            if v is not None and k not in _CLAIM_EXTRA_KEYS
+        }
         return ClaimNode(
             source_paper_slug=paper_slug,
             **filtered,

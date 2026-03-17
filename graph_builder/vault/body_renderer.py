@@ -24,7 +24,7 @@ def _provenance_row(prov: ProvenanceNode) -> str:
     source_link = f"[[sources/{prov.source_arxiv_id}]]"
     return (
         f"| {source_link} | {prov.section} "
-        f"| \"{prov.formulation}\" | {prov.extraction_confidence} |\n"
+        f'| "{prov.formulation}" | {prov.extraction_confidence} |\n'
     )
 
 

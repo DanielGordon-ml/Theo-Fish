@@ -24,9 +24,7 @@ _UNWRAP_TAGS = re.compile(
 )
 
 # ArXiv cross-reference links
-_ARXIV_LINK = re.compile(
-    r"\[([^\]]*)\]\(https?://arxiv\.org/html/[^)]+\)"
-)
+_ARXIV_LINK = re.compile(r"\[([^\]]*)\]\(https?://arxiv\.org/html/[^)]+\)")
 
 # Broken reference markers
 _BROKEN_REF = re.compile(r"\[\?\]")

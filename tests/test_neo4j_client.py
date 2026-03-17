@@ -79,6 +79,7 @@ class TestNeo4jClientExecuteRead:
 
             async def fake_execute_read(tx_func):
                 mock_tx = AsyncMock()
+
                 # Capture what tx.run was called with
                 async def capturing_run(query, **params):
                     captured["query"] = query

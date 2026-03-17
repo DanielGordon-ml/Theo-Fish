@@ -22,7 +22,7 @@ def tmp_data_dir(tmp_path):
 def sample_csv(tmp_path):
     """Create a sample CSV input file."""
     csv_content = (
-        'paper_name,file_path,file_type\n'
+        "paper_name,file_path,file_type\n"
         '"Attention Is All You Need",2706.03762,pdf\n'
         '"BERT",1810.04805,html\n'
     )

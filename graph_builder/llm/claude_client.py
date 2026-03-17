@@ -94,7 +94,8 @@ class ClaudeClient:
         """
         async with self._semaphore:
             return await self._call_with_retries(
-                system_prompt, user_prompt,
+                system_prompt,
+                user_prompt,
             )
 
     async def _call_with_retries(
@@ -108,7 +109,8 @@ class ClaudeClient:
         for attempt in range(MAX_RETRIES + 1):
             try:
                 return await self._execute_call(
-                    system_prompt, user_prompt,
+                    system_prompt,
+                    user_prompt,
                 )
             except (RateLimitError, APIError) as err:
                 last_error = err
@@ -117,7 +119,10 @@ class ClaudeClient:
                 delay = _compute_backoff_delay(attempt)
                 logger.warning(
                     "Claude call failed (attempt %d/%d), retrying in %.1fs: %s",
-                    attempt + 1, MAX_RETRIES + 1, delay, str(err),
+                    attempt + 1,
+                    MAX_RETRIES + 1,
+                    delay,
+                    str(err),
                 )
                 await asyncio.sleep(delay)
 
@@ -165,4 +170,4 @@ def _compute_backoff_delay(attempt: int) -> float:
     @param attempt Zero-based attempt number
     @returns Delay in seconds
     """
-    return _BASE_DELAY * (2 ** attempt) + random.uniform(0, 1)
+    return _BASE_DELAY * (2**attempt) + random.uniform(0, 1)

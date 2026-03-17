@@ -10,7 +10,8 @@ from graph_builder.models.section import Section
 
 # Matches TOC headings like "# Contents" or "# Table of Contents"
 _TOC_HEADING_RE = re.compile(
-    r"^#\s+(Contents|Table of Contents)\s*$", re.MULTILINE | re.IGNORECASE,
+    r"^#\s+(Contents|Table of Contents)\s*$",
+    re.MULTILINE | re.IGNORECASE,
 )
 
 # Matches any markdown heading (H1-H6)
@@ -35,7 +36,7 @@ def strip_toc(text: str) -> str:
 
     toc_start = match.start()
     # Find the next heading after the TOC
-    rest = text[match.end():]
+    rest = text[match.end() :]
     next_heading = _HEADING_RE.search(rest)
     if next_heading is None:
         return text[:toc_start].rstrip()
@@ -57,7 +58,7 @@ def _split_on_pattern(text: str, pattern: re.Pattern) -> list[Section]:
 
     sections: list[Section] = []
     # Content before the first heading
-    preamble = text[:matches[0].start()].strip()
+    preamble = text[: matches[0].start()].strip()
     if preamble and not is_stub_section(preamble):
         sections.append(_build_section("", 0, preamble, len(sections)))
 
@@ -84,7 +85,10 @@ def _make_single_section(text: str) -> list[Section]:
 
 
 def _build_section(
-    heading: str, level: int, content: str, index: int,
+    heading: str,
+    level: int,
+    content: str,
+    index: int,
 ) -> Section:
     """Construct a Section model from components."""
     return Section(
@@ -117,9 +121,14 @@ def _split_on_paragraphs(section: Section) -> list[Section]:
         para_len = len(para)
         if current_len + para_len > MAX_SECTION_CHARS and current_parts:
             content = "\n\n".join(current_parts)
-            chunks.append(_build_section(
-                section.heading, section.level, content, len(chunks),
-            ))
+            chunks.append(
+                _build_section(
+                    section.heading,
+                    section.level,
+                    content,
+                    len(chunks),
+                )
+            )
             current_parts = []
             current_len = 0
         current_parts.append(para)
@@ -128,9 +137,14 @@ def _split_on_paragraphs(section: Section) -> list[Section]:
     if current_parts:
         content = "\n\n".join(current_parts)
         if not is_stub_section(content):
-            chunks.append(_build_section(
-                section.heading, section.level, content, len(chunks),
-            ))
+            chunks.append(
+                _build_section(
+                    section.heading,
+                    section.level,
+                    content,
+                    len(chunks),
+                )
+            )
 
     return chunks if chunks else [section]
 
@@ -154,7 +168,10 @@ def split_into_sections(text: str) -> list[Section]:
     # Re-index after splitting
     for i, section in enumerate(result):
         result[i] = _build_section(
-            section.heading, section.level, section.content, i,
+            section.heading,
+            section.level,
+            section.content,
+            i,
         )
 
     return result

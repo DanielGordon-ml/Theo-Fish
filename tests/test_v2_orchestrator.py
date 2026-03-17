@@ -34,6 +34,7 @@ _MODULE = "graph_builder.orchestrator.orchestrator"
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_schema() -> GraphSchema:
     """Build a minimal GraphSchema for orchestrator tests."""
     return GraphSchema(
@@ -61,8 +62,11 @@ def _make_section(heading: str, index: int) -> Section:
     """Build a Section with enough content to avoid stub detection."""
     content = f"Section {heading} with enough content to pass the minimum character check for sections."
     return Section(
-        heading=heading, level=2, content=content,
-        char_count=len(content), index=index,
+        heading=heading,
+        level=2,
+        content=content,
+        char_count=len(content),
+        index=index,
     )
 
 
@@ -74,8 +78,10 @@ def _make_concept(name: str) -> ConceptNode:
 def _make_claim(label: str, paper_slug: str) -> ClaimNode:
     """Build a ClaimNode with the given label."""
     return ClaimNode(
-        label=label, source_paper_slug=paper_slug,
-        claim_type="theorem", conclusion=f"{label} conclusion",
+        label=label,
+        source_paper_slug=paper_slug,
+        claim_type="theorem",
+        conclusion=f"{label} conclusion",
         section="section-1",
     )
 
@@ -86,12 +92,16 @@ def _make_merged(name: str, arxiv_id: str) -> MergedConcept:
     return MergedConcept(
         concept=concept,
         dedup_result=DedupResult(
-            slug=concept.slug, is_new=True,
-            match_method="new", match_confidence=0.0,
+            slug=concept.slug,
+            is_new=True,
+            match_method="new",
+            match_confidence=0.0,
         ),
         provenance=ProvenanceNode(
-            concept_slug=concept.slug, source_arxiv_id=arxiv_id,
-            formulation="test definition", formal_spec="test spec",
+            concept_slug=concept.slug,
+            source_arxiv_id=arxiv_id,
+            formulation="test definition",
+            formal_spec="test spec",
         ),
     )
 
@@ -192,6 +202,7 @@ def _patch_pipeline(overrides: dict | None = None):
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestProcessPaperPassOrder:
     """Tests that passes execute in the correct order."""
 
@@ -207,16 +218,19 @@ class TestProcessPaperPassOrder:
         merged = [_make_merged("Hilbert Space", arxiv_id)]
         claim = _make_claim("Theorem 1", "test-paper")
         coupling = CouplingEdge(
-            claim_slug=claim.slug, concept_slug=concepts[0].slug,
+            claim_slug=claim.slug,
+            concept_slug=concepts[0].slug,
         )
         write_counts = {"concepts": 1, "claims": 1, "edges": 1}
 
-        with _patch_pipeline({
-            "p1": [concepts],
-            "merge": merged,
-            "p2": ([claim], [coupling]),
-            "write": write_counts,
-        }) as mocks:
+        with _patch_pipeline(
+            {
+                "p1": [concepts],
+                "merge": merged,
+                "p2": ([claim], [coupling]),
+                "write": write_counts,
+            }
+        ) as mocks:
             mocks["p1"].side_effect = lambda *a, **kw: (
                 call_order.append("pass1") or [concepts]
             )
@@ -243,10 +257,23 @@ class TestProcessPaperPassOrder:
             )
 
             result = await process_paper(
-                arxiv_id, _make_options(), llm, _mock_neo4j(), _mock_embedding(),
+                arxiv_id,
+                _make_options(),
+                llm,
+                _mock_neo4j(),
+                _mock_embedding(),
             )
 
-        expected = ["pass1", "merge", "pass2", "pass3a", "pass3b", "pass4", "validate", "write"]
+        expected = [
+            "pass1",
+            "merge",
+            "pass2",
+            "pass3a",
+            "pass3b",
+            "pass4",
+            "validate",
+            "write",
+        ]
         assert call_order == expected
         assert result.status == "built"
 
@@ -261,7 +288,10 @@ class TestProcessPaperSkip:
 
         with _patch_pipeline({"check": True}):
             result = await process_paper(
-                arxiv_id, _make_options(), MagicMock(), _mock_neo4j(),
+                arxiv_id,
+                _make_options(),
+                MagicMock(),
+                _mock_neo4j(),
             )
 
         assert result.status == "skipped"
@@ -277,7 +307,11 @@ class TestProcessPaperSkip:
 
         with _patch_pipeline({"check": True}):
             result = await process_paper(
-                arxiv_id, options, llm, _mock_neo4j(), _mock_embedding(),
+                arxiv_id,
+                options,
+                llm,
+                _mock_neo4j(),
+                _mock_embedding(),
             )
 
         assert result.status == "built"
@@ -305,14 +339,20 @@ class TestProcessPaperPartialFailure:
         ]
         sections = [_make_section(f"Sec {i}", i) for i in range(3)]
 
-        with _patch_pipeline({
-            "load": ("Test Paper", sections, "Full paper text"),
-            "p1": section_concepts,
-            "merge": merged,
-            "write": {"concepts": 2, "claims": 1, "edges": 1},
-        }):
+        with _patch_pipeline(
+            {
+                "load": ("Test Paper", sections, "Full paper text"),
+                "p1": section_concepts,
+                "merge": merged,
+                "write": {"concepts": 2, "claims": 1, "edges": 1},
+            }
+        ):
             result = await process_paper(
-                arxiv_id, _make_options(), llm, _mock_neo4j(), _mock_embedding(),
+                arxiv_id,
+                _make_options(),
+                llm,
+                _mock_neo4j(),
+                _mock_embedding(),
             )
 
         assert result.status == "built"
@@ -330,12 +370,18 @@ class TestProcessPaperAbortThreshold:
         # 4 sections: 3 fail (empty), 1 succeeds -> 75% failure
         section_concepts = [[], [], [], [_make_concept("X")]]
 
-        with _patch_pipeline({
-            "load": ("Test Paper", sections, "Full paper text"),
-            "p1": section_concepts,
-        }):
+        with _patch_pipeline(
+            {
+                "load": ("Test Paper", sections, "Full paper text"),
+                "p1": section_concepts,
+            }
+        ):
             result = await process_paper(
-                arxiv_id, _make_options(), MagicMock(), _mock_neo4j(), _mock_embedding(),
+                arxiv_id,
+                _make_options(),
+                MagicMock(),
+                _mock_neo4j(),
+                _mock_embedding(),
             )
 
         assert result.status == "failed"
@@ -358,12 +404,18 @@ class TestProcessPaperValidationPartialWrite:
             warnings=[],
         )
 
-        with _patch_pipeline({
-            "validate": invalid_validation,
-            "write": {"concepts": 1, "claims": 0, "edges": 0},
-        }) as mocks:
+        with _patch_pipeline(
+            {
+                "validate": invalid_validation,
+                "write": {"concepts": 1, "claims": 0, "edges": 0},
+            }
+        ) as mocks:
             result = await process_paper(
-                arxiv_id, _make_options(), llm, _mock_neo4j(), _mock_embedding(),
+                arxiv_id,
+                _make_options(),
+                llm,
+                _mock_neo4j(),
+                _mock_embedding(),
             )
 
         assert result.status == "built"
@@ -382,26 +434,45 @@ class TestProcessPaperBuildResult:
         llm.call = AsyncMock()
 
         concepts = [_make_concept("Hilbert Space"), _make_concept("Operator")]
-        merged = [_make_merged("Hilbert Space", arxiv_id), _make_merged("Operator", arxiv_id)]
+        merged = [
+            _make_merged("Hilbert Space", arxiv_id),
+            _make_merged("Operator", arxiv_id),
+        ]
         claims = [
             _make_claim("Theorem 1", "test-paper"),
             _make_claim("Lemma 2", "test-paper"),
             _make_claim("Corollary 3", "test-paper"),
         ]
         coupling = CouplingEdge(
-            claim_slug=claims[0].slug, concept_slug=concepts[0].slug,
+            claim_slug=claims[0].slug,
+            concept_slug=concepts[0].slug,
         )
 
-        with _patch_pipeline({
-            "p1": [concepts],
-            "merge": merged,
-            "p2": (claims, [coupling]),
-            "p3a": ([ClaimEdge(source_slug="s1", target_slug="s2", edge_type="depends_on")], []),
-            "p3b": [ClaimEdge(source_slug="s3", target_slug="s4", edge_type="enables")],
-            "write": {"concepts": 2, "claims": 3, "edges": 4},
-        }):
+        with _patch_pipeline(
+            {
+                "p1": [concepts],
+                "merge": merged,
+                "p2": (claims, [coupling]),
+                "p3a": (
+                    [
+                        ClaimEdge(
+                            source_slug="s1", target_slug="s2", edge_type="depends_on"
+                        )
+                    ],
+                    [],
+                ),
+                "p3b": [
+                    ClaimEdge(source_slug="s3", target_slug="s4", edge_type="enables")
+                ],
+                "write": {"concepts": 2, "claims": 3, "edges": 4},
+            }
+        ):
             result = await process_paper(
-                arxiv_id, _make_options(), llm, _mock_neo4j(), _mock_embedding(),
+                arxiv_id,
+                _make_options(),
+                llm,
+                _mock_neo4j(),
+                _mock_embedding(),
             )
 
         assert result.arxiv_id == arxiv_id
@@ -418,7 +489,10 @@ class TestProcessPaperBuildResult:
         with _patch_pipeline() as mocks:
             mocks["load"].side_effect = FileNotFoundError("No cleaned JSON found")
             result = await process_paper(
-                arxiv_id, _make_options(), MagicMock(), _mock_neo4j(),
+                arxiv_id,
+                _make_options(),
+                MagicMock(),
+                _mock_neo4j(),
             )
 
         assert result.status == "failed"
@@ -475,7 +549,11 @@ class TestProcessPaperClearOnForce:
                 mock_writer_cls.return_value = mock_writer
 
                 result = await process_paper(
-                    arxiv_id, options, llm, neo4j, _mock_embedding(),
+                    arxiv_id,
+                    options,
+                    llm,
+                    neo4j,
+                    _mock_embedding(),
                 )
 
         assert result.status == "built"
@@ -497,8 +575,12 @@ class TestProcessPaperDualLLM:
 
         with _patch_pipeline():
             result = await process_paper(
-                arxiv_id, _make_options(), llm, _mock_neo4j(),
-                _mock_embedding(), claim_llm_client=claim_llm,
+                arxiv_id,
+                _make_options(),
+                llm,
+                _mock_neo4j(),
+                _mock_embedding(),
+                claim_llm_client=claim_llm,
             )
 
         assert result.status == "built"

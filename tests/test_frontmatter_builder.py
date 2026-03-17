@@ -149,9 +149,7 @@ class TestBuildConceptFrontmatter:
         assert meta_list[0]["condition"] == "triangulation"
         assert meta_list[0]["direction"] == "forward"
 
-    def test_it_should_group_edges_by_type(
-        self, brouwer, sperner, simplex
-    ):
+    def test_it_should_group_edges_by_type(self, brouwer, sperner, simplex):
         """Multiple edges of different types appear in separate lists."""
         generalizes_edge = ConceptEdge(
             source_slug=brouwer.slug,
@@ -163,9 +161,7 @@ class TestBuildConceptFrontmatter:
             target_slug=simplex.slug,
             edge_type="has_component",
         )
-        fm = build_concept_frontmatter(
-            brouwer, [generalizes_edge, component_edge], []
-        )
+        fm = build_concept_frontmatter(brouwer, [generalizes_edge, component_edge], [])
 
         assert "[[concepts/sperner-lemma]]" in fm["generalizes"]
         assert "[[concepts/simplex]]" in fm["has_component"]
@@ -221,7 +217,10 @@ class TestBuildClaimFrontmatter:
         assert fm["slug"] == claim_node.slug
         assert fm["claim_type"] == "lemma"
         assert fm["label"] == "Lemma 2.3"
-        assert fm["statement"] == "Every open cover of a compact set has a finite sub-cover."
+        assert (
+            fm["statement"]
+            == "Every open cover of a compact set has a finite sub-cover."
+        )
         assert fm["status"] == "unverified"
 
     def test_it_should_set_human_owned_fields_to_empty_string_on_new_file(
@@ -263,9 +262,7 @@ class TestBuildClaimFrontmatter:
         assert meta[0]["role"] == "primary"
         assert meta[0]["aspect"] == "existence"
 
-    def test_it_should_build_depends_on_wikilinks_from_claim_edges(
-        self, claim_node
-    ):
+    def test_it_should_build_depends_on_wikilinks_from_claim_edges(self, claim_node):
         """depends_on edges produce wikilinks pointing to claims/ folder."""
         edge = ClaimEdge(
             source_slug=claim_node.slug,
@@ -277,9 +274,7 @@ class TestBuildClaimFrontmatter:
 
         assert "[[claims/other-paper--lemma-1-1]]" in fm["depends_on"]
 
-    def test_it_should_include_depends_on_meta_with_attributes(
-        self, claim_node
-    ):
+    def test_it_should_include_depends_on_meta_with_attributes(self, claim_node):
         """depends_on_meta includes the edge attributes and target wikilink."""
         edge = ClaimEdge(
             source_slug=claim_node.slug,
@@ -337,9 +332,7 @@ class TestBuildSourceFrontmatter:
         assert fm["authors"] == ["Alice Smith", "Bob Jones"]
         assert fm["date_published"] == "2019-04-15"
 
-    def test_it_should_set_human_owned_fields_to_empty_string(
-        self, source_node
-    ):
+    def test_it_should_set_human_owned_fields_to_empty_string(self, source_node):
         """human_notes defaults to empty string."""
         fm = build_source_frontmatter(source_node)
 

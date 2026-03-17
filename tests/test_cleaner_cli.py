@@ -80,9 +80,13 @@ class TestCliExecution:
 
         result = subprocess.run(
             [
-                sys.executable, "-m", "data_cleaner",
-                "--input", str(input_dir),
-                "--output", str(output_dir),
+                sys.executable,
+                "-m",
+                "data_cleaner",
+                "--input",
+                str(input_dir),
+                "--output",
+                str(output_dir),
             ],
             capture_output=True,
             text=True,
@@ -101,15 +105,21 @@ class TestCliExecution:
 
         paper_file = input_dir / "1234.5678.json"
         paper_file.write_text(
-            _make_paper_json(arxiv_id="1234.5678"), encoding="utf-8",
+            _make_paper_json(arxiv_id="1234.5678"),
+            encoding="utf-8",
         )
 
         result = subprocess.run(
             [
-                sys.executable, "-m", "data_cleaner",
-                "--input", str(input_dir),
-                "--output", str(output_dir),
-                "--paper", "1234.5678",
+                sys.executable,
+                "-m",
+                "data_cleaner",
+                "--input",
+                str(input_dir),
+                "--output",
+                str(output_dir),
+                "--paper",
+                "1234.5678",
             ],
             capture_output=True,
             text=True,

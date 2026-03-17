@@ -28,9 +28,12 @@ class TestHealthEndpoint:
 class TestPostPapers:
     def test_submit_single_paper(self, client, monkeypatch):
         """It should accept a paper and return a job ID."""
+
         async def mock_load_paper(arxiv_id, **kwargs):
             return PaperResult(
-                arxiv_id="2706.03762", status="processed", converter="arxiv2md",
+                arxiv_id="2706.03762",
+                status="processed",
+                converter="arxiv2md",
             )
 
         monkeypatch.setattr("data_loader.api.load_paper", mock_load_paper)
@@ -50,10 +53,15 @@ class TestPostPapers:
 class TestPostPapersBatch:
     def test_submit_batch(self, client, monkeypatch):
         """It should accept a batch of papers and return a job ID."""
+
         async def mock_load_papers(arxiv_ids, **kwargs):
             return BatchResult(
-                total=2, processed=2, skipped=0, failed=0,
-                arxiv2md=2, mineru=0,
+                total=2,
+                processed=2,
+                skipped=0,
+                failed=0,
+                arxiv2md=2,
+                mineru=0,
                 results=[
                     PaperResult(arxiv_id="2706.03762", status="processed"),
                     PaperResult(arxiv_id="1810.04805", status="processed"),
@@ -74,9 +82,12 @@ class TestPostPapersBatch:
 class TestGetJob:
     def test_get_pending_job(self, client, monkeypatch):
         """It should return pending status for a new job."""
+
         async def mock_load_paper(arxiv_id, **kwargs):
             return PaperResult(
-                arxiv_id="2706.03762", status="processed", converter="arxiv2md",
+                arxiv_id="2706.03762",
+                status="processed",
+                converter="arxiv2md",
             )
 
         monkeypatch.setattr("data_loader.api.load_paper", mock_load_paper)

@@ -8,7 +8,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from data_loader.config import sanitize_arxiv_id
-from data_loader.models import PaperInput, PaperMetadata, ConversionResult, PaperDocument
+from data_loader.models import (
+    PaperInput,
+    PaperMetadata,
+    ConversionResult,
+    PaperDocument,
+)
 
 logger = logging.getLogger("data_loader")
 
@@ -57,7 +62,8 @@ def write_document(doc: PaperDocument, processed_dir: Path) -> Path:
         json_file.write_text(doc.model_dump_json(indent=2), encoding="utf-8")
     except Exception as e:
         logger.error(
-            "Failed to write JSON: %s", str(e),
+            "Failed to write JSON: %s",
+            str(e),
             extra={"arxiv_id": doc.arxiv_id},
         )
         raise

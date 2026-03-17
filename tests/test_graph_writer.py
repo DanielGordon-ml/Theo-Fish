@@ -301,7 +301,8 @@ class TestCreateSchemaConstraints:
         all_cypher = _collect_all_cypher(mock_client.execute_write)
         # Verify there's a uniqueness constraint on Concept.slug
         concept_constraint = [
-            c for c in all_cypher
+            c
+            for c in all_cypher
             if "Concept" in c and "slug" in c and "UNIQUE" in c.upper()
         ]
         assert len(concept_constraint) >= 1

@@ -41,6 +41,7 @@ def _make_embedding_client(embedding: list[float] | None = None) -> EmbeddingCli
 def _make_llm_client(is_same: bool = True) -> MagicMock:
     """Build a mock DeepSeekClient returning a confirmation response."""
     import json
+
     response = MagicMock()
     response.content = json.dumps({"is_same_concept": is_same})
     client = MagicMock()
@@ -168,7 +169,9 @@ class TestDedupCascadeLLMConfirmation:
         )
         embedding_client = _make_embedding_client()
 
-        result = await run_dedup_cascade(concept, reader, embedding_client, llm_client=None)
+        result = await run_dedup_cascade(
+            concept, reader, embedding_client, llm_client=None
+        )
 
         assert result.is_new is True
         assert result.match_method == "new"

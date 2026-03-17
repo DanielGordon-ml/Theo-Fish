@@ -6,7 +6,12 @@
 import json
 import pytest
 from data_loader.json_writer import assemble_document, write_document, should_skip
-from data_loader.models import PaperInput, PaperMetadata, ConversionResult, PaperDocument
+from data_loader.models import (
+    PaperInput,
+    PaperMetadata,
+    ConversionResult,
+    PaperDocument,
+)
 
 
 @pytest.fixture
@@ -56,9 +61,15 @@ class TestAssembleDocument:
     def test_uses_arxiv_id_when_no_name_or_title(self, sample_conversion):
         """It should fall back to arxiv_id when no name or title."""
         metadata = PaperMetadata(
-            arxiv_id="2706.03762", title="", authors=[], abstract="",
-            publication_date="", categories=[], primary_category="",
-            math_subject="", source="arxiv_api",
+            arxiv_id="2706.03762",
+            title="",
+            authors=[],
+            abstract="",
+            publication_date="",
+            categories=[],
+            primary_category="",
+            math_subject="",
+            source="arxiv_api",
         )
         paper_input = PaperInput(arxiv_id="2706.03762")
         doc = assemble_document(paper_input, metadata, sample_conversion)

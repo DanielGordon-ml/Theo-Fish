@@ -169,7 +169,9 @@ class TestBatchResult:
     def test_create(self):
         """It should create BatchResult with counts and results list."""
         results = [
-            PaperResult(arxiv_id="2706.03762", status="processed", converter="arxiv2md"),
+            PaperResult(
+                arxiv_id="2706.03762", status="processed", converter="arxiv2md"
+            ),
             PaperResult(arxiv_id="1810.04805", status="skipped"),
         ]
         b = BatchResult(

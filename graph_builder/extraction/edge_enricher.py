@@ -44,7 +44,9 @@ async def enrich_section_edges(
         return [], []
 
     system_prompt = build_edge_enrichment_prompt(schema)
-    user_prompt = _build_user_prompt(section_claims, section_text, all_concepts, all_claims)
+    user_prompt = _build_user_prompt(
+        section_claims, section_text, all_concepts, all_claims
+    )
 
     try:
         response = await llm_client.call(system_prompt, user_prompt)

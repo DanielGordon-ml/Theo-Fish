@@ -127,9 +127,11 @@ class TestCleanStage:
         for aid in ["2502.00425", "1904.07272"]:
             (tmp_path / f"{aid}.json").write_text("{}", encoding="utf-8")
 
-        with patch("main.clean_paper") as mock_clean, \
-             patch("main.PROCESSED_DIR", tmp_path), \
-             patch("main.CLEANED_DIR", tmp_path / "cleaned"):
+        with (
+            patch("main.clean_paper") as mock_clean,
+            patch("main.PROCESSED_DIR", tmp_path),
+            patch("main.CLEANED_DIR", tmp_path / "cleaned"),
+        ):
             mock_clean.return_value = MagicMock(status="cleaned")
             _clean_stage(["2502.00425", "1904.07272"], force=False)
             assert mock_clean.call_count == 2
@@ -139,9 +141,11 @@ class TestCleanStage:
         # Only create one file — second paper has no processed JSON
         (tmp_path / "2502.00425.json").write_text("{}", encoding="utf-8")
 
-        with patch("main.clean_paper") as mock_clean, \
-             patch("main.PROCESSED_DIR", tmp_path), \
-             patch("main.CLEANED_DIR", tmp_path / "cleaned"):
+        with (
+            patch("main.clean_paper") as mock_clean,
+            patch("main.PROCESSED_DIR", tmp_path),
+            patch("main.CLEANED_DIR", tmp_path / "cleaned"),
+        ):
             mock_clean.return_value = MagicMock(status="cleaned")
             _clean_stage(["2502.00425", "1904.07272"], force=False)
             assert mock_clean.call_count == 1
@@ -150,9 +154,11 @@ class TestCleanStage:
         """It should pass force to clean_paper."""
         (tmp_path / "2502.00425.json").write_text("{}", encoding="utf-8")
 
-        with patch("main.clean_paper") as mock_clean, \
-             patch("main.PROCESSED_DIR", tmp_path), \
-             patch("main.CLEANED_DIR", tmp_path / "cleaned"):
+        with (
+            patch("main.clean_paper") as mock_clean,
+            patch("main.PROCESSED_DIR", tmp_path),
+            patch("main.CLEANED_DIR", tmp_path / "cleaned"),
+        ):
             mock_clean.return_value = MagicMock(status="cleaned")
             _clean_stage(["2502.00425"], force=True)
             _, kwargs = mock_clean.call_args
@@ -162,9 +168,11 @@ class TestCleanStage:
         """It should log but not raise when clean_paper fails."""
         (tmp_path / "2502.00425.json").write_text("{}", encoding="utf-8")
 
-        with patch("main.clean_paper") as mock_clean, \
-             patch("main.PROCESSED_DIR", tmp_path), \
-             patch("main.CLEANED_DIR", tmp_path / "cleaned"):
+        with (
+            patch("main.clean_paper") as mock_clean,
+            patch("main.PROCESSED_DIR", tmp_path),
+            patch("main.CLEANED_DIR", tmp_path / "cleaned"),
+        ):
             mock_clean.side_effect = Exception("bad json")
             # Should not raise
             _clean_stage(["2502.00425"], force=False)
@@ -176,15 +184,21 @@ class TestFromFlagIntegration:
     @pytest.mark.asyncio
     async def test_should_run_all_stages_by_default(self):
         """It should run load, clean, and process when no --from given."""
-        with patch("main._load_stage", new_callable=AsyncMock) as mock_load, \
-             patch("main._clean_stage") as mock_clean, \
-             patch("main._process_stage", new_callable=AsyncMock) as mock_proc:
+        with (
+            patch("main._load_stage", new_callable=AsyncMock) as mock_load,
+            patch("main._clean_stage") as mock_clean,
+            patch("main._process_stage", new_callable=AsyncMock) as mock_proc,
+        ):
             mock_proc.return_value = (1, 0, 0)
             from main import _run
+
             args = argparse.Namespace(
-                arxiv_id="2502.00425", csv_path=None,
-                from_stage="load", force=False,
-                concurrency=10, no_export=True,
+                arxiv_id="2502.00425",
+                csv_path=None,
+                from_stage="load",
+                force=False,
+                concurrency=10,
+                no_export=True,
             )
             await _run(args)
             mock_load.assert_called_once()
@@ -194,15 +208,21 @@ class TestFromFlagIntegration:
     @pytest.mark.asyncio
     async def test_should_skip_load_when_from_clean(self):
         """It should skip load stage when --from clean."""
-        with patch("main._load_stage", new_callable=AsyncMock) as mock_load, \
-             patch("main._clean_stage") as mock_clean, \
-             patch("main._process_stage", new_callable=AsyncMock) as mock_proc:
+        with (
+            patch("main._load_stage", new_callable=AsyncMock) as mock_load,
+            patch("main._clean_stage") as mock_clean,
+            patch("main._process_stage", new_callable=AsyncMock) as mock_proc,
+        ):
             mock_proc.return_value = (1, 0, 0)
             from main import _run
+
             args = argparse.Namespace(
-                arxiv_id="2502.00425", csv_path=None,
-                from_stage="clean", force=False,
-                concurrency=10, no_export=True,
+                arxiv_id="2502.00425",
+                csv_path=None,
+                from_stage="clean",
+                force=False,
+                concurrency=10,
+                no_export=True,
             )
             await _run(args)
             mock_load.assert_not_called()
@@ -212,15 +232,21 @@ class TestFromFlagIntegration:
     @pytest.mark.asyncio
     async def test_should_skip_load_and_clean_when_from_process(self):
         """It should skip load and clean when --from process."""
-        with patch("main._load_stage", new_callable=AsyncMock) as mock_load, \
-             patch("main._clean_stage") as mock_clean, \
-             patch("main._process_stage", new_callable=AsyncMock) as mock_proc:
+        with (
+            patch("main._load_stage", new_callable=AsyncMock) as mock_load,
+            patch("main._clean_stage") as mock_clean,
+            patch("main._process_stage", new_callable=AsyncMock) as mock_proc,
+        ):
             mock_proc.return_value = (1, 0, 0)
             from main import _run
+
             args = argparse.Namespace(
-                arxiv_id="2502.00425", csv_path=None,
-                from_stage="process", force=False,
-                concurrency=10, no_export=True,
+                arxiv_id="2502.00425",
+                csv_path=None,
+                from_stage="process",
+                force=False,
+                concurrency=10,
+                no_export=True,
             )
             await _run(args)
             mock_load.assert_not_called()
@@ -230,15 +256,21 @@ class TestFromFlagIntegration:
     @pytest.mark.asyncio
     async def test_should_propagate_force_to_stages(self):
         """It should pass force=True to all active stages."""
-        with patch("main._load_stage", new_callable=AsyncMock) as mock_load, \
-             patch("main._clean_stage") as mock_clean, \
-             patch("main._process_stage", new_callable=AsyncMock) as mock_proc:
+        with (
+            patch("main._load_stage", new_callable=AsyncMock) as mock_load,
+            patch("main._clean_stage") as mock_clean,
+            patch("main._process_stage", new_callable=AsyncMock) as mock_proc,
+        ):
             mock_proc.return_value = (1, 0, 0)
             from main import _run
+
             args = argparse.Namespace(
-                arxiv_id="2502.00425", csv_path=None,
-                from_stage="load", force=True,
-                concurrency=10, no_export=True,
+                arxiv_id="2502.00425",
+                csv_path=None,
+                from_stage="load",
+                force=True,
+                concurrency=10,
+                no_export=True,
             )
             await _run(args)
             _, load_kwargs = mock_load.call_args

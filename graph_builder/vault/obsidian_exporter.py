@@ -204,7 +204,9 @@ def _write_concepts(
 
     for concept in data["concepts"]:
         _write_concept_file(
-            vault_dir, staging, concept,
+            vault_dir,
+            staging,
+            concept,
             edges_by_source.get(concept.slug, []),
             sourced_by_node.get(concept.slug, []),
             provs_by_concept.get(concept.slug, []),
@@ -245,9 +247,7 @@ def _write_concept_file(
 
     if concept.status == _REVIEW_NEEDED:
         review = vault_dir / "_review" / "concepts" / f"{concept.slug}.md"
-        _stage_and_move(
-            staging / "_review_c" / f"{concept.slug}.md", review, content
-        )
+        _stage_and_move(staging / "_review_c" / f"{concept.slug}.md", review, content)
 
 
 # ---------------------------------------------------------------------------
@@ -275,7 +275,9 @@ def _write_claims(
 
     for claim in data["claims"]:
         _write_claim_file(
-            vault_dir, staging, claim,
+            vault_dir,
+            staging,
+            claim,
             claim_edges_by.get(claim.slug, []),
             coupling_by.get(claim.slug, []),
             sourced_by.get(claim.slug, []),
@@ -304,7 +306,10 @@ def _write_claim_file(
     @param source_titles Map of arxiv_id -> title.
     """
     fm = build_claim_frontmatter(
-        claim, claim_edges, coupling_edges, sourced_from,
+        claim,
+        claim_edges,
+        coupling_edges,
+        sourced_from,
         source_titles=source_titles,
     )
     subdir = _claim_subdir(claim.claim_type)
@@ -314,15 +319,11 @@ def _write_claim_file(
     body = render_claim_body(claim)
     content = _assemble(fm, body)
 
-    _stage_and_move(
-        staging / "claims" / subdir / f"{claim.slug}.md", final, content
-    )
+    _stage_and_move(staging / "claims" / subdir / f"{claim.slug}.md", final, content)
 
     if claim.status == _REVIEW_NEEDED:
         review = vault_dir / "_review" / "claims" / f"{claim.slug}.md"
-        _stage_and_move(
-            staging / "_review_cl" / f"{claim.slug}.md", review, content
-        )
+        _stage_and_move(staging / "_review_cl" / f"{claim.slug}.md", review, content)
 
 
 # ---------------------------------------------------------------------------
@@ -467,4 +468,5 @@ def _utc_now() -> str:
     @returns Timestamp string like '2026-03-16T00:00:00'.
     """
     from datetime import datetime, timezone
+
     return datetime.now(tz=timezone.utc).isoformat(timespec="seconds")

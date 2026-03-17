@@ -22,6 +22,7 @@ job_store = JobStore()
 
 # --- Request models ---
 
+
 class SinglePaperRequest(BaseModel):
     """Request body for POST /papers."""
 
@@ -37,6 +38,7 @@ class BatchPaperRequest(BaseModel):
 
 
 # --- Background task runners ---
+
 
 async def _run_single_paper_job(job_id: str, arxiv_id: str, force: bool) -> None:
     """Background task that processes a single paper and updates the job store."""
@@ -57,7 +59,9 @@ async def _run_single_paper_job(job_id: str, arxiv_id: str, force: bool) -> None
 
 
 async def _run_batch_paper_job(
-    job_id: str, arxiv_ids: list[str], force: bool,
+    job_id: str,
+    arxiv_ids: list[str],
+    force: bool,
 ) -> None:
     """Background task that processes a batch of papers and updates the job store."""
     job_store.update(job_id, status="running")
@@ -78,6 +82,7 @@ async def _run_batch_paper_job(
 
 # --- Endpoints ---
 
+
 @app.post("/papers", status_code=202)
 async def submit_paper(request: SinglePaperRequest) -> dict:
     """Submit a single paper for processing.
@@ -85,9 +90,7 @@ async def submit_paper(request: SinglePaperRequest) -> dict:
     Returns a job ID for polling status via GET /jobs/{job_id}.
     """
     job_id = job_store.create("single")
-    asyncio.create_task(
-        _run_single_paper_job(job_id, request.arxiv_id, request.force)
-    )
+    asyncio.create_task(_run_single_paper_job(job_id, request.arxiv_id, request.force))
     return {"job_id": job_id, "status": "pending"}
 
 
@@ -98,9 +101,7 @@ async def submit_batch(request: BatchPaperRequest) -> dict:
     Returns a job ID for polling status via GET /jobs/{job_id}.
     """
     job_id = job_store.create("batch")
-    asyncio.create_task(
-        _run_batch_paper_job(job_id, request.arxiv_ids, request.force)
-    )
+    asyncio.create_task(_run_batch_paper_job(job_id, request.arxiv_ids, request.force))
     return {"job_id": job_id, "status": "pending"}
 
 
@@ -131,4 +132,5 @@ async def health() -> dict:
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

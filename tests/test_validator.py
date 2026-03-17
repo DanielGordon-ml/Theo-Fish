@@ -3,7 +3,6 @@
 @description Tests for graph validation rules: errors, warnings, cycles, and inverse consistency.
 """
 
-
 from graph_builder.config.schema_types import (
     EdgeCategories,
     EdgeDef,
@@ -25,6 +24,7 @@ from graph_builder.validation.validator import validate_paper
 # ---------------------------------------------------------------------------
 # Helpers / fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_schema() -> GraphSchema:
     """Return a minimal GraphSchema mirroring the real schema.yaml structure."""
@@ -81,8 +81,17 @@ def _make_schema() -> GraphSchema:
         validation=ValidationConfig(
             rules=[],
             severity=ValidationSeverity(
-                error=["missing_about", "missing_provenance", "unknown_edge_type", "inconsistent_inverse"],
-                warning=["cycle_in_depends_on", "unknown_attribute", "corollary_without_depends_on"],
+                error=[
+                    "missing_about",
+                    "missing_provenance",
+                    "unknown_edge_type",
+                    "inconsistent_inverse",
+                ],
+                warning=[
+                    "cycle_in_depends_on",
+                    "unknown_attribute",
+                    "corollary_without_depends_on",
+                ],
             ),
         ),
         field_ownership=FieldOwnership(),
@@ -113,6 +122,7 @@ def _about(claim_slug: str, concept_slug: str) -> CouplingEdge:
 # Happy path
 # ---------------------------------------------------------------------------
 
+
 class TestValidatePaperHappyPath:
     def test_should_pass_when_all_rules_satisfied(self):
         """It should return is_valid=True with no errors or warnings when data is clean."""
@@ -141,6 +151,7 @@ class TestValidatePaperHappyPath:
 # Error rules
 # ---------------------------------------------------------------------------
 
+
 class TestMissingAbout:
     def test_should_error_when_claim_has_no_about_edge(self):
         """It should report missing_about error for claims with no ABOUT coupling."""
@@ -154,7 +165,7 @@ class TestMissingAbout:
             claims=[claim],
             concept_edges=[],
             claim_edges=[],
-            coupling_edges=[],         # no ABOUT edges at all
+            coupling_edges=[],  # no ABOUT edges at all
             provenances=[provenance],
             schema=schema,
         )
@@ -178,7 +189,7 @@ class TestMissingProvenance:
             concept_edges=[],
             claim_edges=[],
             coupling_edges=[coupling],
-            provenances=[],            # no provenance nodes
+            provenances=[],  # no provenance nodes
             schema=schema,
         )
 
@@ -288,6 +299,7 @@ class TestInconsistentInverse:
 # Warning rules
 # ---------------------------------------------------------------------------
 
+
 class TestCorollaryWithoutDependsOn:
     def test_should_warn_when_corollary_has_no_depends_on_edge(self):
         """It should warn (not error) when a corollary claim has no DEPENDS_ON edge."""
@@ -301,13 +313,13 @@ class TestCorollaryWithoutDependsOn:
             concepts=[concept],
             claims=[corollary],
             concept_edges=[],
-            claim_edges=[],            # no depends_on edges
+            claim_edges=[],  # no depends_on edges
             coupling_edges=[coupling],
             provenances=[provenance],
             schema=schema,
         )
 
-        assert result.is_valid is True   # warnings do not block
+        assert result.is_valid is True  # warnings do not block
         assert any("corollary_without_depends_on" in w for w in result.warnings)
         assert corollary.slug in " ".join(result.warnings)
 
@@ -363,9 +375,21 @@ class TestDependsOnCycleWarning:
 
         # A -> B -> C -> A cycle
         cycle_edges = [
-            ClaimEdge(source_slug=claim_a.slug, target_slug=claim_b.slug, edge_type="depends_on"),
-            ClaimEdge(source_slug=claim_b.slug, target_slug=claim_c.slug, edge_type="depends_on"),
-            ClaimEdge(source_slug=claim_c.slug, target_slug=claim_a.slug, edge_type="depends_on"),
+            ClaimEdge(
+                source_slug=claim_a.slug,
+                target_slug=claim_b.slug,
+                edge_type="depends_on",
+            ),
+            ClaimEdge(
+                source_slug=claim_b.slug,
+                target_slug=claim_c.slug,
+                edge_type="depends_on",
+            ),
+            ClaimEdge(
+                source_slug=claim_c.slug,
+                target_slug=claim_a.slug,
+                edge_type="depends_on",
+            ),
         ]
 
         result = validate_paper(
@@ -378,13 +402,14 @@ class TestDependsOnCycleWarning:
             schema=schema,
         )
 
-        assert result.is_valid is True          # cycle is a warning, not an error
+        assert result.is_valid is True  # cycle is a warning, not an error
         assert any("cycle_in_depends_on" in w for w in result.warnings)
 
 
 # ---------------------------------------------------------------------------
 # Multi-issue and validity semantics
 # ---------------------------------------------------------------------------
+
 
 class TestMultipleIssues:
     def test_should_collect_multiple_errors_and_warnings_in_one_pass(self):
@@ -464,6 +489,7 @@ class TestValiditySemantics:
 # ---------------------------------------------------------------------------
 # cycle_detector unit tests
 # ---------------------------------------------------------------------------
+
 
 class TestDetectDependsOnCycles:
     def test_should_return_empty_when_no_edges(self):

@@ -60,6 +60,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Resolve directories
     from data_loader.config import DATA_DIR
+
     input_dir = Path(args.input) if args.input else DATA_DIR / "processed"
     output_dir = Path(args.output) if args.output else CLEANED_DIR
 
@@ -81,12 +82,15 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     batch = run_batch(
-        input_dir, output_dir,
+        input_dir,
+        output_dir,
         force=args.force,
         concurrency=args.concurrency,
     )
 
-    print(f"Cleaned: {batch.cleaned}  Skipped: {batch.skipped}  Failed: {batch.failed}  Total: {batch.total}")
+    print(
+        f"Cleaned: {batch.cleaned}  Skipped: {batch.skipped}  Failed: {batch.failed}  Total: {batch.total}"
+    )
 
     for report in batch.reports:
         status_char = {"cleaned": "+", "skipped": "~", "failed": "!"}

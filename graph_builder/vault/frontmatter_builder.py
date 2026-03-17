@@ -59,12 +59,14 @@ def _build_sourced_from_pairs(
         title = title_map.get(edge.source_arxiv_id, "")
         link = _source_wikilink(edge.source_arxiv_id, title)
         links.append(link)
-        meta.append({
-            "target": link,
-            "section": edge.section,
-            "page": edge.page,
-            "confidence": edge.confidence,
-        })
+        meta.append(
+            {
+                "target": link,
+                "section": edge.section,
+                "page": edge.page,
+                "confidence": edge.confidence,
+            }
+        )
     return links, meta
 
 
@@ -181,11 +183,13 @@ def _populate_about_keys(
     for edge in coupling_edges:
         link = _concept_wikilink(edge.concept_slug)
         fm["about"].append(link)
-        fm["about_meta"].append({
-            "target": link,
-            "role": edge.role,
-            "aspect": edge.aspect,
-        })
+        fm["about_meta"].append(
+            {
+                "target": link,
+                "role": edge.role,
+                "aspect": edge.aspect,
+            }
+        )
 
 
 def _populate_claim_edge_keys(

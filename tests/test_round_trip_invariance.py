@@ -225,9 +225,7 @@ class TestRoundTripInvariance:
         identical to the Neo4j state.
         """
         vault_dir = tmp_path / "vault"
-        reader = _make_reader(
-            [concept], [claim], [source], provenances=[provenance]
-        )
+        reader = _make_reader([concept], [claim], [source], provenances=[provenance])
         export_client = _make_neo4j_client()
 
         manifest = await export_vault(vault_dir, reader, export_client)
@@ -258,9 +256,7 @@ class TestRoundTripInvariance:
         human_notes field must be returned.
         """
         vault_dir = tmp_path / "vault"
-        reader = _make_reader(
-            [concept], [claim], [source], provenances=[provenance]
-        )
+        reader = _make_reader([concept], [claim], [source], provenances=[provenance])
         export_client = _make_neo4j_client()
 
         manifest = await export_vault(vault_dir, reader, export_client)
@@ -307,5 +303,7 @@ def _inject_human_notes(path: Path, value: str) -> None:
 
     fm = yaml.safe_load(parts[1]) or {}
     fm["human_notes"] = value
-    new_fm = yaml.dump(fm, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    new_fm = yaml.dump(
+        fm, default_flow_style=False, allow_unicode=True, sort_keys=False
+    )
     path.write_text(f"---\n{new_fm}---\n{parts[2]}", encoding="utf-8")

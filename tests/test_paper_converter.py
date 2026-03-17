@@ -17,9 +17,11 @@ from data_loader.models import PaperInput, ConversionResult
 class TestConvertWithArxiv2md:
     async def test_success(self, monkeypatch):
         """It should return ConversionResult when arxiv2md succeeds."""
+
         async def mock_ingest(paper_id, **kwargs):
             class MockResult:
                 markdown = "# Test Paper\n\nContent with $E=mc^2$"
+
             return MockResult()
 
         monkeypatch.setattr(
@@ -33,6 +35,7 @@ class TestConvertWithArxiv2md:
 
     async def test_failure_returns_none(self, monkeypatch):
         """It should return None when arxiv2md raises."""
+
         async def mock_ingest(paper_id, **kwargs):
             raise RuntimeError("No HTML version available")
 
@@ -48,6 +51,7 @@ class TestConvertWithArxiv2md:
 class TestConvertPaper:
     async def test_uses_arxiv2md_when_available(self, monkeypatch):
         """It should use arxiv2md as primary converter."""
+
         async def mock_arxiv2md(arxiv_id):
             return ConversionResult(
                 arxiv_id=arxiv_id,
@@ -66,6 +70,7 @@ class TestConvertPaper:
 
     async def test_falls_back_to_mineru(self, monkeypatch):
         """It should fall back to MinerU when arxiv2md fails."""
+
         async def mock_arxiv2md(arxiv_id):
             return None
 
@@ -91,6 +96,7 @@ class TestConvertPaper:
 
     async def test_both_fail_returns_none(self, monkeypatch):
         """It should return None when both converters fail."""
+
         async def mock_arxiv2md(arxiv_id):
             return None
 
@@ -125,6 +131,7 @@ class TestConvertLocalPdf:
             return "# Extracted Content\n\nSome text from PDF."
 
         import asyncio
+
         loop = asyncio.get_event_loop()
         monkeypatch.setattr(loop, "run_in_executor", mock_run_in_executor)
 
@@ -163,6 +170,7 @@ class TestConvertLocalPdf:
             raise RuntimeError("MinerU parse error")
 
         import asyncio
+
         loop = asyncio.get_event_loop()
         monkeypatch.setattr(loop, "run_in_executor", mock_run_in_executor)
 

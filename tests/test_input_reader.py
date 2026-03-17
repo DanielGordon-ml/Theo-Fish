@@ -3,7 +3,12 @@
 @description Tests for input reading, normalization, and deduplication.
 """
 
-from data_loader.input_reader import normalize_arxiv_id, read_csv, read_cli_papers, merge_inputs
+from data_loader.input_reader import (
+    normalize_arxiv_id,
+    read_csv,
+    read_cli_papers,
+    merge_inputs,
+)
 from data_loader.models import PaperInput
 
 
@@ -59,7 +64,7 @@ class TestReadCsv:
         """It should skip rows with invalid ArXiv IDs."""
         csv_file = tmp_path / "bad.csv"
         csv_file.write_text(
-            'paper_name,file_path,file_type\n'
+            "paper_name,file_path,file_type\n"
             '"Good Paper",2706.03762,pdf\n'
             '"Bad Paper",not-a-valid-id,pdf\n'
         )
@@ -70,7 +75,7 @@ class TestReadCsv:
     def test_empty_csv(self, tmp_path):
         """It should return empty list for header-only CSV."""
         csv_file = tmp_path / "empty.csv"
-        csv_file.write_text('paper_name,file_path,file_type\n')
+        csv_file.write_text("paper_name,file_path,file_type\n")
         papers = read_csv(csv_file)
         assert papers == []
 
@@ -78,8 +83,7 @@ class TestReadCsv:
         """It should detect .pdf extension and create local PaperInput."""
         csv_file = tmp_path / "local.csv"
         csv_file.write_text(
-            'paper_name,file_path,file_type\n'
-            '"My Local Paper",my_paper.pdf,PDF\n'
+            'paper_name,file_path,file_type\n"My Local Paper",my_paper.pdf,PDF\n'
         )
         papers = read_csv(csv_file)
         assert len(papers) == 1
@@ -93,7 +97,7 @@ class TestReadCsv:
         """It should handle CSV with both ArXiv IDs and local PDFs."""
         csv_file = tmp_path / "mixed.csv"
         csv_file.write_text(
-            'paper_name,file_path,file_type\n'
+            "paper_name,file_path,file_type\n"
             '"ArXiv Paper",2706.03762,pdf\n'
             '"Local Paper",achieving_pareto.pdf,PDF\n'
         )
@@ -111,8 +115,7 @@ class TestReadCsv:
         """It should detect .PDF extension regardless of case."""
         csv_file = tmp_path / "case.csv"
         csv_file.write_text(
-            'paper_name,file_path,file_type\n'
-            '"Paper",my_paper.PDF,pdf\n'
+            'paper_name,file_path,file_type\n"Paper",my_paper.PDF,pdf\n'
         )
         papers = read_csv(csv_file)
         assert len(papers) == 1

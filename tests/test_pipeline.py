@@ -54,7 +54,8 @@ class TestRunPipeline:
         output_dir.mkdir()
 
         input_path = _write_paper(
-            input_dir, "1234.5678",
+            input_dir,
+            "1234.5678",
             markdown="# Title\n\n\n\n\nExtra whitespace.\n",
         )
 
@@ -105,7 +106,9 @@ class TestRunPipeline:
 
         original_md = "# Title\n\nSome content.\n"
         input_path = _write_paper(
-            input_dir, "1234.5678", markdown=original_md,
+            input_dir,
+            "1234.5678",
+            markdown=original_md,
         )
 
         run_pipeline(input_path, output_dir)

@@ -56,6 +56,7 @@ class TestParseArxivEntry:
     def test_parses_entry(self):
         """It should parse a feedparser entry into PaperMetadata."""
         import feedparser
+
         feed = feedparser.parse(SAMPLE_ENTRY_XML)
         entry = feed.entries[0]
         metadata = parse_arxiv_entry(entry)
@@ -99,6 +100,7 @@ class TestBuildLocalMetadata:
 class TestParseFrontmatterMetadata:
     async def test_returns_none_on_failure(self, monkeypatch):
         """It should return None when arxiv2md fails."""
+
         async def mock_ingest(paper_id, **kwargs):
             raise RuntimeError("No HTML version")
 
@@ -114,12 +116,15 @@ class TestParseFrontmatterMetadata:
 class TestFetchAllMetadata:
     async def test_fetches_batch(self, monkeypatch):
         """It should fetch metadata for a batch of papers."""
+
         async def mock_get(self, url, **kwargs):
             class MockResponse:
                 status_code = 200
                 text = SAMPLE_ENTRY_XML
+
                 def raise_for_status(self):
                     pass
+
             return MockResponse()
 
         monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
@@ -133,6 +138,7 @@ class TestFetchAllMetadata:
 
     async def test_handles_timeout(self, monkeypatch):
         """It should return empty dict on API timeout, not crash."""
+
         async def mock_get(self, url, **kwargs):
             raise httpx.TimeoutException("Connection timed out")
 
@@ -146,12 +152,15 @@ class TestFetchAllMetadata:
 
     async def test_returns_empty_for_missing(self, monkeypatch):
         """It should omit papers not found in the API response."""
+
         async def mock_get(self, url, **kwargs):
             class MockResponse:
                 status_code = 200
                 text = SAMPLE_ENTRY_XML  # Only has 2706.03762
+
                 def raise_for_status(self):
                     pass
+
             return MockResponse()
 
         monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)
@@ -176,8 +185,10 @@ class TestFetchAllMetadata:
             class MockResponse:
                 status_code = 200
                 text = SAMPLE_ENTRY_XML
+
                 def raise_for_status(self):
                     pass
+
             return MockResponse()
 
         monkeypatch.setattr(httpx.AsyncClient, "get", mock_get)

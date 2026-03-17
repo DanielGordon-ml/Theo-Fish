@@ -8,7 +8,12 @@ from graph_builder.models.concept import ConceptNode
 from graph_builder.models.claim import ClaimNode
 from graph_builder.models.source import SourceNode
 from graph_builder.models.provenance import ProvenanceNode
-from graph_builder.models.edges import ConceptEdge, ClaimEdge, CouplingEdge, SourcedFromEdge
+from graph_builder.models.edges import (
+    ConceptEdge,
+    ClaimEdge,
+    CouplingEdge,
+    SourcedFromEdge,
+)
 
 _ALL_SLUGS_CYPHER = "MATCH (c:Concept) RETURN c.slug AS slug"
 
@@ -167,12 +172,15 @@ class GraphReader:
             "s.arxiv_id AS source_arxiv_id, "
             "r.section AS section, r.confidence AS confidence"
         )
-        return [SourcedFromEdge(
-            node_slug=r.get("node_slug", ""),
-            source_arxiv_id=r.get("source_arxiv_id", ""),
-            section=r.get("section") or "",
-            confidence=r.get("confidence") or 0.0,
-        ) for r in rows]
+        return [
+            SourcedFromEdge(
+                node_slug=r.get("node_slug", ""),
+                source_arxiv_id=r.get("source_arxiv_id", ""),
+                section=r.get("section") or "",
+                confidence=r.get("confidence") or 0.0,
+            )
+            for r in rows
+        ]
 
     async def is_paper_built(self, arxiv_id: str) -> bool:
         """Check whether a Source node exists for the given arxiv_id.
@@ -226,7 +234,8 @@ def _row_to_model(row: dict, model_cls: type):
     props = row.get("props", row)
     allowed = model_cls.model_fields.keys()
     filtered = {
-        k: _coerce_neo4j_type(v) for k, v in props.items()
+        k: _coerce_neo4j_type(v)
+        for k, v in props.items()
         if k in allowed and v is not None
     }
     return model_cls(**filtered)

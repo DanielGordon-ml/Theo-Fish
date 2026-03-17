@@ -26,8 +26,15 @@ class TestLoadSchema:
         """It should load all 9 concept types."""
         schema = load_schema(SCHEMA_PATH)
         expected = {
-            "structure", "space", "operator", "property",
-            "quantity", "relation", "class", "problem", "criterion",
+            "structure",
+            "space",
+            "operator",
+            "property",
+            "quantity",
+            "relation",
+            "class",
+            "problem",
+            "criterion",
         }
         assert set(schema.concept_types.keys()) == expected
 
@@ -35,8 +42,12 @@ class TestLoadSchema:
         """It should load all 6 claim types."""
         schema = load_schema(SCHEMA_PATH)
         expected = {
-            "theorem", "lemma", "proposition",
-            "corollary", "conjecture", "algorithm",
+            "theorem",
+            "lemma",
+            "proposition",
+            "corollary",
+            "conjecture",
+            "algorithm",
         }
         assert set(schema.claim_types.keys()) == expected
 

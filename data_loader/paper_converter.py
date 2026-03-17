@@ -101,6 +101,7 @@ async def _download_pdf(arxiv_id: str, papers_dir: Path) -> Path | None:
     Skips download if the file already exists.
     """
     from data_loader.config import sanitize_arxiv_id
+
     pdf_path = papers_dir / f"{sanitize_arxiv_id(arxiv_id)}.pdf"
     if pdf_path.exists():
         return pdf_path
@@ -172,7 +173,8 @@ async def convert_local_pdf(
     pdf_path = for_process_dir / paper.local_filename
     if not pdf_path.exists():
         logger.error(
-            "Local PDF not found: %s", pdf_path,
+            "Local PDF not found: %s",
+            pdf_path,
             extra={"arxiv_id": paper.arxiv_id},
         )
         return None
@@ -181,7 +183,10 @@ async def convert_local_pdf(
     with tempfile.TemporaryDirectory() as tmp_out:
         try:
             markdown = await loop.run_in_executor(
-                _executor, _run_mineru, str(pdf_path), tmp_out,
+                _executor,
+                _run_mineru,
+                str(pdf_path),
+                tmp_out,
             )
             return ConversionResult(
                 arxiv_id=paper.arxiv_id,
@@ -192,7 +197,8 @@ async def convert_local_pdf(
         except Exception as e:
             logger.error(
                 "MinerU failed for local PDF %s: %s",
-                paper.local_filename, str(e),
+                paper.local_filename,
+                str(e),
                 extra={"arxiv_id": paper.arxiv_id},
             )
             return None

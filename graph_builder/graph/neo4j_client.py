@@ -53,6 +53,7 @@ class Neo4jClient:
         @param params Keyword parameters forwarded to tx.run
         @raises neo4j.exceptions.Neo4jError on query failure
         """
+
         async def _tx(tx):
             result = await tx.run(query, **params)
             return [record.data() async for record in result]
@@ -69,6 +70,7 @@ class Neo4jClient:
         @param params Keyword parameters forwarded to tx.run
         @raises neo4j.exceptions.Neo4jError on query failure
         """
+
         async def _tx(tx):
             result = await tx.run(query, **params)
             return [record.data() async for record in result]

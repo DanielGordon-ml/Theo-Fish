@@ -44,46 +44,50 @@ _PAPER_TITLE = "Spectral Theory of Compact Operators"
 _PAPER_SLUG = "spectral-theory-of-compact-operators"
 _SANITIZED_ID = "2301-00001"
 
-_CONCEPT_JSON = json.dumps({
-    "concepts": [
-        {
-            "name": "Compact Operator",
-            "semantic_type": "operator",
-            "canonical_definition": "A bounded linear map sending bounded sets to precompact sets.",
-            "formal_spec": "T: X -> X, T(B) relatively compact",
-            "aliases": ["compact linear map"],
-        }
-    ]
-})
+_CONCEPT_JSON = json.dumps(
+    {
+        "concepts": [
+            {
+                "name": "Compact Operator",
+                "semantic_type": "operator",
+                "canonical_definition": "A bounded linear map sending bounded sets to precompact sets.",
+                "formal_spec": "T: X -> X, T(B) relatively compact",
+                "aliases": ["compact linear map"],
+            }
+        ]
+    }
+)
 
-_CLAIM_JSON = json.dumps({
-    "claims": [
-        {
-            "label": "Theorem 1",
-            "claim_type": "theorem",
-            "statement": "Every compact operator on a Hilbert space has a spectral decomposition.",
-            "conclusion": "Spectral decomposition exists.",
-            "strength": "proved",
-            "status": "unverified",
-        }
-    ]
-})
+_CLAIM_JSON = json.dumps(
+    {
+        "claims": [
+            {
+                "label": "Theorem 1",
+                "claim_type": "theorem",
+                "statement": "Every compact operator on a Hilbert space has a spectral decomposition.",
+                "conclusion": "Spectral decomposition exists.",
+                "strength": "proved",
+                "status": "unverified",
+            }
+        ]
+    }
+)
 
-_EDGE_JSON = json.dumps({
-    "claim_edges": [],
-    "coupling_edges": [
-        {
-            "claim_slug": f"{_PAPER_SLUG}--theorem-1",
-            "concept_slug": "compact-operator",
-            "role": "primary",
-            "aspect": "",
-        }
-    ],
-})
+_EDGE_JSON = json.dumps(
+    {
+        "claim_edges": [],
+        "coupling_edges": [
+            {
+                "claim_slug": f"{_PAPER_SLUG}--theorem-1",
+                "concept_slug": "compact-operator",
+                "role": "primary",
+                "aspect": "",
+            }
+        ],
+    }
+)
 
-_CROSS_SECTION_JSON = json.dumps({
-    "edges": []
-})
+_CROSS_SECTION_JSON = json.dumps({"edges": []})
 
 
 # ---------------------------------------------------------------------------
@@ -150,6 +154,7 @@ def _build_mock_llm(
       "relationship extractor" -> edge_json
       "gap-fill extractor" -> cross_json
     """
+
     async def _call(system_prompt: str, user_prompt: str) -> LLMResponse:
         prompt_lower = system_prompt.lower()
         if "concept extractor" in prompt_lower:
@@ -259,7 +264,9 @@ class TestE2ESmoke:
             )
 
         # 5. Verify BuildResult has the expected shape.
-        assert result.status == "built", f"Expected 'built', got: {result.status!r} ({result.error})"
+        assert result.status == "built", (
+            f"Expected 'built', got: {result.status!r} ({result.error})"
+        )
         assert result.arxiv_id == _ARXIV_ID
         assert result.concept_count >= 1
         assert result.claim_count >= 1
@@ -318,24 +325,28 @@ class TestE2ESmoke:
         # 9. Call sync_back with a mocked Neo4j client.
         async def _sync_read(query: str, **kwargs):
             if "Concept" in query:
-                return [{"props": {
-                    "slug": concept.slug,
-                    "name": concept.name,
-                    "canonical_definition": concept.canonical_definition,
-                    "human_notes": "",
-                    "aliases": [],
-                    "status": "canonical",
-                    "semantic_type": "operator",
-                    "formal_spec": "",
-                    "rhetorical_origin": "",
-                    "components": [],
-                    "ts_domain": "",
-                    "ts_codomain": "",
-                    "ts_applies_to": "",
-                    "ts_member_type": "",
-                    "ts_objective": "",
-                    "embedding": [],
-                }}]
+                return [
+                    {
+                        "props": {
+                            "slug": concept.slug,
+                            "name": concept.name,
+                            "canonical_definition": concept.canonical_definition,
+                            "human_notes": "",
+                            "aliases": [],
+                            "status": "canonical",
+                            "semantic_type": "operator",
+                            "formal_spec": "",
+                            "rhetorical_origin": "",
+                            "components": [],
+                            "ts_domain": "",
+                            "ts_codomain": "",
+                            "ts_applies_to": "",
+                            "ts_member_type": "",
+                            "ts_objective": "",
+                            "embedding": [],
+                        }
+                    }
+                ]
             return []
 
         sync_client = MagicMock()

@@ -53,14 +53,14 @@ def _extract_authors(md: str) -> list[str] | None:
     if not title_match:
         return None
 
-    after_title = md[title_match.end():]
+    after_title = md[title_match.end() :]
 
     # Find Abstract heading
     abstract_match = re.search(r"^##?\s+Abstract", after_title, re.MULTILINE)
     if not abstract_match:
         return None
 
-    between = after_title[:abstract_match.start()].strip()
+    between = after_title[: abstract_match.start()].strip()
     if not between:
         return None
 

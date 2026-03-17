@@ -57,7 +57,9 @@ async def _process_one(
                 extra={"arxiv_id": arxiv_id},
             )
             return PaperResult(
-                arxiv_id=arxiv_id, status="failed", error="no metadata",
+                arxiv_id=arxiv_id,
+                status="failed",
+                error="no metadata",
             )
 
         # Convert (with concurrency limit)
@@ -66,7 +68,9 @@ async def _process_one(
 
     if conversion is None:
         return PaperResult(
-            arxiv_id=arxiv_id, status="failed", error="conversion failed",
+            arxiv_id=arxiv_id,
+            status="failed",
+            error="conversion failed",
         )
 
     # Assemble and write
@@ -81,11 +85,14 @@ async def _process_one(
         )
     except Exception as e:
         logger.error(
-            "Failed to write document: %s", str(e),
+            "Failed to write document: %s",
+            str(e),
             extra={"arxiv_id": arxiv_id},
         )
         return PaperResult(
-            arxiv_id=arxiv_id, status="failed", error=str(e),
+            arxiv_id=arxiv_id,
+            status="failed",
+            error=str(e),
         )
 
 
@@ -127,9 +134,13 @@ async def process_batch(
     for r in raw_results:
         if isinstance(r, Exception):
             counts["failed"] += 1
-            paper_results.append(PaperResult(
-                arxiv_id="unknown", status="failed", error=str(r),
-            ))
+            paper_results.append(
+                PaperResult(
+                    arxiv_id="unknown",
+                    status="failed",
+                    error=str(r),
+                )
+            )
             continue
 
         paper_results.append(r)

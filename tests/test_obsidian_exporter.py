@@ -242,9 +242,7 @@ class TestClaimFileWriting:
 
         await export_vault(tmp_path, reader, client)
 
-        expected = (
-            tmp_path / "claims" / "theorems" / f"{claim.slug}.md"
-        )
+        expected = tmp_path / "claims" / "theorems" / f"{claim.slug}.md"
         assert expected.exists()
 
     @pytest.mark.asyncio
@@ -397,9 +395,7 @@ class TestHumanFieldPreservation:
 
         claim_file = tmp_path / "claims" / "theorems" / f"{claim.slug}.md"
         content = claim_file.read_text()
-        content = content.replace(
-            f"status: {claim.status}", "status: verified"
-        )
+        content = content.replace(f"status: {claim.status}", "status: verified")
         claim_file.write_text(content)
 
         await export_vault(tmp_path, reader, client)
@@ -417,7 +413,9 @@ class TestManifestOutput:
     """It should write export-manifest.json with file counts."""
 
     @pytest.mark.asyncio
-    async def test_it_should_write_manifest_json(self, tmp_path, concept, source, claim):
+    async def test_it_should_write_manifest_json(
+        self, tmp_path, concept, source, claim
+    ):
         """export-manifest.json is created in _meta/ after export."""
         reader = _make_reader([concept], [claim], [source])
         client = _make_neo4j_client()

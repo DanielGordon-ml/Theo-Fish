@@ -90,9 +90,15 @@ class TestBuildParser:
     def test_it_should_combine_concurrency_no_thinking_and_paper(self):
         """--concurrency, --no-thinking, and --paper can be used together."""
         parser = build_parser()
-        args = parser.parse_args([
-            "--concurrency", "5", "--no-thinking", "--paper", "1904.07272",
-        ])
+        args = parser.parse_args(
+            [
+                "--concurrency",
+                "5",
+                "--no-thinking",
+                "--paper",
+                "1904.07272",
+            ]
+        )
         assert args.concurrency == 5
         assert args.no_thinking is True
         assert args.paper == "1904.07272"
@@ -105,6 +111,7 @@ class TestBuildParser:
             # parse_args alone won't error — main() enforces this via a
             # post-parse check. We test the _validate_args helper directly.
             from graph_builder.orchestrator.cli import _validate_args
+
             _validate_args(parser, parser.parse_args([]))
 
         assert exc_info.value.code != 0

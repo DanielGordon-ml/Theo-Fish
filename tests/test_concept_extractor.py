@@ -26,6 +26,7 @@ from graph_builder.models.section import Section
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_schema() -> GraphSchema:
     """Build a minimal GraphSchema sufficient for concept extractor tests."""
     return GraphSchema(
@@ -89,6 +90,7 @@ def _make_mock_client(concepts: list[dict]) -> MagicMock:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestExtractConceptsFromSection:
     """Tests for extract_concepts_from_section()."""
 
@@ -97,10 +99,12 @@ class TestExtractConceptsFromSection:
         """It should call the LLM and return a list of ConceptNode objects."""
         schema = _make_schema()
         section = _make_section()
-        client = _make_mock_client([
-            {"name": "Markov Decision Process", "semantic_type": "structure"},
-            {"name": "regret", "semantic_type": "quantity"},
-        ])
+        client = _make_mock_client(
+            [
+                {"name": "Markov Decision Process", "semantic_type": "structure"},
+                {"name": "regret", "semantic_type": "quantity"},
+            ]
+        )
 
         result = await extract_concepts_from_section(section, schema, client)
 
@@ -129,12 +133,17 @@ class TestExtractConceptsFromSection:
             {"slug": "markov-decision-process", "semantic_type": "structure"},
             {"slug": "regret", "semantic_type": "quantity"},
         ]
-        client = _make_mock_client([
-            {"name": "policy", "semantic_type": "structure"},
-        ])
+        client = _make_mock_client(
+            [
+                {"name": "policy", "semantic_type": "structure"},
+            ]
+        )
 
         await extract_concepts_from_section(
-            section, schema, client, existing_concepts=existing_concepts,
+            section,
+            schema,
+            client,
+            existing_concepts=existing_concepts,
         )
 
         _, user_prompt = client.call.call_args[0]
@@ -147,12 +156,14 @@ class TestExtractConceptsFromSection:
         schema = _make_schema()
         section = _make_section()
         client = MagicMock()
-        client.call = AsyncMock(return_value=LLMResponse(
-            content="this is not json {{{",
-            input_tokens=10,
-            output_tokens=5,
-            model="deepseek-chat",
-        ))
+        client.call = AsyncMock(
+            return_value=LLMResponse(
+                content="this is not json {{{",
+                input_tokens=10,
+                output_tokens=5,
+                model="deepseek-chat",
+            )
+        )
 
         result = await extract_concepts_from_section(section, schema, client)
 
@@ -163,9 +174,11 @@ class TestExtractConceptsFromSection:
         """It should set the section field on each extracted ConceptNode."""
         schema = _make_schema()
         section = _make_section(heading="3 Main Results")
-        client = _make_mock_client([
-            {"name": "MDP", "semantic_type": "structure"},
-        ])
+        client = _make_mock_client(
+            [
+                {"name": "MDP", "semantic_type": "structure"},
+            ]
+        )
 
         result = await extract_concepts_from_section(section, schema, client)
 

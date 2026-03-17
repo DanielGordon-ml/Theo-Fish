@@ -17,6 +17,7 @@ from data_loader.models import (
 class TestProcessBatch:
     async def test_processes_papers(self, tmp_data_dir, monkeypatch):
         """It should process papers and return BatchResult."""
+
         async def mock_fetch_all(papers, client):
             return {
                 "2706.03762": PaperMetadata(
@@ -40,7 +41,9 @@ class TestProcessBatch:
                 conversion_warnings=[],
             )
 
-        monkeypatch.setattr("data_loader.orchestrator.fetch_all_metadata", mock_fetch_all)
+        monkeypatch.setattr(
+            "data_loader.orchestrator.fetch_all_metadata", mock_fetch_all
+        )
         monkeypatch.setattr("data_loader.orchestrator.convert_paper", mock_convert)
 
         papers = [PaperInput(arxiv_id="2706.03762", paper_name="Test Paper")]
@@ -65,10 +68,13 @@ class TestProcessBatch:
 
     async def test_skips_existing(self, tmp_data_dir, monkeypatch):
         """It should skip already-processed papers."""
+
         async def mock_fetch_all(papers, client):
             return {}
 
-        monkeypatch.setattr("data_loader.orchestrator.fetch_all_metadata", mock_fetch_all)
+        monkeypatch.setattr(
+            "data_loader.orchestrator.fetch_all_metadata", mock_fetch_all
+        )
 
         processed_dir = tmp_data_dir / "processed"
         (processed_dir / "2706.03762.json").write_text("{}")
@@ -88,19 +94,28 @@ class TestProcessBatch:
 
     async def test_handles_conversion_failure(self, tmp_data_dir, monkeypatch):
         """It should count papers that fail conversion as failed."""
+
         async def mock_fetch_all(papers, client):
             return {
                 "2706.03762": PaperMetadata(
-                    arxiv_id="2706.03762", title="T", authors=[], abstract="",
-                    publication_date="", categories=[], primary_category="",
-                    math_subject="", source="arxiv_api",
+                    arxiv_id="2706.03762",
+                    title="T",
+                    authors=[],
+                    abstract="",
+                    publication_date="",
+                    categories=[],
+                    primary_category="",
+                    math_subject="",
+                    source="arxiv_api",
                 ),
             }
 
         async def mock_convert(arxiv_id, papers_dir):
             return None  # Both converters failed
 
-        monkeypatch.setattr("data_loader.orchestrator.fetch_all_metadata", mock_fetch_all)
+        monkeypatch.setattr(
+            "data_loader.orchestrator.fetch_all_metadata", mock_fetch_all
+        )
         monkeypatch.setattr("data_loader.orchestrator.convert_paper", mock_convert)
 
         papers = [PaperInput(arxiv_id="2706.03762")]
@@ -166,6 +181,7 @@ class TestProcessBatch:
 
     async def test_mixed_batch_arxiv_and_local(self, tmp_data_dir, monkeypatch):
         """It should handle a mixed batch of ArXiv and local papers."""
+
         async def mock_fetch_all(papers, client):
             # Should only receive the ArXiv paper
             return {

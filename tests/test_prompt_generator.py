@@ -26,13 +26,24 @@ from graph_builder.extraction.prompt_generator import (
 SCHEMA_PATH = Path("data_vault/_meta/schema.yaml")
 
 ALL_CONCEPT_TYPES = {
-    "structure", "space", "operator", "property",
-    "quantity", "relation", "class", "problem", "criterion",
+    "structure",
+    "space",
+    "operator",
+    "property",
+    "quantity",
+    "relation",
+    "class",
+    "problem",
+    "criterion",
 }
 
 ALL_CLAIM_TYPES = {
-    "theorem", "lemma", "proposition",
-    "corollary", "conjecture", "algorithm",
+    "theorem",
+    "lemma",
+    "proposition",
+    "corollary",
+    "conjecture",
+    "algorithm",
 }
 
 
@@ -141,7 +152,11 @@ class TestBuildClaimPrompt:
     def test_it_should_inject_concept_list_when_provided(self, schema):
         """It should inject concept names/slugs/types into prompt when concept_list provided."""
         concepts = [
-            {"name": "Bellman operator", "slug": "bellman-operator", "type": "operator"},
+            {
+                "name": "Bellman operator",
+                "slug": "bellman-operator",
+                "type": "operator",
+            },
             {"name": "policy space", "slug": "policy-space", "type": "space"},
         ]
         prompt = build_claim_prompt(schema, concept_list=concepts)
@@ -152,9 +167,12 @@ class TestBuildClaimPrompt:
     def test_it_should_not_include_concept_list_when_not_provided(self, schema):
         """It should not include concept grounding section when concept_list is None."""
         prompt_without = build_claim_prompt(schema, concept_list=None)
-        prompt_with = build_claim_prompt(schema, concept_list=[
-            {"name": "Markov chain", "slug": "markov-chain", "type": "structure"},
-        ])
+        prompt_with = build_claim_prompt(
+            schema,
+            concept_list=[
+                {"name": "Markov chain", "slug": "markov-chain", "type": "structure"},
+            ],
+        )
         # The prompt with concepts should be longer
         assert len(prompt_with) > len(prompt_without)
 
@@ -162,7 +180,11 @@ class TestBuildClaimPrompt:
         """It should include descriptions for each claim type."""
         prompt = build_claim_prompt(schema)
         # Known description fragments from schema
-        assert "proven" in prompt.lower() or "proof" in prompt.lower() or "result" in prompt.lower()
+        assert (
+            "proven" in prompt.lower()
+            or "proof" in prompt.lower()
+            or "result" in prompt.lower()
+        )
 
     def test_it_should_instruct_to_extract_assertions(self, schema):
         """It should instruct to extract assertions/claims, not objects."""
@@ -246,13 +268,20 @@ class TestBuildGapFillPrompt:
         """It should reference gap-filling or missing connections."""
         prompt = build_gap_fill_prompt(schema)
         lower = prompt.lower()
-        assert "gap" in lower or "missing" in lower or "implicit" in lower or "cross" in lower
+        assert (
+            "gap" in lower
+            or "missing" in lower
+            or "implicit" in lower
+            or "cross" in lower
+        )
 
 
 class TestSchemaReflection:
     """Tests for dynamic schema-reflection behavior."""
 
-    def test_it_should_reflect_added_concept_type_in_concept_prompt(self, minimal_schema):
+    def test_it_should_reflect_added_concept_type_in_concept_prompt(
+        self, minimal_schema
+    ):
         """It should include a newly added concept type in the concept prompt."""
         prompt_before = build_concept_prompt(minimal_schema)
         assert "category" not in prompt_before

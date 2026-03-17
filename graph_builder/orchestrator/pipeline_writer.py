@@ -86,7 +86,9 @@ async def _write_concepts(
             count += 1
         except Exception as err:
             logger.error(
-                "Failed to write concept '%s': %s", m.concept.slug, err,
+                "Failed to write concept '%s': %s",
+                m.concept.slug,
+                err,
             )
     return count
 
@@ -110,7 +112,9 @@ async def _write_claims(
             count += 1
         except Exception as err:
             logger.error(
-                "Failed to write claim '%s': %s", claim.slug, err,
+                "Failed to write claim '%s': %s",
+                claim.slug,
+                err,
             )
     return count
 

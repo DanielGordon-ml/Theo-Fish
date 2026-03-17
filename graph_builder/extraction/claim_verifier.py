@@ -56,7 +56,9 @@ async def verify_section_claims(
     apply_corrections(claims, result.get("corrections", []))
     apply_flags(claims, result.get("flags", []))
     return build_missing_claims(
-        result.get("missing_claims", []), paper_slug, section_heading,
+        result.get("missing_claims", []),
+        paper_slug,
+        section_heading,
     )
 
 
@@ -72,7 +74,8 @@ def apply_corrections(claims: list[ClaimNode], corrections: list[dict]) -> None:
 
 
 def _apply_single_correction(
-    claim_index: dict[str, ClaimNode], corr: dict,
+    claim_index: dict[str, ClaimNode],
+    corr: dict,
 ) -> None:
     """Apply one correction entry to the matching claim."""
     slug = corr.get("claim_slug", "")
@@ -98,7 +101,8 @@ def apply_flags(claims: list[ClaimNode], flags: list[dict]) -> None:
 
 
 def _apply_single_flag(
-    claim_index: dict[str, ClaimNode], flag: dict,
+    claim_index: dict[str, ClaimNode],
+    flag: dict,
 ) -> None:
     """Apply one flag entry, setting review_needed if below threshold."""
     slug = flag.get("claim_slug", "")
@@ -111,7 +115,9 @@ def _apply_single_flag(
 
 
 def build_missing_claims(
-    missing: list[dict], paper_slug: str, section_heading: str,
+    missing: list[dict],
+    paper_slug: str,
+    section_heading: str,
 ) -> tuple[list[ClaimNode], list[CouplingEdge]]:
     """Construct ClaimNodes and coupling edges from missing claim data.
 
@@ -133,23 +139,28 @@ def build_missing_claims(
 
 
 def _build_single_missing(
-    entry: dict, paper_slug: str, section_heading: str,
+    entry: dict,
+    paper_slug: str,
+    section_heading: str,
 ) -> tuple[ClaimNode, list[CouplingEdge]] | None:
     """Build one ClaimNode and its coupling edges from a missing entry."""
     label = entry.get("label", "")
     if not label:
         return None
     claim = ClaimNode(
-        source_paper_slug=paper_slug, label=label,
+        source_paper_slug=paper_slug,
+        label=label,
         claim_type=entry.get("claim_type", "theorem"),
-        statement=entry.get("statement", ""), section=section_heading,
+        statement=entry.get("statement", ""),
+        section=section_heading,
     )
     edges = _build_concept_edges(claim.slug, entry.get("about_concepts", []))
     return claim, edges
 
 
 def _build_concept_edges(
-    claim_slug: str, concepts: list,
+    claim_slug: str,
+    concepts: list,
 ) -> list[CouplingEdge]:
     """Create CouplingEdge instances for each valid concept slug."""
     return [
@@ -181,7 +192,9 @@ def _build_system_prompt() -> str:
 
 
 def _build_user_prompt(
-    section_text: str, proof_map: dict[str, str], claims: list[ClaimNode],
+    section_text: str,
+    proof_map: dict[str, str],
+    claims: list[ClaimNode],
 ) -> str:
     """Build the user prompt with section text and extracted claims."""
     claims_json = _serialize_claims(claims)
@@ -197,10 +210,19 @@ def _build_user_prompt(
 def _serialize_claims(claims: list[ClaimNode]) -> str:
     """Serialize claims to JSON for the verification prompt."""
     return json.dumps(
-        [{"slug": c.slug, "label": c.label, "claim_type": c.claim_type,
-          "statement": c.statement, "proof": c.proof,
-          "proof_technique": c.proof_technique, "strength": c.strength}
-         for c in claims], indent=2,
+        [
+            {
+                "slug": c.slug,
+                "label": c.label,
+                "claim_type": c.claim_type,
+                "statement": c.statement,
+                "proof": c.proof,
+                "proof_technique": c.proof_technique,
+                "strength": c.strength,
+            }
+            for c in claims
+        ],
+        indent=2,
     )
 
 

@@ -264,7 +264,8 @@ class GraphWriter:
         @param paper_slug Source paper slug to match
         """
         await self._client.execute_write(
-            _CLEAR_CLAIMS_CYPHER, paper_slug=paper_slug,
+            _CLEAR_CLAIMS_CYPHER,
+            paper_slug=paper_slug,
         )
 
     async def clear_paper_provenances(self, arxiv_id: str) -> None:
@@ -273,7 +274,8 @@ class GraphWriter:
         @param arxiv_id ArXiv ID of the source paper
         """
         await self._client.execute_write(
-            _CLEAR_PROVENANCES_CYPHER, arxiv_id=arxiv_id,
+            _CLEAR_PROVENANCES_CYPHER,
+            arxiv_id=arxiv_id,
         )
 
     async def create_schema_constraints(self) -> None:

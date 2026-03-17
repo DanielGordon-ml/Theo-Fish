@@ -16,9 +16,7 @@ from graph_builder.models.section import Section
 logger = logging.getLogger("graph_builder")
 
 # Header text prefixed to the existing-concept shortlist block
-_KNOWN_CONCEPTS_HEADER = (
-    "Known concepts (use exact names if this concept matches):"
-)
+_KNOWN_CONCEPTS_HEADER = "Known concepts (use exact names if this concept matches):"
 
 
 async def extract_concepts_from_section(

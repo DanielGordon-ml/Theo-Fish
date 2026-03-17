@@ -179,9 +179,7 @@ class TestIsPaperBuilt:
     async def test_it_should_return_true_when_source_exists(self):
         """Returns True if a Source node for the arxiv_id exists."""
         mock_client = _make_mock_client()
-        mock_client.execute_read = AsyncMock(
-            return_value=[{"count": 1}]
-        )
+        mock_client.execute_read = AsyncMock(return_value=[{"count": 1}])
         reader = GraphReader(mock_client)
 
         result = await reader.is_paper_built("2301.00001")
@@ -192,9 +190,7 @@ class TestIsPaperBuilt:
     async def test_it_should_return_false_when_source_missing(self):
         """Returns False if no Source node for the arxiv_id exists."""
         mock_client = _make_mock_client()
-        mock_client.execute_read = AsyncMock(
-            return_value=[{"count": 0}]
-        )
+        mock_client.execute_read = AsyncMock(return_value=[{"count": 0}])
         reader = GraphReader(mock_client)
 
         result = await reader.is_paper_built("9999.99999")

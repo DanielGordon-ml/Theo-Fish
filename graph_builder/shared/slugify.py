@@ -17,22 +17,55 @@ _LATEX_BACKSLASH_RE = re.compile(r"\\([a-zA-Z]+)")
 
 # Greek letter map for LaTeX command names (common in math)
 _GREEK_MAP = {
-    "alpha": "a", "beta": "b", "gamma": "g", "delta": "d",
-    "epsilon": "epsilon", "zeta": "z", "eta": "eta", "theta": "theta",
-    "lambda": "lambda", "mu": "mu", "pi": "pi", "sigma": "sigma",
-    "tau": "tau", "phi": "phi", "omega": "omega",
+    "alpha": "a",
+    "beta": "b",
+    "gamma": "g",
+    "delta": "d",
+    "epsilon": "epsilon",
+    "zeta": "z",
+    "eta": "eta",
+    "theta": "theta",
+    "lambda": "lambda",
+    "mu": "mu",
+    "pi": "pi",
+    "sigma": "sigma",
+    "tau": "tau",
+    "phi": "phi",
+    "omega": "omega",
 }
 
 # Unicode Greek character -> ASCII replacement (applied before NFKD)
 _UNICODE_GREEK_MAP = {
-    "α": "a", "β": "b", "γ": "g", "δ": "d",
-    "ε": "epsilon", "ζ": "z", "η": "eta", "θ": "theta",
-    "λ": "lambda", "μ": "mu", "π": "pi", "σ": "sigma",
-    "τ": "tau", "φ": "phi", "ω": "omega",
-    "Α": "a", "Β": "b", "Γ": "g", "Δ": "d",
-    "Ε": "epsilon", "Ζ": "z", "Η": "eta", "Θ": "theta",
-    "Λ": "lambda", "Μ": "mu", "Π": "pi", "Σ": "sigma",
-    "Τ": "tau", "Φ": "phi", "Ω": "omega",
+    "α": "a",
+    "β": "b",
+    "γ": "g",
+    "δ": "d",
+    "ε": "epsilon",
+    "ζ": "z",
+    "η": "eta",
+    "θ": "theta",
+    "λ": "lambda",
+    "μ": "mu",
+    "π": "pi",
+    "σ": "sigma",
+    "τ": "tau",
+    "φ": "phi",
+    "ω": "omega",
+    "Α": "a",
+    "Β": "b",
+    "Γ": "g",
+    "Δ": "d",
+    "Ε": "epsilon",
+    "Ζ": "z",
+    "Η": "eta",
+    "Θ": "theta",
+    "Λ": "lambda",
+    "Μ": "mu",
+    "Π": "pi",
+    "Σ": "sigma",
+    "Τ": "tau",
+    "Φ": "phi",
+    "Ω": "omega",
 }
 
 
@@ -64,9 +97,7 @@ def slugify(name: str) -> str:
 
     # Unicode NFKD normalization
     text = unicodedata.normalize("NFKD", text)
-    text = "".join(
-        c for c in text if not unicodedata.combining(c)
-    )
+    text = "".join(c for c in text if not unicodedata.combining(c))
 
     text = text.lower()
     text = re.sub(r"[^a-z0-9]+", "-", text)

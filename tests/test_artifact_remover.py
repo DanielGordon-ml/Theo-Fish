@@ -10,8 +10,7 @@ class TestHtmlTableConversion:
     def test_should_convert_simple_table(self):
         """It should convert an HTML table to markdown pipe table."""
         html = (
-            "<table><tr><th>A</th><th>B</th></tr>"
-            "<tr><td>1</td><td>2</td></tr></table>"
+            "<table><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></table>"
         )
         result, stage = remove_artifacts(html)
         assert "| A | B |" in result

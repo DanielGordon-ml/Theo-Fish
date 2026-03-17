@@ -83,28 +83,38 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         description="Theo-Fish ETL: extract mathematical knowledge from papers",
     )
     parser.add_argument(
-        "arxiv_id", nargs="?", default=None,
+        "arxiv_id",
+        nargs="?",
+        default=None,
         help="ArXiv ID or paper name to process",
     )
     parser.add_argument(
-        "--csv", dest="csv_path", default=None,
+        "--csv",
+        dest="csv_path",
+        default=None,
         help="Path to CSV or text file with paper IDs",
     )
     parser.add_argument(
-        "--from", dest="from_stage", default="load",
+        "--from",
+        dest="from_stage",
+        default="load",
         choices=["load", "clean", "process"],
         help="Start pipeline from this stage (default: load)",
     )
     parser.add_argument(
-        "--force", action="store_true",
+        "--force",
+        action="store_true",
         help="Re-extract even if paper already built",
     )
     parser.add_argument(
-        "--concurrency", type=int, default=DEFAULT_CONCURRENCY,
+        "--concurrency",
+        type=int,
+        default=DEFAULT_CONCURRENCY,
         help=f"Max parallel LLM calls (default: {DEFAULT_CONCURRENCY})",
     )
     parser.add_argument(
-        "--no-export", action="store_true",
+        "--no-export",
+        action="store_true",
         help="Skip vault export after processing",
     )
     return parser
@@ -137,7 +147,9 @@ async def _load_stage(
             )
         logger.info(
             "Load: %d processed, %d skipped, %d failed",
-            result.processed, result.skipped, result.failed,
+            result.processed,
+            result.skipped,
+            result.failed,
         )
     except Exception:
         logger.exception("Load stage failed — continuing")
@@ -182,7 +194,11 @@ async def _process_stage(
 
     try:
         counts = await _process_all(
-            arxiv_ids, options, deepseek, claude, neo4j,
+            arxiv_ids,
+            options,
+            deepseek,
+            claude,
+            neo4j,
         )
         if not args.no_export:
             await _export(neo4j)
@@ -220,7 +236,8 @@ async def _run(args: argparse.Namespace) -> int:
 
 
 def _build_options(
-    schema, args: argparse.Namespace,
+    schema,
+    args: argparse.Namespace,
 ) -> PipelineOptions:
     """Construct PipelineOptions from schema and CLI args.
 
@@ -255,11 +272,17 @@ async def _process_all(
     for paper_id in arxiv_ids:
         logger.info("Processing: %s", paper_id)
         result = await process_paper(
-            paper_id, options, deepseek,
-            neo4j, claim_llm_client=claude,
+            paper_id,
+            options,
+            deepseek,
+            neo4j,
+            claim_llm_client=claude,
         )
         built, skipped, failed = _tally(
-            result, built, skipped, failed,
+            result,
+            built,
+            skipped,
+            failed,
         )
     return built, skipped, failed
 
@@ -275,7 +298,10 @@ async def _export(neo4j: Neo4jClient) -> None:
 
 
 def _tally(
-    result, built: int, skipped: int, failed: int,
+    result,
+    built: int,
+    skipped: int,
+    failed: int,
 ) -> tuple[int, int, int]:
     """Update counters based on a BuildResult.
 

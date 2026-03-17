@@ -3,7 +3,6 @@
 @description Tests for deterministic slug generation.
 """
 
-
 from graph_builder.shared.slugify import slugify
 
 

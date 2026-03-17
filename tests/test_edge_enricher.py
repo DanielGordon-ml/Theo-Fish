@@ -28,6 +28,7 @@ from graph_builder.models.edges import ClaimEdge, CouplingEdge
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_schema() -> GraphSchema:
     """Build a minimal GraphSchema with claim and coupling edge types."""
     return GraphSchema(
@@ -97,13 +98,17 @@ def _make_concept(
     return ConceptNode(name=name, semantic_type=semantic_type, formal_spec="R_T")
 
 
-def _make_llm_response(claim_edges: list[dict], coupling_edges: list[dict]) -> LLMResponse:
+def _make_llm_response(
+    claim_edges: list[dict], coupling_edges: list[dict]
+) -> LLMResponse:
     """Build an LLMResponse with claim and coupling edge payloads."""
     return LLMResponse(
-        content=json.dumps({
-            "claim_edges": claim_edges,
-            "coupling_edges": coupling_edges,
-        }),
+        content=json.dumps(
+            {
+                "claim_edges": claim_edges,
+                "coupling_edges": coupling_edges,
+            }
+        ),
         input_tokens=100,
         output_tokens=50,
         model="deepseek-chat",
@@ -143,6 +148,7 @@ _VALID_COUPLING_EDGE = {
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 class TestEnrichSectionEdges:
     """Tests for enrich_section_edges()."""
@@ -267,12 +273,14 @@ class TestEnrichSectionEdges:
         schema = _make_schema()
         claims = [_make_claim()]
         client = MagicMock()
-        client.call = AsyncMock(return_value=LLMResponse(
-            content="not valid json {{{",
-            input_tokens=10,
-            output_tokens=5,
-            model="deepseek-chat",
-        ))
+        client.call = AsyncMock(
+            return_value=LLMResponse(
+                content="not valid json {{{",
+                input_tokens=10,
+                output_tokens=5,
+                model="deepseek-chat",
+            )
+        )
 
         claim_edges, coupling_edges = await enrich_section_edges(
             claims, "Section.", [], claims, schema, client

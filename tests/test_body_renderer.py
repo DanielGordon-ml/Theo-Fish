@@ -20,6 +20,7 @@ from graph_builder.vault.body_renderer import (
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def concept() -> ConceptNode:
     """A minimal ConceptNode for testing."""
@@ -71,11 +72,13 @@ def source() -> SourceNode:
 # render_concept_body
 # ---------------------------------------------------------------------------
 
+
 class TestRenderConceptBody:
     """Tests for render_concept_body()."""
 
     def test_it_should_render_concept_body_with_canonical_definition(
-        self, concept: ConceptNode,
+        self,
+        concept: ConceptNode,
     ):
         """Body opens with a heading and the canonical definition."""
         body = render_concept_body(concept, [])
@@ -102,7 +105,8 @@ class TestRenderConceptBody:
         assert "0.95" in body
 
     def test_it_should_handle_concept_with_no_provenance(
-        self, concept: ConceptNode,
+        self,
+        concept: ConceptNode,
     ):
         """When provenance list is empty, no provenance table is rendered."""
         body = render_concept_body(concept, [])
@@ -113,11 +117,13 @@ class TestRenderConceptBody:
 # render_claim_body
 # ---------------------------------------------------------------------------
 
+
 class TestRenderClaimBody:
     """Tests for render_claim_body()."""
 
     def test_it_should_render_claim_body_with_statement_and_proof_sections(
-        self, claim: ClaimNode,
+        self,
+        claim: ClaimNode,
     ):
         """Body contains heading, statement text, and proof section."""
         body = render_claim_body(claim)
@@ -145,11 +151,13 @@ class TestRenderClaimBody:
 # render_source_body
 # ---------------------------------------------------------------------------
 
+
 class TestRenderSourceBody:
     """Tests for render_source_body()."""
 
     def test_it_should_render_source_body_with_paper_metadata_and_entity_lists(
-        self, source: SourceNode,
+        self,
+        source: SourceNode,
     ):
         """Body contains heading, arxiv_id, authors, and entity wikilinks."""
         concept_slugs = ["markov-decision-process", "ucb-index"]

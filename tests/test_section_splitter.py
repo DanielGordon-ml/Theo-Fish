@@ -35,26 +35,14 @@ class TestStripToc:
 
     def test_it_should_handle_numbered_toc_items(self):
         """Strip TOC with numbered list items."""
-        text = (
-            "# Contents\n\n"
-            "1. Introduction\n"
-            "2. Methods\n\n"
-            "# Introduction\n\n"
-            "Content."
-        )
+        text = "# Contents\n\n1. Introduction\n2. Methods\n\n# Introduction\n\nContent."
         result = strip_toc(text)
         assert "# Contents" not in result
         assert "# Introduction" in result
 
     def test_it_should_handle_table_of_contents_heading(self):
         """Strip TOC with 'Table of Contents' heading variant."""
-        text = (
-            "# Table of Contents\n\n"
-            "- Intro\n"
-            "- Methods\n\n"
-            "# Intro\n\n"
-            "Content."
-        )
+        text = "# Table of Contents\n\n- Intro\n- Methods\n\n# Intro\n\nContent."
         result = strip_toc(text)
         assert "Table of Contents" not in result
         assert "# Intro" in result
@@ -66,10 +54,7 @@ class TestSplitIntoSections:
     def test_it_should_split_on_h1_headings(self):
         """H1 headings create section boundaries."""
         filler = "This is enough content to exceed the stub threshold easily."
-        text = (
-            f"# Section One\n\n{filler}\n\n"
-            f"# Section Two\n\n{filler}"
-        )
+        text = f"# Section One\n\n{filler}\n\n# Section Two\n\n{filler}"
         sections = split_into_sections(text)
         assert len(sections) == 2
         assert sections[0].heading == "Section One"
@@ -78,10 +63,7 @@ class TestSplitIntoSections:
     def test_it_should_split_on_h2_headings(self):
         """H2 headings also create section boundaries."""
         filler = "This is enough content to exceed the stub threshold easily."
-        text = (
-            f"# Main Title\n\n{filler}\n\n"
-            f"## Sub Section\n\n{filler}"
-        )
+        text = f"# Main Title\n\n{filler}\n\n## Sub Section\n\n{filler}"
         sections = split_into_sections(text)
         assert len(sections) == 2
         assert sections[1].heading == "Sub Section"

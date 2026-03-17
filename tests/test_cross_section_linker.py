@@ -28,6 +28,7 @@ from graph_builder.models.edges import ClaimEdge
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_schema() -> GraphSchema:
     """Build a minimal GraphSchema with claim edge types for gap-fill."""
     return GraphSchema(
@@ -110,7 +111,9 @@ def _make_mock_client(edges: list[dict] | None = None) -> MagicMock:
 
 
 _CLAIM_A = _make_claim("Theorem 1.1", section="2 Preliminaries")
-_CLAIM_B = _make_claim("Lemma 3.1", "lemma", "Bound is tight.", section="3 Main Results")
+_CLAIM_B = _make_claim(
+    "Lemma 3.1", "lemma", "Bound is tight.", section="3 Main Results"
+)
 
 _NEW_CROSS_EDGE = {
     "source_slug": _CLAIM_B.slug,
@@ -129,6 +132,7 @@ _EXISTING_EDGE = ClaimEdge(
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 class TestFindCrossSectionEdges:
     """Tests for find_cross_section_edges()."""
@@ -194,9 +198,7 @@ class TestFindCrossSectionEdges:
         client = MagicMock()
         client.call = AsyncMock(side_effect=RuntimeError("LLM unavailable"))
 
-        result = await find_cross_section_edges(
-            claims, concepts, [], schema, client
-        )
+        result = await find_cross_section_edges(claims, concepts, [], schema, client)
 
         assert result == []
 
@@ -206,12 +208,14 @@ class TestFindCrossSectionEdges:
         schema = _make_schema()
         claims = [_CLAIM_A, _CLAIM_B]
         client = MagicMock()
-        client.call = AsyncMock(return_value=LLMResponse(
-            content="not valid json {{{",
-            input_tokens=10,
-            output_tokens=5,
-            model="deepseek-chat",
-        ))
+        client.call = AsyncMock(
+            return_value=LLMResponse(
+                content="not valid json {{{",
+                input_tokens=10,
+                output_tokens=5,
+                model="deepseek-chat",
+            )
+        )
 
         result = await find_cross_section_edges(claims, [], [], schema, client)
 

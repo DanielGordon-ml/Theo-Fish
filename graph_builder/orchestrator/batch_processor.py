@@ -46,7 +46,9 @@ async def process_batch(
 
     semaphore = asyncio.Semaphore(options.concurrency)
     tasks = [
-        _process_guarded(f.stem, options, llm_client, neo4j_client, embedding_client, semaphore)
+        _process_guarded(
+            f.stem, options, llm_client, neo4j_client, embedding_client, semaphore
+        )
         for f in paper_files
     ]
     raw = await asyncio.gather(*tasks, return_exceptions=True)
@@ -57,6 +59,7 @@ async def process_batch(
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 async def _process_guarded(
     arxiv_id: str,
@@ -78,7 +81,11 @@ async def _process_guarded(
     """
     async with semaphore:
         return await process_paper(
-            arxiv_id, options, llm_client, neo4j_client, embedding_client,
+            arxiv_id,
+            options,
+            llm_client,
+            neo4j_client,
+            embedding_client,
         )
 
 
@@ -100,11 +107,13 @@ def _coerce_results(
     for item, arxiv_id in zip(raw, arxiv_ids):
         if isinstance(item, Exception):
             logger.error("Unhandled exception for %s: %s", arxiv_id, item)
-            results.append(BuildResult(
-                arxiv_id=arxiv_id,
-                status="failed",
-                error=str(item),
-            ))
+            results.append(
+                BuildResult(
+                    arxiv_id=arxiv_id,
+                    status="failed",
+                    error=str(item),
+                )
+            )
         else:
             results.append(item)
     return results

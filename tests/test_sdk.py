@@ -16,14 +16,25 @@ from data_loader.models import (
 class TestLoadPaper:
     async def test_success(self, tmp_data_dir, monkeypatch):
         """It should return PaperResult on success."""
-        async def mock_process_batch(papers, processed_dir, papers_dir, concurrency, force):
+
+        async def mock_process_batch(
+            papers, processed_dir, papers_dir, concurrency, force
+        ):
             return BatchResult(
-                total=1, processed=1, skipped=0, failed=0,
-                arxiv2md=1, mineru=0,
-                results=[PaperResult(
-                    arxiv_id="2706.03762", status="processed",
-                    converter="arxiv2md", output_path=str(tmp_data_dir / "processed" / "2706.03762.json"),
-                )],
+                total=1,
+                processed=1,
+                skipped=0,
+                failed=0,
+                arxiv2md=1,
+                mineru=0,
+                results=[
+                    PaperResult(
+                        arxiv_id="2706.03762",
+                        status="processed",
+                        converter="arxiv2md",
+                        output_path=str(tmp_data_dir / "processed" / "2706.03762.json"),
+                    )
+                ],
             )
 
         monkeypatch.setattr("data_loader.sdk.process_batch", mock_process_batch)
@@ -38,14 +49,24 @@ class TestLoadPaper:
 
     async def test_failure_raises_loader_error(self, tmp_data_dir, monkeypatch):
         """It should raise LoaderError when processing fails."""
-        async def mock_process_batch(papers, processed_dir, papers_dir, concurrency, force):
+
+        async def mock_process_batch(
+            papers, processed_dir, papers_dir, concurrency, force
+        ):
             return BatchResult(
-                total=1, processed=0, skipped=0, failed=1,
-                arxiv2md=0, mineru=0,
-                results=[PaperResult(
-                    arxiv_id="9999.99999", status="failed",
-                    error="Both converters failed",
-                )],
+                total=1,
+                processed=0,
+                skipped=0,
+                failed=1,
+                arxiv2md=0,
+                mineru=0,
+                results=[
+                    PaperResult(
+                        arxiv_id="9999.99999",
+                        status="failed",
+                        error="Both converters failed",
+                    )
+                ],
             )
 
         monkeypatch.setattr("data_loader.sdk.process_batch", mock_process_batch)
@@ -62,14 +83,24 @@ class TestLoadPaper:
         """It should normalize ArXiv IDs before processing."""
         captured_papers = []
 
-        async def mock_process_batch(papers, processed_dir, papers_dir, concurrency, force):
+        async def mock_process_batch(
+            papers, processed_dir, papers_dir, concurrency, force
+        ):
             captured_papers.extend(papers)
             return BatchResult(
-                total=1, processed=1, skipped=0, failed=0,
-                arxiv2md=1, mineru=0,
-                results=[PaperResult(
-                    arxiv_id="2706.03762", status="processed", converter="arxiv2md",
-                )],
+                total=1,
+                processed=1,
+                skipped=0,
+                failed=0,
+                arxiv2md=1,
+                mineru=0,
+                results=[
+                    PaperResult(
+                        arxiv_id="2706.03762",
+                        status="processed",
+                        converter="arxiv2md",
+                    )
+                ],
             )
 
         monkeypatch.setattr("data_loader.sdk.process_batch", mock_process_batch)
@@ -95,13 +126,24 @@ class TestLoadPaper:
 class TestLoadPapers:
     async def test_returns_batch_result(self, tmp_data_dir, monkeypatch):
         """It should return BatchResult for multiple papers."""
-        async def mock_process_batch(papers, processed_dir, papers_dir, concurrency, force):
+
+        async def mock_process_batch(
+            papers, processed_dir, papers_dir, concurrency, force
+        ):
             return BatchResult(
-                total=2, processed=2, skipped=0, failed=0,
-                arxiv2md=2, mineru=0,
+                total=2,
+                processed=2,
+                skipped=0,
+                failed=0,
+                arxiv2md=2,
+                mineru=0,
                 results=[
-                    PaperResult(arxiv_id="2706.03762", status="processed", converter="arxiv2md"),
-                    PaperResult(arxiv_id="1810.04805", status="processed", converter="arxiv2md"),
+                    PaperResult(
+                        arxiv_id="2706.03762", status="processed", converter="arxiv2md"
+                    ),
+                    PaperResult(
+                        arxiv_id="1810.04805", status="processed", converter="arxiv2md"
+                    ),
                 ],
             )
 
@@ -118,13 +160,24 @@ class TestLoadPapers:
 
     async def test_never_raises(self, tmp_data_dir, monkeypatch):
         """It should never raise, even on failures — captures in BatchResult."""
-        async def mock_process_batch(papers, processed_dir, papers_dir, concurrency, force):
+
+        async def mock_process_batch(
+            papers, processed_dir, papers_dir, concurrency, force
+        ):
             return BatchResult(
-                total=1, processed=0, skipped=0, failed=1,
-                arxiv2md=0, mineru=0,
-                results=[PaperResult(
-                    arxiv_id="9999.99999", status="failed", error="test",
-                )],
+                total=1,
+                processed=0,
+                skipped=0,
+                failed=1,
+                arxiv2md=0,
+                mineru=0,
+                results=[
+                    PaperResult(
+                        arxiv_id="9999.99999",
+                        status="failed",
+                        error="test",
+                    )
+                ],
             )
 
         monkeypatch.setattr("data_loader.sdk.process_batch", mock_process_batch)

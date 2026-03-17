@@ -53,7 +53,8 @@ def _write_output(doc: PaperDocument, output_dir: Path) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / f"{sanitize_arxiv_id(doc.arxiv_id)}.json"
     output_file.write_text(
-        doc.model_dump_json(indent=2), encoding="utf-8",
+        doc.model_dump_json(indent=2),
+        encoding="utf-8",
     )
     return output_file
 
@@ -105,7 +106,9 @@ def run_pipeline(
 
     # Stage 3: Heading normalizer
     text, sr = _run_text_stage(
-        text, normalize_headings, converter=doc.converter_used,
+        text,
+        normalize_headings,
+        converter=doc.converter_used,
     )
     stages.append(sr)
 
@@ -166,7 +169,8 @@ def run_batch(
             return run_pipeline(path, output_dir, force=force)
         except Exception as e:
             logger.error(
-                "Pipeline failed: %s", str(e),
+                "Pipeline failed: %s",
+                str(e),
                 extra={"arxiv_id": path.stem},
             )
             return CleaningReport(

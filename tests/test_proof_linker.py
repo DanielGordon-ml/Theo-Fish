@@ -3,7 +3,6 @@
 @description Tests for the proof-linking pre-pass that maps claim labels to proof text.
 """
 
-
 from graph_builder.extraction.proof_linker import build_proof_map
 
 
@@ -79,9 +78,7 @@ class TestBuildProofMap:
     def test_it_should_handle_corollary_proofs(self):
         """It should match proofs of corollaries."""
         text = (
-            "Proof of Corollary 1: This follows immediately "
-            "from Theorem 2.\n\n"
-            "# Next\n"
+            "Proof of Corollary 1: This follows immediately from Theorem 2.\n\n# Next\n"
         )
         proof_map = build_proof_map(text)
         assert "Corollary 1" in proof_map

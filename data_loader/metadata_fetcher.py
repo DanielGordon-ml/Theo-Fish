@@ -90,7 +90,9 @@ def parse_arxiv_entry(entry: Any) -> PaperMetadata:
     elif categories:
         primary_category = categories[0]
 
-    publication_date = entry.get("published", "")[:10]  # "2017-06-12T..." -> "2017-06-12"
+    publication_date = entry.get("published", "")[
+        :10
+    ]  # "2017-06-12T..." -> "2017-06-12"
 
     return PaperMetadata(
         arxiv_id=arxiv_id,
@@ -164,7 +166,8 @@ async def parse_frontmatter_metadata(arxiv_id: str) -> PaperMetadata | None:
         )
     except Exception as e:
         logger.warning(
-            "Frontmatter metadata extraction failed: %s", str(e),
+            "Frontmatter metadata extraction failed: %s",
+            str(e),
             extra={"arxiv_id": arxiv_id},
         )
         return None
@@ -184,7 +187,8 @@ async def _fetch_batch(
     except (httpx.HTTPError, httpx.TimeoutException) as e:
         for aid in arxiv_ids:
             logger.error(
-                "ArXiv API request failed: %s", str(e),
+                "ArXiv API request failed: %s",
+                str(e),
                 extra={"arxiv_id": aid},
             )
         return {}
@@ -198,7 +202,8 @@ async def _fetch_batch(
             results[metadata.arxiv_id] = metadata
         except Exception as e:
             logger.warning(
-                "Failed to parse ArXiv entry: %s", str(e),
+                "Failed to parse ArXiv entry: %s",
+                str(e),
                 extra={"arxiv_id": "unknown"},
             )
 

@@ -66,13 +66,15 @@ def read_csv(csv_path: Path) -> list[PaperInput]:
             # Detect local PDF by .pdf extension
             if file_path.lower().endswith(".pdf"):
                 stem = Path(file_path).stem
-                papers.append(PaperInput(
-                    arxiv_id=stem,
-                    paper_name=row.get("paper_name") or None,
-                    file_type="pdf",
-                    is_local=True,
-                    local_filename=file_path,
-                ))
+                papers.append(
+                    PaperInput(
+                        arxiv_id=stem,
+                        paper_name=row.get("paper_name") or None,
+                        file_type="pdf",
+                        is_local=True,
+                        local_filename=file_path,
+                    )
+                )
                 continue
 
             arxiv_id = normalize_arxiv_id(file_path)
@@ -83,11 +85,13 @@ def read_csv(csv_path: Path) -> list[PaperInput]:
                     extra={"arxiv_id": file_path},
                 )
                 continue
-            papers.append(PaperInput(
-                arxiv_id=arxiv_id,
-                paper_name=row.get("paper_name") or None,
-                file_type=row.get("file_type") or None,
-            ))
+            papers.append(
+                PaperInput(
+                    arxiv_id=arxiv_id,
+                    paper_name=row.get("paper_name") or None,
+                    file_type=row.get("file_type") or None,
+                )
+            )
     return papers
 
 

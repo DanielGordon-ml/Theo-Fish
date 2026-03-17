@@ -69,6 +69,7 @@ _COALITION_SLUG = slugify(_COALITION_NAME)
 # Fixture loading helpers
 # ---------------------------------------------------------------------------
 
+
 def _load_concepts_fixture() -> dict:
     """Load the golden concept extraction fixture from disk."""
     path = _FIXTURES_DIR / "golden_paper_concepts.json"
@@ -84,6 +85,7 @@ def _load_claims_fixture() -> dict:
 # ---------------------------------------------------------------------------
 # Schema and model builder helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_schema() -> GraphSchema:
     """Build a GraphSchema covering all concept/claim types used in the fixtures."""
@@ -227,12 +229,12 @@ def _valid_validation() -> MagicMock:
 # Concept and claim sets built from fixtures
 # ---------------------------------------------------------------------------
 
+
 def _paper1_concepts_section1() -> list[ConceptNode]:
     """Return the three concepts from paper 1 section 1."""
     fixture = _load_concepts_fixture()
     return [
-        _make_concept_from_fixture(e)
-        for e in fixture["paper_1_section_1"]["concepts"]
+        _make_concept_from_fixture(e) for e in fixture["paper_1_section_1"]["concepts"]
     ]
 
 
@@ -240,8 +242,7 @@ def _paper1_concepts_section2() -> list[ConceptNode]:
     """Return the three concepts from paper 1 section 2."""
     fixture = _load_concepts_fixture()
     return [
-        _make_concept_from_fixture(e)
-        for e in fixture["paper_1_section_2"]["concepts"]
+        _make_concept_from_fixture(e) for e in fixture["paper_1_section_2"]["concepts"]
     ]
 
 
@@ -249,8 +250,7 @@ def _paper2_concepts_section1() -> list[ConceptNode]:
     """Return the two concepts from paper 2 section 1."""
     fixture = _load_concepts_fixture()
     return [
-        _make_concept_from_fixture(e)
-        for e in fixture["paper_2_section_1"]["concepts"]
+        _make_concept_from_fixture(e) for e in fixture["paper_2_section_1"]["concepts"]
     ]
 
 
@@ -279,10 +279,12 @@ def _paper1_coupling_edges(
     edges: list[CouplingEdge] = []
     for claim, raw in zip(claims, raw_claims):
         for concept_slug in raw.get("about_concepts", []):
-            edges.append(CouplingEdge(
-                claim_slug=claim.slug,
-                concept_slug=concept_slug,
-            ))
+            edges.append(
+                CouplingEdge(
+                    claim_slug=claim.slug,
+                    concept_slug=concept_slug,
+                )
+            )
     return edges
 
 
@@ -302,7 +304,9 @@ def _paper1_claim_edges(claims: list[ClaimNode]) -> list[ClaimEdge]:
             source_slug=corollary.slug,
             target_slug=theorem.slug,
             edge_type="derived_from",
-            attributes={"condition": "Corollary obtained by substituting k=1 into Theorem 1"},
+            attributes={
+                "condition": "Corollary obtained by substituting k=1 into Theorem 1"
+            },
         ),
     ]
 
@@ -310,6 +314,7 @@ def _paper1_claim_edges(claims: list[ClaimNode]) -> list[ClaimEdge]:
 # ---------------------------------------------------------------------------
 # Pipeline patch context manager
 # ---------------------------------------------------------------------------
+
 
 @contextmanager
 def _patch_pipeline(overrides: dict | None = None):
@@ -324,10 +329,13 @@ def _patch_pipeline(overrides: dict | None = None):
     coupling = _paper1_coupling_edges(claims)
 
     defaults = {
-        "load": (_PAPER_1_TITLE, [
-            _make_section("Introduction", "Game theory intro content.", 0),
-            _make_section("Main Results", "Theorems and lemmas.", 1),
-        ]),
+        "load": (
+            _PAPER_1_TITLE,
+            [
+                _make_section("Introduction", "Game theory intro content.", 0),
+                _make_section("Main Results", "Theorems and lemmas.", 1),
+            ],
+        ),
         "check": False,
         "p1": [_paper1_concepts_section1(), _paper1_concepts_section2()],
         "merge": _paper1_all_merged(),
@@ -378,6 +386,7 @@ def _patch_pipeline(overrides: dict | None = None):
 # ---------------------------------------------------------------------------
 # Phase 1: Single-paper extraction tests
 # ---------------------------------------------------------------------------
+
 
 class TestPhase1ConceptExtraction:
     """Phase 1 — validate concept semantic types from fixture data."""
@@ -494,9 +503,7 @@ class TestPhase1CouplingEdges:
         coupling = _paper1_coupling_edges(claims)
 
         lemma = next(c for c in claims if c.label == "Lemma 1")
-        lemma_targets = {
-            e.concept_slug for e in coupling if e.claim_slug == lemma.slug
-        }
+        lemma_targets = {e.concept_slug for e in coupling if e.claim_slug == lemma.slug}
         assert _COALITION_SLUG in lemma_targets
 
     def test_it_should_populate_edge_condition_attribute_in_claim_edges(self):
@@ -568,6 +575,7 @@ class TestPhase1OrchestratorResult:
 # Phase 2: Cross-paper deduplication tests
 # ---------------------------------------------------------------------------
 
+
 def _paper2_all_merged_with_nash_shared() -> list[MergedConcept]:
     """Build paper 2 merged list: Nash Equilibrium is not-new (cross-vault hit).
 
@@ -579,21 +587,23 @@ def _paper2_all_merged_with_nash_shared() -> list[MergedConcept]:
     for concept in p2_concepts:
         is_new = concept.name != _NASH_EQ_NAME
         match_method = "new" if is_new else "exact"
-        results.append(MergedConcept(
-            concept=concept,
-            dedup_result=DedupResult(
-                slug=concept.slug,
-                is_new=is_new,
-                match_method=match_method,
-                match_confidence=0.0 if is_new else 1.0,
-            ),
-            provenance=ProvenanceNode(
-                concept_slug=concept.slug,
-                source_arxiv_id=_PAPER_2_ID,
-                formulation=concept.canonical_definition,
-                formal_spec=concept.formal_spec,
-            ),
-        ))
+        results.append(
+            MergedConcept(
+                concept=concept,
+                dedup_result=DedupResult(
+                    slug=concept.slug,
+                    is_new=is_new,
+                    match_method=match_method,
+                    match_confidence=0.0 if is_new else 1.0,
+                ),
+                provenance=ProvenanceNode(
+                    concept_slug=concept.slug,
+                    source_arxiv_id=_PAPER_2_ID,
+                    formulation=concept.canonical_definition,
+                    formal_spec=concept.formal_spec,
+                ),
+            )
+        )
     return results
 
 
@@ -603,9 +613,7 @@ class TestPhase2CrossPaperDedup:
     def test_it_should_merge_nash_equilibrium_as_non_new_in_paper_2(self):
         """It should flag Nash Equilibrium as is_new=False when paper 2 processes it."""
         merged_p2 = _paper2_all_merged_with_nash_shared()
-        nash_entry = next(
-            m for m in merged_p2 if m.concept.slug == _NASH_EQ_SLUG
-        )
+        nash_entry = next(m for m in merged_p2 if m.concept.slug == _NASH_EQ_SLUG)
         assert nash_entry.dedup_result.is_new is False
         assert nash_entry.dedup_result.match_method == "exact"
         assert nash_entry.dedup_result.match_confidence == 1.0
@@ -643,11 +651,13 @@ class TestPhase2CrossPaperDedup:
 
         form_p1 = next(
             m.provenance.formulation
-            for m in merged_p1 if m.concept.slug == _NASH_EQ_SLUG
+            for m in merged_p1
+            if m.concept.slug == _NASH_EQ_SLUG
         )
         form_p2 = next(
             m.provenance.formulation
-            for m in merged_p2 if m.concept.slug == _NASH_EQ_SLUG
+            for m in merged_p2
+            if m.concept.slug == _NASH_EQ_SLUG
         )
 
         # Both are non-empty and distinct (different papers frame it differently)
@@ -667,8 +677,12 @@ class TestPhase2CrossPaperDedup:
         p2_slugs = [m.concept.slug for m in merged_p2]
 
         # Each paper's own merged list must have no duplicates
-        assert len(p1_slugs) == len(set(p1_slugs)), "Paper 1 has duplicate concept slugs"
-        assert len(p2_slugs) == len(set(p2_slugs)), "Paper 2 has duplicate concept slugs"
+        assert len(p1_slugs) == len(set(p1_slugs)), (
+            "Paper 1 has duplicate concept slugs"
+        )
+        assert len(p2_slugs) == len(set(p2_slugs)), (
+            "Paper 2 has duplicate concept slugs"
+        )
 
     def test_it_should_write_two_provenance_nodes_for_shared_nash_eq(self):
         """Orchestrator should invoke write for both provenance nodes (one per paper)."""
@@ -695,21 +709,28 @@ class TestPhase2CrossPaperDedup:
         p2_merged = _paper2_all_merged_with_nash_shared()
         p2_claims: list[ClaimNode] = []
 
-        with _patch_pipeline({
-            "load": (_PAPER_2_TITLE, [
-                _make_section("Introduction", "Nash equilibrium in congestion games.", 0),
-            ]),
-            "p1": [p2_concepts],
-            "merge": p2_merged,
-            "p2": (p2_claims, []),
-            "p3a": ([], []),
-            "p3b": [],
-            "write": {
-                "concepts": len(p2_merged),
-                "claims": 0,
-                "edges": 0,
-            },
-        }):
+        with _patch_pipeline(
+            {
+                "load": (
+                    _PAPER_2_TITLE,
+                    [
+                        _make_section(
+                            "Introduction", "Nash equilibrium in congestion games.", 0
+                        ),
+                    ],
+                ),
+                "p1": [p2_concepts],
+                "merge": p2_merged,
+                "p2": (p2_claims, []),
+                "p3a": ([], []),
+                "p3b": [],
+                "write": {
+                    "concepts": len(p2_merged),
+                    "claims": 0,
+                    "edges": 0,
+                },
+            }
+        ):
             result = await process_paper(
                 _PAPER_2_ID,
                 _make_options(),

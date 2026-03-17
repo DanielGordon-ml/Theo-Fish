@@ -119,7 +119,9 @@ def _format_concept_grounding(concept_list: list[dict]) -> list[str]:
         "",
     ]
     for c in concept_list:
-        lines.append(f"- {c.get('name', '')} (slug: {c.get('slug', '')}, type: {c.get('type', '')})")
+        lines.append(
+            f"- {c.get('name', '')} (slug: {c.get('slug', '')}, type: {c.get('type', '')})"
+        )
     lines.append("")
     return lines
 

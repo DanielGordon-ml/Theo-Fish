@@ -27,7 +27,10 @@ from graph_builder.models.edges import ClaimEdge, ConceptEdge, CouplingEdge
 # Minimal schema fixture
 # ---------------------------------------------------------------------------
 
-def _make_schema(concept_types: dict | None = None, claim_types: dict | None = None) -> GraphSchema:
+
+def _make_schema(
+    concept_types: dict | None = None, claim_types: dict | None = None
+) -> GraphSchema:
     """Build a minimal GraphSchema for use in parser tests."""
     concept_types = concept_types or {
         "structure": ConceptTypeDef(
@@ -87,21 +90,24 @@ _VALID_CLAIM = {
 # parse_concepts tests
 # ---------------------------------------------------------------------------
 
+
 class TestParseConcepts:
     """Tests for parse_concepts()."""
 
     def test_it_should_parse_valid_concept_json_into_concept_nodes(self):
         """Valid JSON with 'concepts' key returns list of ConceptNode."""
-        payload = json.dumps({
-            "concepts": [
-                {
-                    "name": "MDP",
-                    "semantic_type": "structure",
-                    "formal_spec": "(S,A,P,R,γ)",
-                    "canonical_definition": "Markov Decision Process",
-                },
-            ],
-        })
+        payload = json.dumps(
+            {
+                "concepts": [
+                    {
+                        "name": "MDP",
+                        "semantic_type": "structure",
+                        "formal_spec": "(S,A,P,R,γ)",
+                        "canonical_definition": "Markov Decision Process",
+                    },
+                ],
+            }
+        )
 
         result = parse_concepts(payload, SCHEMA)
 
@@ -113,12 +119,14 @@ class TestParseConcepts:
 
     def test_it_should_parse_multiple_concepts(self):
         """Multiple concepts in JSON all produce ConceptNode objects."""
-        payload = json.dumps({
-            "concepts": [
-                {"name": "MDP", "semantic_type": "structure"},
-                {"name": "Bellman Operator", "semantic_type": "operator"},
-            ],
-        })
+        payload = json.dumps(
+            {
+                "concepts": [
+                    {"name": "MDP", "semantic_type": "structure"},
+                    {"name": "Bellman Operator", "semantic_type": "operator"},
+                ],
+            }
+        )
 
         result = parse_concepts(payload, SCHEMA)
 
@@ -128,19 +136,26 @@ class TestParseConcepts:
 
     def test_it_should_skip_malformed_entries_and_log_warning(self, caplog):
         """Entries missing required fields are skipped with a warning logged."""
-        payload = json.dumps({
-            "concepts": [
-                {"name": "Valid Concept", "semantic_type": "structure"},
-                {"semantic_type": "structure"},  # missing 'name'
-            ],
-        })
+        payload = json.dumps(
+            {
+                "concepts": [
+                    {"name": "Valid Concept", "semantic_type": "structure"},
+                    {"semantic_type": "structure"},  # missing 'name'
+                ],
+            }
+        )
 
         with caplog.at_level(logging.WARNING):
             result = parse_concepts(payload, SCHEMA)
 
         assert len(result) == 1
         assert result[0].name == "Valid Concept"
-        assert any("skipping" in r.message.lower() or "malformed" in r.message.lower() or "invalid" in r.message.lower() for r in caplog.records)
+        assert any(
+            "skipping" in r.message.lower()
+            or "malformed" in r.message.lower()
+            or "invalid" in r.message.lower()
+            for r in caplog.records
+        )
 
     def test_it_should_return_empty_list_for_completely_invalid_json(self, caplog):
         """Non-JSON input returns empty list and logs a warning."""
@@ -159,27 +174,38 @@ class TestParseConcepts:
 
         assert result == []
 
-    def test_it_should_validate_semantic_type_against_schema_concept_types(self, caplog):
+    def test_it_should_validate_semantic_type_against_schema_concept_types(
+        self, caplog
+    ):
         """Entries with unknown semantic_type are skipped with a warning."""
-        payload = json.dumps({
-            "concepts": [
-                {"name": "Valid", "semantic_type": "structure"},
-                {"name": "Invalid", "semantic_type": "nonexistent_type"},
-            ],
-        })
+        payload = json.dumps(
+            {
+                "concepts": [
+                    {"name": "Valid", "semantic_type": "structure"},
+                    {"name": "Invalid", "semantic_type": "nonexistent_type"},
+                ],
+            }
+        )
 
         with caplog.at_level(logging.WARNING):
             result = parse_concepts(payload, SCHEMA)
 
         assert len(result) == 1
         assert result[0].name == "Valid"
-        assert any("nonexistent_type" in r.message or "semantic_type" in r.message for r in caplog.records)
+        assert any(
+            "nonexistent_type" in r.message or "semantic_type" in r.message
+            for r in caplog.records
+        )
 
     def test_it_should_auto_derive_slug_from_name(self):
         """ConceptNode.slug is derived from name if not provided."""
-        payload = json.dumps({
-            "concepts": [{"name": "Markov Decision Process", "semantic_type": "structure"}],
-        })
+        payload = json.dumps(
+            {
+                "concepts": [
+                    {"name": "Markov Decision Process", "semantic_type": "structure"}
+                ],
+            }
+        )
 
         result = parse_concepts(payload, SCHEMA)
 
@@ -190,21 +216,24 @@ class TestParseConcepts:
 # parse_claims tests
 # ---------------------------------------------------------------------------
 
+
 class TestParseClaims:
     """Tests for parse_claims()."""
 
     def test_it_should_parse_valid_claim_json_into_claim_nodes(self):
         """Valid JSON with 'claims' key returns list of ClaimNode."""
-        payload = json.dumps({
-            "claims": [
-                {
-                    "label": "Theorem 4.1",
-                    "claim_type": "theorem",
-                    "conclusion": "Policy converges under mild assumptions.",
-                    "assumptions": ["MDP is finite"],
-                },
-            ],
-        })
+        payload = json.dumps(
+            {
+                "claims": [
+                    {
+                        "label": "Theorem 4.1",
+                        "claim_type": "theorem",
+                        "conclusion": "Policy converges under mild assumptions.",
+                        "assumptions": ["MDP is finite"],
+                    },
+                ],
+            }
+        )
 
         result = parse_claims(payload, PAPER_SLUG, SCHEMA)
 
@@ -216,11 +245,17 @@ class TestParseClaims:
 
     def test_it_should_compose_slug_from_paper_slug_and_label(self):
         """ClaimNode slug is paper_slug--label_slug."""
-        payload = json.dumps({
-            "claims": [
-                {"label": "Lemma 2.3", "claim_type": "theorem", "conclusion": "foo"},
-            ],
-        })
+        payload = json.dumps(
+            {
+                "claims": [
+                    {
+                        "label": "Lemma 2.3",
+                        "claim_type": "theorem",
+                        "conclusion": "foo",
+                    },
+                ],
+            }
+        )
 
         result = parse_claims(payload, PAPER_SLUG, SCHEMA)
 
@@ -228,12 +263,18 @@ class TestParseClaims:
 
     def test_it_should_skip_malformed_claim_entries_and_log_warning(self, caplog):
         """Claims missing required fields are skipped with a warning."""
-        payload = json.dumps({
-            "claims": [
-                {"label": "Theorem 1.0", "claim_type": "theorem", "conclusion": "valid"},
-                {"claim_type": "theorem"},  # missing 'label'
-            ],
-        })
+        payload = json.dumps(
+            {
+                "claims": [
+                    {
+                        "label": "Theorem 1.0",
+                        "claim_type": "theorem",
+                        "conclusion": "valid",
+                    },
+                    {"claim_type": "theorem"},  # missing 'label'
+                ],
+            }
+        )
 
         with caplog.at_level(logging.WARNING):
             result = parse_claims(payload, PAPER_SLUG, SCHEMA)
@@ -251,12 +292,22 @@ class TestParseClaims:
 
     def test_it_should_validate_claim_type_against_schema_claim_types(self, caplog):
         """Claims with unknown claim_type are skipped."""
-        payload = json.dumps({
-            "claims": [
-                {"label": "Theorem 1", "claim_type": "theorem", "conclusion": "valid"},
-                {"label": "Unknown 2", "claim_type": "nonsense_type", "conclusion": "x"},
-            ],
-        })
+        payload = json.dumps(
+            {
+                "claims": [
+                    {
+                        "label": "Theorem 1",
+                        "claim_type": "theorem",
+                        "conclusion": "valid",
+                    },
+                    {
+                        "label": "Unknown 2",
+                        "claim_type": "nonsense_type",
+                        "conclusion": "x",
+                    },
+                ],
+            }
+        )
 
         with caplog.at_level(logging.WARNING):
             result = parse_claims(payload, PAPER_SLUG, SCHEMA)
@@ -309,22 +360,25 @@ class TestParseClaims:
 # parse_edges tests
 # ---------------------------------------------------------------------------
 
+
 class TestParseEdges:
     """Tests for parse_edges()."""
 
     def test_it_should_parse_valid_concept_edges(self):
         """Valid concept edges produce ConceptEdge objects."""
-        payload = json.dumps({
-            "concept_edges": [
-                {
-                    "source_slug": "mdp",
-                    "target_slug": "pomdp",
-                    "edge_type": "GENERALIZES",
-                },
-            ],
-            "claim_edges": [],
-            "coupling_edges": [],
-        })
+        payload = json.dumps(
+            {
+                "concept_edges": [
+                    {
+                        "source_slug": "mdp",
+                        "target_slug": "pomdp",
+                        "edge_type": "GENERALIZES",
+                    },
+                ],
+                "claim_edges": [],
+                "coupling_edges": [],
+            }
+        )
 
         concept_edges, claim_edges, coupling_edges = parse_edges(payload, SCHEMA)
 
@@ -335,17 +389,19 @@ class TestParseEdges:
 
     def test_it_should_parse_valid_claim_edges(self):
         """Valid claim edges produce ClaimEdge objects."""
-        payload = json.dumps({
-            "concept_edges": [],
-            "claim_edges": [
-                {
-                    "source_slug": "paper--theorem-1",
-                    "target_slug": "paper--theorem-2",
-                    "edge_type": "IMPLIES",
-                },
-            ],
-            "coupling_edges": [],
-        })
+        payload = json.dumps(
+            {
+                "concept_edges": [],
+                "claim_edges": [
+                    {
+                        "source_slug": "paper--theorem-1",
+                        "target_slug": "paper--theorem-2",
+                        "edge_type": "IMPLIES",
+                    },
+                ],
+                "coupling_edges": [],
+            }
+        )
 
         concept_edges, claim_edges, coupling_edges = parse_edges(payload, SCHEMA)
 
@@ -354,13 +410,15 @@ class TestParseEdges:
 
     def test_it_should_parse_valid_coupling_edges(self):
         """Valid coupling edges produce CouplingEdge objects."""
-        payload = json.dumps({
-            "concept_edges": [],
-            "claim_edges": [],
-            "coupling_edges": [
-                {"claim_slug": "paper--theorem-1", "concept_slug": "mdp"},
-            ],
-        })
+        payload = json.dumps(
+            {
+                "concept_edges": [],
+                "claim_edges": [],
+                "coupling_edges": [
+                    {"claim_slug": "paper--theorem-1", "concept_slug": "mdp"},
+                ],
+            }
+        )
 
         concept_edges, claim_edges, coupling_edges = parse_edges(payload, SCHEMA)
 
@@ -379,14 +437,20 @@ class TestParseEdges:
 
     def test_it_should_skip_malformed_edge_entries_and_log_warning(self, caplog):
         """Edge entries missing required fields are skipped."""
-        payload = json.dumps({
-            "concept_edges": [
-                {"source_slug": "a", "target_slug": "b", "edge_type": "GENERALIZES"},
-                {"source_slug": "c"},  # missing target_slug and edge_type
-            ],
-            "claim_edges": [],
-            "coupling_edges": [],
-        })
+        payload = json.dumps(
+            {
+                "concept_edges": [
+                    {
+                        "source_slug": "a",
+                        "target_slug": "b",
+                        "edge_type": "GENERALIZES",
+                    },
+                    {"source_slug": "c"},  # missing target_slug and edge_type
+                ],
+                "claim_edges": [],
+                "coupling_edges": [],
+            }
+        )
 
         with caplog.at_level(logging.WARNING):
             concept_edges, claim_edges, coupling_edges = parse_edges(payload, SCHEMA)

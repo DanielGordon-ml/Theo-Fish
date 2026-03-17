@@ -18,6 +18,7 @@ from graph_builder.models.provenance import ProvenanceNode
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_concept(
     name: str,
     formal_spec: str = "",
@@ -64,13 +65,18 @@ def _dedup_new(slug: str) -> DedupResult:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestMergeConceptsDedup:
     """Tests for intra-paper deduplication by concept name/slug."""
 
     @pytest.mark.asyncio
     async def test_it_should_deduplicate_same_name_across_sections(self):
         """It should produce one entry when the same concept appears in two sections."""
-        section_a = [_make_concept("Hilbert Space", formal_spec="H is a complete inner-product space")]
+        section_a = [
+            _make_concept(
+                "Hilbert Space", formal_spec="H is a complete inner-product space"
+            )
+        ]
         section_b = [_make_concept("Hilbert Space", formal_spec="H")]
         reader = _make_graph_reader()
         embedding_client = _make_embedding_client()
@@ -121,7 +127,12 @@ class TestMergeConceptsDedup:
         )
 
         merged = next(mc for mc in result if mc.concept.name == "MDP")
-        assert set(merged.concept.components) == {"states", "actions", "rewards", "transitions"}
+        assert set(merged.concept.components) == {
+            "states",
+            "actions",
+            "rewards",
+            "transitions",
+        }
 
 
 class TestMergeConceptsDedupCascade:

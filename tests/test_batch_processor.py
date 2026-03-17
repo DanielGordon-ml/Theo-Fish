@@ -29,6 +29,7 @@ _MODULE = "graph_builder.orchestrator.batch_processor"
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_schema() -> GraphSchema:
     """Build a minimal GraphSchema for batch processor tests."""
     return GraphSchema(
@@ -79,12 +80,14 @@ def _mock_clients() -> tuple[MagicMock, MagicMock, MagicMock]:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestPaperDiscovery:
     """Tests for *.json file discovery in the input directory."""
 
     @pytest.mark.asyncio
     async def test_it_should_discover_papers_from_input_directory(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ):
         """It should find all *.json files in input_dir and process them."""
         from graph_builder.orchestrator.batch_processor import process_batch
@@ -103,7 +106,8 @@ class TestPaperDiscovery:
 
     @pytest.mark.asyncio
     async def test_it_should_handle_empty_input_directory(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ):
         """It should return a BatchBuildResult with all zeros for an empty dir."""
         from graph_builder.orchestrator.batch_processor import process_batch
@@ -125,7 +129,8 @@ class TestParallelProcessing:
 
     @pytest.mark.asyncio
     async def test_it_should_process_papers_in_parallel_with_semaphore(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ):
         """It should respect concurrency limit via asyncio.Semaphore."""
         from graph_builder.orchestrator.batch_processor import process_batch
@@ -147,7 +152,11 @@ class TestParallelProcessing:
 
         with patch(f"{_MODULE}.process_paper", side_effect=_fake_process_paper):
             result = await process_batch(
-                tmp_path, _make_options(concurrency=1), llm, neo4j, emb,
+                tmp_path,
+                _make_options(concurrency=1),
+                llm,
+                neo4j,
+                emb,
             )
 
         assert max_active <= 1
@@ -155,7 +164,8 @@ class TestParallelProcessing:
 
     @pytest.mark.asyncio
     async def test_it_should_continue_when_one_paper_fails(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ):
         """It should process remaining papers even if one raises an exception."""
         from graph_builder.orchestrator.batch_processor import process_batch
@@ -184,7 +194,8 @@ class TestBatchBuildResult:
 
     @pytest.mark.asyncio
     async def test_it_should_return_batch_build_result_with_correct_totals(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ):
         """It should aggregate built/skipped/failed counts from all results."""
         from graph_builder.orchestrator.batch_processor import process_batch

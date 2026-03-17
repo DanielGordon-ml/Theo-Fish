@@ -11,7 +11,9 @@ import pytest
 from graph_builder.llm.llm_client import DeepSeekClient, LLMResponse
 
 
-def _make_mock_response(content: str = "{}", prompt_tokens: int = 10, completion_tokens: int = 5) -> MagicMock:
+def _make_mock_response(
+    content: str = "{}", prompt_tokens: int = 10, completion_tokens: int = 5
+) -> MagicMock:
     """Build a minimal mock OpenAI chat completion response."""
     mock_response = MagicMock()
     mock_response.choices = [MagicMock()]
@@ -162,6 +164,7 @@ class TestDeepSeekClientCall:
         client._client.chat.completions.create = AsyncMock(side_effect=api_err)
 
         import unittest.mock
+
         with unittest.mock.patch("asyncio.sleep", new_callable=AsyncMock):
             with pytest.raises(APIError):
                 await client.call("system", "user")
