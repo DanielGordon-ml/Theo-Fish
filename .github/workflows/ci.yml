@@ -34,8 +34,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Install Python 3.10
-        run: uv python install 3.10
+      - name: Install Python 3.11
+        run: uv python install 3.11
       - name: Install dependencies
         run: uv sync
       - name: Run Unit Tests
@@ -51,8 +51,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Install Python 3.10
-        run: uv python install 3.10
+      - name: Install Python 3.11
+        run: uv python install 3.11
       - name: Install dependencies
         run: uv sync
       - name: Run Integration Tests

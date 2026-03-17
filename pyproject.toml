@@ -2,7 +2,7 @@
 name = "theo-fish-etl"
 version = "0.1.0"
 description = "ETL pipeline for ingesting ArXiv academic papers"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "arxiv2markdown",
     "mineru[all]",
